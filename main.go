@@ -132,7 +132,7 @@ func extractTableData(action string, doc *goquery.Document, filter string, table
 							}
 
 							if action == "nat-totals" {
-								fmt.Printf("%s: %s\n", "Total connections of connections", row[1])
+								fmt.Printf("%s: %s\n", "Total number of connections", row[1])
 							}
 						}
 					}
