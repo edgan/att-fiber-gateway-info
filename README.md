@@ -78,7 +78,7 @@ UNI Status: up
 ```
 
 ### fiber-status
-This return all the values from the [Broadband|Fiber status](https://192.168.1.254/cgi-bin/fiberstat.ha).
+This return all the values from the [Broadband|Fiber Status](https://192.168.1.254/cgi-bin/fiberstat.ha).
 
 Example:
 ```
