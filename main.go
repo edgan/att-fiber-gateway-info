@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"crypto/md5"
 	"crypto/tls"
 	"encoding/gob"
@@ -13,6 +14,7 @@ import (
 	"net/http/cookiejar"
 	"net/url"
 	"os"
+	"runtime"
 	"sort"
 	"strconv"
 	"strings"
@@ -26,6 +28,7 @@ type GatewayClient struct {
 	baseURL       string
 	cookieFile    string
 	loadedCookies int
+	loginPath     string
 }
 
 // debugLog prints debug messages when debug mode is enabled
@@ -35,11 +38,12 @@ func debugLog(enabled bool, message string) {
 	}
 }
 
-func NewGatewayClient(baseURL string, cookieFile string, debug bool, freshCookies bool) (*GatewayClient, error) {
+func NewGatewayClient(baseURL string, loginPath string, cookieFile string, debug bool, freshCookies bool) (*GatewayClient, error) {
 	loadedCookies := 0
 
 	// Create cookie jar
 	jar, err := cookiejar.New(nil)
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to create cookie jar: %v", err)
 	}
@@ -74,6 +78,7 @@ func NewGatewayClient(baseURL string, cookieFile string, debug bool, freshCookie
 		baseURL:       baseURL,
 		cookieFile:    cookieFile,
 		loadedCookies: loadedCookies,
+		loginPath:     loginPath,
 	}, nil
 }
 
@@ -87,6 +92,7 @@ func printRowWithPadding(row []string, columnWidths []int) {
 	for i, cell := range row {
 		fmt.Print(cell + strings.Repeat(" ", columnWidths[i]-len(cell)+2))
 	}
+
 	fmt.Println()
 }
 
@@ -109,15 +115,17 @@ func extractTableData(action string, doc *goquery.Document, filter string, prett
 
 					// Check if there is a <pre> tag inside the <td>
 					pre := cell.Find("pre")
+
 					if pre.Length() > 0 {
 						// Process <pre> content with <br> tags replaced by newlines
 						htmlContent, err := pre.Html() // Get HTML inside <pre>, which returns (string, error)
+
 						if err != nil {
 							cellText = "" // or handle error appropriately
 						} else {
 							cellText = strings.ReplaceAll(htmlContent, "Wi-Fi<br/>", "Wi-Fi: ") // Special case for WiFi
-							cellText = strings.ReplaceAll(cellText, "<br/>", "\n  ") // Replace <br /> with newline
-							cellText = strings.ReplaceAll(cellText, "<br>", "\n")     // Handle <br> tag as well
+							cellText = strings.ReplaceAll(cellText, "<br/>", "\n  ")            // Replace <br /> with newline
+							cellText = strings.ReplaceAll(cellText, "<br>", "\n")               // Handle <br> tag as well
 						}
 					} else {
 						// No <pre> tag; get text normally
@@ -141,6 +149,7 @@ func extractTableData(action string, doc *goquery.Document, filter string, prett
 
 								maxConnections := 8192
 								connections, err := strconv.Atoi(row[1])
+
 								if err != nil {
 									panic(err)
 								}
@@ -182,12 +191,14 @@ func extractTableData(action string, doc *goquery.Document, filter string, prett
 			} else if action == "nat-destinations" {
 				sortedDestinationsIPs := CountIPsByColumn(tableData, 7)
 				fmt.Println("Destinations IP addresses:")
+
 				for _, row := range sortedDestinationsIPs {
 					fmt.Printf("%d %s\n", row.Count, row.IP)
 				}
 			} else if action == "nat-sources" {
 				sortedSourcesIPs := CountIPsByColumn(tableData, 5)
 				fmt.Println("Source IP addresses:")
+
 				for _, row := range sortedSourcesIPs {
 					fmt.Printf("%d %s\n", row.Count, row.IP)
 				}
@@ -232,6 +243,7 @@ func extractTableData(action string, doc *goquery.Document, filter string, prett
 					if action == "home-network-status" || action == "ip-allocation" || (action == "nat-connections" && pretty) {
 						// Find the maximum width of each column
 						columnWidths := make([]int, len(tableData[0]))
+
 						for _, row := range tableData {
 							for i, cell := range row {
 								if len(cell) > columnWidths[i] {
@@ -254,6 +266,7 @@ func extractTableData(action string, doc *goquery.Document, filter string, prett
 func extractData(action string, content string, filter string, natActionPrefix string, pretty bool) error {
 	// Load the HTML content into goquery
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(content))
+
 	if err != nil {
 		return fmt.Errorf("failed to parse content: %v", err)
 	}
@@ -291,6 +304,7 @@ func extractData(action string, content string, filter string, natActionPrefix s
 func extractContentSub(htmlStr string) (string, error) {
 	// Load the HTML document
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(htmlStr))
+
 	if err != nil {
 		return "", err
 	}
@@ -300,6 +314,7 @@ func extractContentSub(htmlStr string) (string, error) {
 
 	// Get the HTML of the content-sub div
 	htmlContent, err := contentSub.Html()
+
 	if err != nil {
 		return "", err
 	}
@@ -341,31 +356,39 @@ func findNonce(n *html.Node) (string, error) {
 	return nonce, nil
 }
 
-func (rc *GatewayClient) getNonce(loginPath string) (string, error) {
-	if rc.loadedCookies == 0 {
+func (rc *GatewayClient) getNonce(page string) (string, error) {
+	path := returnPath(page)
+
+	if page == "login" && rc.loadedCookies == 0 {
 		// First request to load the login page and get cookies
-		resp1, err1 := rc.client.Get(rc.baseURL + loginPath)
+		resp1, err1 := rc.client.Get(rc.baseURL + path)
+
 		if err1 != nil {
 			return "", fmt.Errorf("failed to get login page: %v", err1)
 		}
+
 		defer resp1.Body.Close()
 	}
 
 	// Second request to get the nonce, using the cookies from the first request
-	resp2, err2 := rc.client.Get(rc.baseURL + loginPath)
+	resp2, err2 := rc.client.Get(rc.baseURL + path)
+
 	if err2 != nil {
-		return "", fmt.Errorf("failed to get nonce from login page: %v", err2)
+		return "", fmt.Errorf("failed to get nonce from page: %v", err2)
 	}
+
 	defer resp2.Body.Close()
 
 	// Parse HTML to extract nonce
 	doc, err := html.Parse(resp2.Body)
+
 	if err != nil {
 		return "", fmt.Errorf("failed to parse HTML: %v", err)
 	}
 
 	// Use the findNonce function to get the nonce
 	nonce, err := findNonce(doc)
+
 	if err != nil {
 		return "", err
 	}
@@ -380,9 +403,37 @@ func calculateHash(password, nonce string) string {
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-func (rc *GatewayClient) login(password string, loginPath string) error {
-	// Get nonce from login page
-	nonce, err := rc.getNonce(loginPath)
+func (rc *GatewayClient) submitForm(path string, formData url.Values) error {
+	// Submit form
+	resp, err := rc.client.PostForm(rc.baseURL+path, formData)
+
+	if err != nil {
+		return fmt.Errorf("failed to submit the form to %s: %v", path, err)
+	}
+
+	defer resp.Body.Close()
+
+	// Check if submission was successful
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("submission to %s failed with status: %d", path, resp.StatusCode)
+	}
+
+	if path == rc.loginPath {
+		// Save session cookies
+		if err := rc.saveSessionCookies(); err != nil {
+			log.Printf("Failed to save cookies: %v", err)
+		}
+	}
+
+	return nil
+}
+
+func (rc *GatewayClient) login(password string) error {
+	page := "login"
+
+	// Get nonce from page
+	nonce, err := rc.getNonce(page)
+
 	if err != nil {
 		return fmt.Errorf("failed to get nonce: %v", err)
 	}
@@ -395,38 +446,28 @@ func (rc *GatewayClient) login(password string, loginPath string) error {
 		"nonce":        {nonce},
 		"password":     {strings.Repeat("*", len(password))}, // Replicate JS behavior
 		"hashpassword": {hash},
-		"Continue":     {"Continue"},
+		"Continue":     {"Continue"}, // submit button
 	}
 
-	// Submit login form
-	resp, err := rc.client.PostForm(rc.baseURL+loginPath, formData)
-	if err != nil {
-		return fmt.Errorf("failed to submit login form: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check if login was successful
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("login failed with status: %d", resp.StatusCode)
-	}
-
-	// Save session cookies
-	if err := rc.saveSessionCookies(); err != nil {
-		log.Printf("Failed to save cookies: %v", err)
+	if err := rc.submitForm(rc.loginPath, formData); err != nil {
+		log.Fatalf("Submission to %s failed: %v", rc.loginPath, err)
 	}
 
 	return nil
 }
 
 // getPath is a generic function that fetches and returns the response body as a string.
-func (rc *GatewayClient) getPath(path string, loginPath string) (string, error) {
+func (rc *GatewayClient) getPath(path string) (string, error) {
 	resp, err := rc.client.Get(rc.baseURL + path)
+
 	if err != nil {
 		return "", fmt.Errorf("failed to get path %s: %v", path, err)
 	}
+
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
+
 	if err != nil {
 		return "", fmt.Errorf("failed to read response for path %s: %v", path, err)
 	}
@@ -434,30 +475,60 @@ func (rc *GatewayClient) getPath(path string, loginPath string) (string, error) 
 	bodyStr := string(body)
 
 	// Check for login failure
-	if strings.Contains(bodyStr, loginPath) {
+	if strings.Contains(bodyStr, rc.loginPath) {
 		return "", fmt.Errorf("Login failed. Password likely wrong.")
 	}
 
 	return bodyStr, nil
 }
 
-func (rc *GatewayClient) getPage(page string, action string, filter string, loginPath string, natActionPrefix string, pretty bool) error {
-	path := "/cgi-bin/" + page + ".ha"
+func (rc *GatewayClient) getPage(page string, action string, filter string, natActionPrefix string, answerYes bool, pretty bool) error {
+	path := returnPath(page)
 
-	// Get body using the new getPath function
-	body, err := rc.getPath(path, loginPath)
-	if err != nil {
-		return err
-	}
+	if page == "reset" {
+		question := "Do you want to restart your gateway? " +
+			"Note this will take down your internet immediately."
 
-	// Extract content-sub div
-	content, err := extractContentSub(body)
-	if err != nil {
-		log.Fatal(err)
-	}
+		if askYesNo(question, answerYes) {
 
-	if err := extractData(action, content, filter, natActionPrefix, pretty); err != nil {
-		log.Fatalf("Error extracting %s", action)
+			// Get nonce from page
+			nonce, err := rc.getNonce(page)
+
+			if err != nil {
+				return fmt.Errorf("failed to get nonce: %v", err)
+			}
+
+			// Prepare form data
+			formData := url.Values{
+				"nonce":   {nonce},
+				"Restart": {"Restart"}, // submit button
+			}
+
+			if err := rc.submitForm(path, formData); err != nil {
+				log.Fatalf("Submission to %s failed: %v", path, err)
+			}
+		}
+
+	} else {
+
+		// Get body using the new getPath function
+		body, err := rc.getPath(path)
+
+		if err != nil {
+			return err
+		}
+
+		// Extract content-sub div
+		content, err := extractContentSub(body)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if err := extractData(action, content, filter, natActionPrefix, pretty); err != nil {
+			log.Fatalf("Error extracting %s", action)
+		}
+
 	}
 
 	return nil
@@ -500,19 +571,23 @@ func CountIPsByColumn(tableData [][]string, column int) []struct {
 // Function to load cookies from a file
 func loadCookies(jar http.CookieJar, baseURL string, filePath string) error {
 	file, err := os.Open(filePath)
+
 	if err != nil {
 		return err
 	}
+
 	defer file.Close()
 
 	var cookies []*http.Cookie
 	decoder := gob.NewDecoder(file)
 	err = decoder.Decode(&cookies)
+
 	if err != nil {
 		return err
 	}
 
 	u, err := url.Parse(baseURL)
+
 	if err != nil {
 		return err
 	}
@@ -523,6 +598,7 @@ func loadCookies(jar http.CookieJar, baseURL string, filePath string) error {
 func saveCookies(jar http.CookieJar, baseURL string, filePath string) error {
 	// Parse the URL
 	u, err := url.Parse(baseURL)
+
 	if err != nil {
 		return fmt.Errorf("failed to parse base URL: %v", err)
 	}
@@ -532,13 +608,16 @@ func saveCookies(jar http.CookieJar, baseURL string, filePath string) error {
 
 	// Open the file to save cookies
 	file, err := os.Create(filePath)
+
 	if err != nil {
 		return fmt.Errorf("failed to create cookie file: %v", err)
 	}
+
 	defer file.Close()
 
 	// Encode and save cookies to the file
 	encoder := gob.NewEncoder(file)
+
 	if err := encoder.Encode(cookies); err != nil {
 		return fmt.Errorf("failed to encode cookies: %v", err)
 	}
@@ -546,8 +625,43 @@ func saveCookies(jar http.CookieJar, baseURL string, filePath string) error {
 	return nil
 }
 
+func returnPath(page string) string {
+	path := "/cgi-bin/" + page + ".ha"
+
+	return path
+}
+
+// Prompt the user for yes/no input
+func askYesNo(prompt string, answerYes bool) bool {
+	if !answerYes {
+		reader := bufio.NewReader(os.Stdin)
+		for {
+			fmt.Print(prompt + " (yes/no): ")
+			input, err := reader.ReadString('\n')
+
+			if err != nil {
+				fmt.Println("Error reading input. Please try again.")
+				continue
+			}
+
+			// Trim whitespace and convert to lowercase
+			input = strings.TrimSpace(strings.ToLower(input))
+
+			if input == "yes" || input == "y" {
+				return true
+			} else if input == "no" || input == "n" {
+				return false
+			} else {
+				fmt.Println("Invalid input. Please type 'yes' or 'no'.")
+			}
+		}
+	}
+
+	return true
+}
+
 func main() {
-	actionSlice := []string{"broadband-status", "device-list", "fiber-status", "home-network-status", "ip-allocation", "nat-check", "nat-connections", "nat-destinations", "nat-sources", "nat-totals", "system-information"}
+	actionSlice := []string{"broadband-status", "device-list", "fiber-status", "home-network-status", "ip-allocation", "nat-check", "nat-connections", "nat-destinations", "nat-sources", "nat-totals", "restart", "system-information"}
 	actions_help := []string{}
 
 	for _, action := range actionSlice {
@@ -572,6 +686,7 @@ func main() {
 		"fiber-status":        "fiberstat",
 		"home-network-status": "lanstatistics",
 		"ip-allocation":       "ipalloc",
+		"restart":             "reset",
 		"system-information":  "sysinfo",
 	}
 
@@ -585,9 +700,18 @@ func main() {
 	}
 
 	gatewayBaseURL := "https://192.168.1.254"
-	loginPath := "/cgi-bin/login.ha"
 
-	cookieFilename := "/var/tmp/.att-fiber-gateway-info_cookies.gob"
+	var cookieFilename string
+
+	// Set cookieFilename based on GOOS
+	switch runtime.GOOS {
+	case "windows":
+		cookieFilename = "C:\\Windows\\Temp\\att-fiber-gateway-info_cookies.gob"
+	default: // Linux and other Unix-like systems
+		cookieFilename = "/var/tmp/.att-fiber-gateway-info_cookies.gob"
+	}
+
+	loginPath := returnPath("login")
 
 	// Parse command line arguments
 	baseURL := flag.String("url", gatewayBaseURL, "Gateway base URL")
@@ -596,8 +720,10 @@ func main() {
 	filter := flag.String("filter", "", filterDescription)
 	cookieFile := flag.String("cookiefile", cookieFilename, "File to save session cookies")
 	debug := flag.Bool("debug", false, "Enable debug mode")
+	answerYes := flag.Bool("yes", false, "Answer yes to any questions")
 	pretty := flag.Bool("pretty", false, "Enable pretty mode for nat-connections")
 	freshCookies := flag.Bool("fresh", false, "Do not use existing cookies (Warning: If you use all the time you will run out of sessions. There is a max.)")
+
 	flag.Parse()
 
 	if *password == "" {
@@ -637,24 +763,26 @@ func main() {
 	}
 
 	// Create router client
-	client, err := NewGatewayClient(*baseURL, *cookieFile, *debug, *freshCookies)
+	client, err := NewGatewayClient(*baseURL, loginPath, *cookieFile, *debug, *freshCookies)
+
 	if err != nil {
 		log.Fatalf("Failed to create router client: %v", err)
 	}
 
 	// Perform login
-	if err := client.login(*password, loginPath); err != nil {
+	if err := client.login(*password); err != nil {
 		log.Fatalf("Login failed: %v", err)
 	}
 
 	// Determine the page based on action
 	page, exists := actionPageMap[*action]
+
 	if !exists {
 		log.Fatalf("Unknown action: %s", *action)
 	}
 
 	// Get the specified page
-	if err := client.getPage(page, *action, *filter, loginPath, natActionPrefix, *pretty); err != nil {
+	if err := client.getPage(page, *action, *filter, natActionPrefix, *answerYes, *pretty); err != nil {
 		log.Fatalf("Failed to get %s: %v", *action, err)
 	}
 

@@ -6,30 +6,40 @@ tool to pull values from the pages of an
 [BGW320-505 gateway](https://help.sonic.com/hc/en-us/articles/1500000066642-BGW320).
 
 ## Compiling
+To build for only your platform:
 ```
 go build
 ```
 
+To binaries for all supported combinations of operating systems and architectures:
+```
+./builds.sh
+```
+
+## Builds
+See the `.builds` file for the list of supported combinations of operating systems and architectures.
+
 ## Usage
 ```
-./att-fiber-gateway-info --help
 Usage of ./att-fiber-gateway-info:
   -action string
-    	Action to perform (broadband-status, device-list, fiber-status, home-network-status, ip-allocation, nat-check, nat-connections, nat-destinations, nat-sources, nat-totals, system-information)
+        Action to perform (broadband-status, device-list, fiber-status, home-network-status, ip-allocation, nat-check, nat-connections, nat-destinations, nat-sources, nat-totals, restart, system-information)
   -cookiefile string
-    	File to save session cookies (default "/var/tmp/.att-fiber-gateway-info_cookies.gob")
+        File to save session cookies (default "/var/tmp/.att-fiber-gateway-info_cookies.gob")
   -debug
-    	Enable debug mode
+        Enable debug mode
   -filter string
-    	Filter to perform (icmp, ipv4, ipv6, tcp, udp)
+        Filter to perform (icmp, ipv4, ipv6, tcp, udp)
   -fresh
-    	Do not use existing cookies (Warning: If you use all the time you will run out of sessions. There is a max.)
+        Do not use existing cookies (Warning: If you use all the time you will run out of sessions. There is a max.)
   -password string
-    	Gateway password
+        Gateway password
   -pretty
-    	Enable pretty mode for nat-connections
+        Enable pretty mode for nat-connections
   -url string
-    	Gateway base URL (default "https://192.168.1.254")
+        Gateway base URL (default "https://192.168.1.254")
+  -yes
+        Answer yes to any questions
 ```
 
 ## Actions
@@ -90,7 +100,7 @@ Name: Google-Home
 Last Activity: Thu Nov 14 16:48:47 2024
 Status: on
 Allocation: dhcp
-Connection Type: 
+Connection Type:
   Ethernet LAN-1
 Connection Speed: 2500Mbps	fullduplex
 Mesh Client: No
@@ -104,7 +114,7 @@ Name: unknownfe7d07990310
 Last Activity: Mon Nov 11 17:37:06 2024
 Status: off
 Allocation: dhcp
-Connection Type: 
+Connection Type:
   Wi-Fi: 2.4 GHz
   Type: Home
   Name: ATTAJXBcOw
@@ -246,29 +256,29 @@ This returns the values from the
 
 Example:
 ```
-IPv4 Address / Name                        MAC Address        Status  Allocation       Action  
-minipc-1                                   00:1e:06:48:2f:a9  off     DHCP Allocation          
-lake                                       00:1f:c6:fc:35:91  off     DHCP Allocation          
-192.168.1.137 / ASUSTek COMPUTER INC.      00:23:54:1c:26:55  on      DHCP Allocation          
-unknown0024e4f453a6                        00:24:e4:f4:53:a6  off     DHCP Allocation          
-192.168.1.138 / river                      00:c0:ca:13:7f:51  on      DHCP Allocation          
-192.168.1.154 / android-dhcp-13            0a:e2:62:1c:fd:b5  on      DHCP Allocation          
-192.168.1.143 / BRW2C98113D0FE5            2c:98:11:3d:0F:e5  on      DHCP Allocation          
-192.168.1.147 / fuchsia-1cf2-9a48-aba0     3c:8d:20:e3:3d:7b  on      DHCP Allocation          
-192.168.1.161 / My-ecobee                  44:61:32:f8:fa:2d  on      DHCP Allocation          
-router                                     48:21:0b:6a:5f:51  off     DHCP Allocation          
-192.168.1.107 / Pixel-8-Pro                5a:aa:40:d9:35:17  on      DHCP Allocation          
-192.168.1.101 / Vickies-MBP                88:66:5a:4f:93:46  on      DHCP Allocation          
-192.168.1.159 / ocean                      a0:36:bc:1c:3f:92  on      DHCP Allocation          
-192.168.1.106 / VY-Pixel-6                 d2:33:fa:5c:d3:61  on      DHCP Allocation          
-Pixel-8-Pro                                d6:7d:1a:1b:e8:3f  off     DHCP Allocation          
-192.168.1.117 / Vickies-5th-Gen-iPad-Pro   d6:b7:73:c2:c3:f3  on      DHCP Allocation          
-192.168.1.135 / higgs                      d6:f5:4a:1c:a3:1a  off     DHCP Allocation          
-192.168.1.136 / VY-Pixel-6                 de:4a:ff:cd:f5:13  off     DHCP Allocation          
-192.168.1.103 / Google-Home                f4:f5:d8:4f:de:1a  on      DHCP Allocation          
-192.168.1.104 / Google-Home                f4:f5:d8:b2:c1:31  on      DHCP Allocation          
-192.168.1.102 / Google-Home                f4:f5:d8:c8:10:39  on      DHCP Allocation          
-unknownfe7d07990310                        fe:7d:07:99:03:10  off     DHCP Allocation          
+IPv4 Address / Name                        MAC Address        Status  Allocation       Action
+minipc-1                                   00:1e:06:48:2f:a9  off     DHCP Allocation
+lake                                       00:1f:c6:fc:35:91  off     DHCP Allocation
+192.168.1.137 / ASUSTek COMPUTER INC.      00:23:54:1c:26:55  on      DHCP Allocation
+unknown0024e4f453a6                        00:24:e4:f4:53:a6  off     DHCP Allocation
+192.168.1.138 / river                      00:c0:ca:13:7f:51  on      DHCP Allocation
+192.168.1.154 / android-dhcp-13            0a:e2:62:1c:fd:b5  on      DHCP Allocation
+192.168.1.143 / BRW2C98113D0FE5            2c:98:11:3d:0F:e5  on      DHCP Allocation
+192.168.1.147 / fuchsia-1cf2-9a48-aba0     3c:8d:20:e3:3d:7b  on      DHCP Allocation
+192.168.1.161 / My-ecobee                  44:61:32:f8:fa:2d  on      DHCP Allocation
+router                                     48:21:0b:6a:5f:51  off     DHCP Allocation
+192.168.1.107 / Pixel-8-Pro                5a:aa:40:d9:35:17  on      DHCP Allocation
+192.168.1.101 / Vickies-MBP                88:66:5a:4f:93:46  on      DHCP Allocation
+192.168.1.159 / ocean                      a0:36:bc:1c:3f:92  on      DHCP Allocation
+192.168.1.106 / VY-Pixel-6                 d2:33:fa:5c:d3:61  on      DHCP Allocation
+Pixel-8-Pro                                d6:7d:1a:1b:e8:3f  off     DHCP Allocation
+192.168.1.117 / Vickies-5th-Gen-iPad-Pro   d6:b7:73:c2:c3:f3  on      DHCP Allocation
+192.168.1.135 / higgs                      d6:f5:4a:1c:a3:1a  off     DHCP Allocation
+192.168.1.136 / VY-Pixel-6                 de:4a:ff:cd:f5:13  off     DHCP Allocation
+192.168.1.103 / Google-Home                f4:f5:d8:4f:de:1a  on      DHCP Allocation
+192.168.1.104 / Google-Home                f4:f5:d8:b2:c1:31  on      DHCP Allocation
+192.168.1.102 / Google-Home                f4:f5:d8:c8:10:39  on      DHCP Allocation
+unknownfe7d07990310                        fe:7d:07:99:03:10  off     DHCP Allocation
 ```
 
 ### nat-check
@@ -297,9 +307,9 @@ ipv4, udp, 17, 463, , 192.168.1.104, 33049, 8.8.8.8, 53, 110.112.23.57, 33049, 8
 
 Example pretty:
 ```
-IP Family  Protocol  Protocol Number  Lifetime  TCP State    Source Address                           Source Port  Destination Address                      Destination Port  NAT Source Address                       NAT Source Port  NAT Destination Address                  NAT Destination Port  Bidirectional  
-ipv4       udp       17               28                     192.168.1.103                            5353         192.168.1.254                            5353              192.168.1.103                            5353             192.168.1.254                            5353                                 
-ipv4       udp       17               485                    192.168.1.106                            57970        64.233.177.95                            443               110.112.23.57                            57970            64.233.177.95                            443                   *     
+IP Family  Protocol  Protocol Number  Lifetime  TCP State    Source Address                           Source Port  Destination Address                      Destination Port  NAT Source Address                       NAT Source Port  NAT Destination Address                  NAT Destination Port  Bidirectional
+ipv4       udp       17               28                     192.168.1.103                            5353         192.168.1.254                            5353              192.168.1.103                            5353             192.168.1.254                            5353
+ipv4       udp       17               485                    192.168.1.106                            57970        64.233.177.95                            443               110.112.23.57                            57970            64.233.177.95                            443                   *
 ```
 
 ### nat-destinations
@@ -351,8 +361,15 @@ Total number of tcp connections: 95
 Total number of udp connections: 43
 ```
 
+### restart
+This asks you if you are sure you want to restart your gateway. If you answer
+yes it restarts the router via
+[Dianostics|Resets](https://192.168.1.254/cgi-bin/resets.ha) page. There is
+also the -yes flag to skip the question.
+
 ### system-information
-This returns the values from the [Device|System Information](https://192.168.1.254/cgi-bin/sysinfo.ha) page.
+This returns the values from the
+[Device|System Information](https://192.168.1.254/cgi-bin/sysinfo.ha) page.
 
 Example:
 ```
@@ -366,11 +383,6 @@ Time Since Last Reboot: 00:09:51:01
 Current Date/Time: 2024-11-13T13:13:31
 Hardware Version: 02001E0046004F
 ```
-
-## Known issues
-1. By default assumes `/var/tmp` exists. This can be worked around with the
-`-cookiefile` command line argument. It is untested on
-[Windows](https://en.wikipedia.org/wiki/Microsoft_Windows).
 
 ## Story
   I just had [AT&T Fiber](https://www.att.com/internet/fiber/) installed. As
