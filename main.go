@@ -85,12 +85,12 @@ func (rc *GatewayClient) saveSessionCookies() error {
 // Function to print a row with padding
 func printRowWithPadding(row []string, columnWidths []int) {
 	for i, cell := range row {
-		fmt.Print(cell + strings.Repeat(" ", columnWidths[i]-len(cell)+1))
+		fmt.Print(cell + strings.Repeat(" ", columnWidths[i]-len(cell)+2))
 	}
 	fmt.Println()
 }
 
-func extractTableData(action string, doc *goquery.Document, filter string, tableClass string) {
+func extractTableData(action string, doc *goquery.Document, filter string, pretty bool, tableClass string) {
 	doc.Find("table").Each(func(i int, table *goquery.Selection) {
 		var tableData [][]string // A slice to hold all rows, with each row as a slice of cell values
 
@@ -105,7 +105,27 @@ func extractTableData(action string, doc *goquery.Document, filter string, table
 					rowData = append(rowData, strings.TrimSpace(cell.Text()))
 				})
 				row.Find("td").Each(func(k int, cell *goquery.Selection) {
-					rowData = append(rowData, strings.TrimSpace(cell.Text()))
+					var cellText string
+
+					// Check if there is a <pre> tag inside the <td>
+					pre := cell.Find("pre")
+					if pre.Length() > 0 {
+						// Process <pre> content with <br> tags replaced by newlines
+						htmlContent, err := pre.Html() // Get HTML inside <pre>, which returns (string, error)
+						if err != nil {
+							cellText = "" // or handle error appropriately
+						} else {
+							cellText = strings.ReplaceAll(htmlContent, "Wi-Fi<br/>", "Wi-Fi: ") // Special case for WiFi
+							cellText = strings.ReplaceAll(cellText, "<br/>", "\n  ") // Replace <br /> with newline
+							cellText = strings.ReplaceAll(cellText, "<br>", "\n")     // Handle <br> tag as well
+						}
+					} else {
+						// No <pre> tag; get text normally
+						cellText = strings.TrimSpace(cell.Text())
+					}
+
+					// Append processed cellText to rowData
+					rowData = append(rowData, strings.TrimSpace(cellText))
 				})
 
 				// Append the row to the table data
@@ -154,7 +174,7 @@ func extractTableData(action string, doc *goquery.Document, filter string, table
 					fmt.Printf("Total number of tcp connections: %d\n", tcpCount)
 					fmt.Printf("Total number of udp connections: %d\n", udpCount)
 				}
-			} else if action == "nat-connections" {
+			} else if action == "nat-connections" && !pretty {
 				for _, row := range tableData {
 					line := strings.Join(row, ", ")
 					fmt.Println(line)
@@ -172,19 +192,66 @@ func extractTableData(action string, doc *goquery.Document, filter string, table
 					fmt.Printf("%d %s\n", row.Count, row.IP)
 				}
 			} else {
+				if action == "home-network-status" {
+					for _, row := range tableData {
+						count := len(row)
+						if row[0] != "" && count > 1 {
+							row[0] = row[0] + ":"
+						}
+					}
+				}
+
 				// Print each row in a default format
 				for _, row := range tableData {
+					if action == "device-list" {
+						count := len(row)
+
+						// ipv4 address / name
+						if row[0] == "IPv4 Address / Name" {
+							row[0] = "IPv4 Address"
+						}
+
+						substring := " / "
+
+						if count > 1 {
+							if strings.Contains(row[1], substring) {
+								row[1] = strings.Replace(row[1], substring, "Name: ", 1)
+							}
+						}
+					}
+
 					line := strings.Join(row, ": ")
-					if !strings.Contains(line, "Legal Disclaimer") {
+
+					if action == "device-list" {
+						// connection-type
+						if row[0] == "Connection Type" {
+							line = strings.Join(row, ": \n  ")
+						}
+					}
+
+					if action == "home-network-status" || action == "ip-allocation" || (action == "nat-connections" && pretty) {
+						// Find the maximum width of each column
+						columnWidths := make([]int, len(tableData[0]))
+						for _, row := range tableData {
+							for i, cell := range row {
+								if len(cell) > columnWidths[i] {
+									columnWidths[i] = len(cell)
+								}
+							}
+						}
+
+						printRowWithPadding(row, columnWidths)
+					} else if !strings.Contains(line, "Legal Disclaimer") {
 						fmt.Println(line)
 					}
 				}
+				fmt.Println()
 			}
 		}
 	})
 }
 
-func extractData(action string, content string, filter string, natActionPrefix string) error {
+func extractData(action string, content string, filter string, natActionPrefix string, pretty bool) error {
 	// Load the HTML content into goquery
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(content))
 	if err != nil {
@@ -192,16 +259,14 @@ func extractData(action string, content string, filter string, natActionPrefix s
 	}
 
 	if action == "nat-check" {
-		extractTableData(action, doc, filter, "table60")
+		extractTableData(action, doc, filter, pretty, "table60")
 	} else if action == "nat-totals" {
-		extractTableData(action, doc, filter, "table60")
-		extractTableData(action, doc, filter, "grid table100")
-	} else if strings.HasPrefix(action, natActionPrefix) {
-		extractTableData(action, doc, filter, "grid table100")
+		extractTableData(action, doc, filter, pretty, "table60")
+		extractTableData(action, doc, filter, pretty, "grid table100")
+	} else if strings.HasPrefix(action, natActionPrefix) || action == "ip-allocation" {
+		extractTableData(action, doc, filter, pretty, "grid table100")
 	} else if action == "fiber-status" {
-		extractTableData(action, doc, filter, "table75")
-
-		fmt.Println("")
+		extractTableData(action, doc, filter, pretty, "table75")
 
 		// Extract <h1> elements with specific information about Temperature, Vcc, and Power outside the tables
 		doc.Find("h1").Each(func(i int, s *goquery.Selection) {
@@ -213,9 +278,11 @@ func extractData(action string, content string, filter string, natActionPrefix s
 				fmt.Println(text)
 			}
 		})
+	} else if action == "home-network-status" || action == "device-list" {
+		extractTableData(action, doc, filter, pretty, "table100")
 	} else {
 		// broadband-status, sys-info
-		extractTableData(action, doc, filter, "table75")
+		extractTableData(action, doc, filter, pretty, "table75")
 	}
 
 	return nil
@@ -374,7 +441,7 @@ func (rc *GatewayClient) getPath(path string, loginPath string) (string, error) 
 	return bodyStr, nil
 }
 
-func (rc *GatewayClient) getPage(page string, action string, filter string, loginPath string, natActionPrefix string) error {
+func (rc *GatewayClient) getPage(page string, action string, filter string, loginPath string, natActionPrefix string, pretty bool) error {
 	path := "/cgi-bin/" + page + ".ha"
 
 	// Get body using the new getPath function
@@ -389,7 +456,7 @@ func (rc *GatewayClient) getPage(page string, action string, filter string, logi
 		log.Fatal(err)
 	}
 
-	if err := extractData(action, content, filter, natActionPrefix); err != nil {
+	if err := extractData(action, content, filter, natActionPrefix, pretty); err != nil {
 		log.Fatalf("Error extracting %s", action)
 	}
 
@@ -480,7 +547,7 @@ func saveCookies(jar http.CookieJar, baseURL string, filePath string) error {
 }
 
 func main() {
-	actionSlice := []string{"broadband-status", "fiber-status", "nat-check", "nat-connections", "nat-destinations", "nat-sources", "nat-totals", "sys-info"}
+	actionSlice := []string{"broadband-status", "device-list", "fiber-status", "home-network-status", "ip-allocation", "nat-check", "nat-connections", "nat-destinations", "nat-sources", "nat-totals", "system-information"}
 	actions_help := []string{}
 
 	for _, action := range actionSlice {
@@ -500,9 +567,12 @@ func main() {
 
 	// Define a map linking actions to their corresponding page names
 	actionPageMap := map[string]string{
-		"broadband-status": "broadbandstatistics",
-		"fiber-status":     "fiberstat",
-		"sys-info":         "sysinfo",
+		"broadband-status":    "broadbandstatistics",
+		"device-list":         "devices",
+		"fiber-status":        "fiberstat",
+		"home-network-status": "lanstatistics",
+		"ip-allocation":       "ipalloc",
+		"system-information":  "sysinfo",
 	}
 
 	// All "nat-" prefixed actions use "nattable" page
@@ -526,6 +596,7 @@ func main() {
 	filter := flag.String("filter", "", filterDescription)
 	cookieFile := flag.String("cookiefile", cookieFilename, "File to save session cookies")
 	debug := flag.Bool("debug", false, "Enable debug mode")
+	pretty := flag.Bool("pretty", false, "Enable pretty mode for nat-connections")
 	freshCookies := flag.Bool("fresh", false, "Do not use existing cookies (Warning: If you use all the time you will run out of sessions. There is a max.)")
 	flag.Parse()
 
@@ -583,7 +654,7 @@ func main() {
 	}
 
 	// Get the specified page
-	if err := client.getPage(page, *action, *filter, loginPath, natActionPrefix); err != nil {
+	if err := client.getPage(page, *action, *filter, loginPath, natActionPrefix, *pretty); err != nil {
 		log.Fatalf("Failed to get %s: %v", *action, err)
 	}
 
