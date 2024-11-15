@@ -418,6 +418,36 @@ func (rc *GatewayClient) login(password string, loginPath string) error {
 	return nil
 }
 
+func (rc *GatewayClient) restart(resetPath string, loginPath string) error {
+
+	// Get nonce from reset page
+	nonce, err := rc.getNonce(resetPath)
+	if err != nil {
+		return fmt.Errorf("failed to get nonce: %v", err)
+  }
+  
+	// Prepare form data
+	formData := url.Values{
+		"Restart":      {"Restart"},
+		"nonce":        {nonce},
+	}
+
+	// Submit restart form
+	resp, err := rc.client.PostForm(rc.baseURL+resetPath, formData)
+	if err != nil {
+		return fmt.Errorf("failed to submit restart form: %v", err)
+	}
+  
+  defer resp.Body.Close()
+
+	// Check if restart was successful
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("restart failed with status: %d", resp.StatusCode)
+	}
+
+	return nil
+}
+
 // getPath is a generic function that fetches and returns the response body as a string.
 func (rc *GatewayClient) getPath(path string, loginPath string) (string, error) {
 	resp, err := rc.client.Get(rc.baseURL + path)
@@ -546,8 +576,8 @@ func saveCookies(jar http.CookieJar, baseURL string, filePath string) error {
 	return nil
 }
 
-func main() {
-	actionSlice := []string{"broadband-status", "device-list", "fiber-status", "home-network-status", "ip-allocation", "nat-check", "nat-connections", "nat-destinations", "nat-sources", "nat-totals", "system-information"}
+func main() {	
+	actionSlice := []string{"broadband-status", "device-list", "fiber-status", "home-network-status", "ip-allocation", "nat-check", "nat-connections", "nat-destinations", "nat-sources", "nat-totals", "system-information", "restart"}
 	actions_help := []string{}
 
 	for _, action := range actionSlice {
@@ -586,6 +616,7 @@ func main() {
 
 	gatewayBaseURL := "https://192.168.1.254"
 	loginPath := "/cgi-bin/login.ha"
+	resetPath := "/cgi-bin/reset.ha"
 
 	cookieFilename := "/var/tmp/.att-fiber-gateway-info_cookies.gob"
 
@@ -646,6 +677,14 @@ func main() {
 	if err := client.login(*password, loginPath); err != nil {
 		log.Fatalf("Login failed: %v", err)
 	}
+
+	// Perform restart
+	if *action == "restart" {
+		if err := client.restart(resetPath, loginPath); err != nil {
+			log.Fatalf("Restart failed: %v", err)
+		}
+		os.Exit(0)
+  	}
 
 	// Determine the page based on action
 	page, exists := actionPageMap[*action]

@@ -15,7 +15,7 @@ go build
 ./att-fiber-gateway-info --help
 Usage of ./att-fiber-gateway-info:
   -action string
-    	Action to perform (broadband-status, device-list, fiber-status, home-network-status, ip-allocation, nat-check, nat-connections, nat-destinations, nat-sources, nat-totals, system-information)
+    	Action to perform (broadband-status, device-list, fiber-status, home-network-status, ip-allocation, nat-check, nat-connections, nat-destinations, nat-sources, nat-totals, system-information, restart)
   -cookiefile string
     	File to save session cookies (default "/var/tmp/.att-fiber-gateway-info_cookies.gob")
   -debug
@@ -30,6 +30,8 @@ Usage of ./att-fiber-gateway-info:
     	Enable pretty mode for nat-connections
   -url string
     	Gateway base URL (default "https://192.168.1.254")
+  -restart
+  	Send restart signal to Gateway
 ```
 
 ## Actions
