@@ -2,8 +2,10 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"crypto/md5"
 	"crypto/tls"
+	_ "embed"
 	"encoding/gob"
 	"encoding/hex"
 	"flag"
@@ -14,6 +16,7 @@ import (
 	"net/http/cookiejar"
 	"net/url"
 	"os"
+	"path/filepath"
 	"runtime"
 	"sort"
 	"strconv"
@@ -22,7 +25,19 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/fatih/color"
 	"golang.org/x/net/html"
+	"gopkg.in/yaml.v3"
 )
+
+// Names have to be capitalized
+type Config struct {
+	BaseURL  string `yaml:"baseURL"`
+	Password string `yaml:"password"`
+}
+
+// Embed the default configuration file
+// Do not remove next line
+//go:embed default_config.yml
+var defaultConfig []byte
 
 type GatewayClient struct {
 	client        *http.Client
@@ -31,6 +46,54 @@ type GatewayClient struct {
 	cookieFile    string
 	loadedCookies int
 	loginPath     string
+}
+
+func loadDefaultConfig() (*Config, error) {
+	config := &Config{}
+	decoder := yaml.NewDecoder(bytes.NewReader(defaultConfig))
+	if err := decoder.Decode(config); err != nil {
+		return nil, fmt.Errorf("failed to parse embedded default config: %w", err)
+	}
+	return config, nil
+}
+
+func loadConfig(configFile string) (*Config, error) {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user home directory: %w", err)
+	}
+
+	configPath := filepath.Join(homeDir, configFile)
+
+	var permissions os.FileMode
+	// This applies to Linux/MacOS only, not Windows.
+	permissions = 0600
+
+	// Check if the config file exists
+	if _, err := os.Stat(configPath); os.IsNotExist(err) {
+		// File does not exist, write the default configuration
+		err = os.WriteFile(configPath, defaultConfig, permissions) // Use the embedded defaultConfig
+		if err != nil {
+			return nil, fmt.Errorf("failed to write default config file: %w", err)
+		}
+		log.Printf("Default config written to %s", configPath)
+	}
+
+	// Open the config file
+	file, err := os.Open(configPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open config file: %w", err)
+	}
+	defer file.Close()
+
+	// Decode the config file
+	config := &Config{}
+	decoder := yaml.NewDecoder(file)
+	if err := decoder.Decode(config); err != nil {
+		return nil, fmt.Errorf("failed to parse config file: %w", err)
+	}
+
+	return config, nil
 }
 
 // debugLog prints debug messages when debug mode is enabled
@@ -485,11 +548,11 @@ func (rc *GatewayClient) getPath(path string) (string, error) {
 	return bodyStr, nil
 }
 
-func (rc *GatewayClient) submitForm(action string, answerYes bool, page string, path string, reset_action [4]string) error {
-	buttonName := reset_action[0]
-	buttonValue := reset_action[1]
-	question := reset_action[2]
-	warning := reset_action[3]
+func (rc *GatewayClient) submitForm(action string, answerYes bool, page string, path string, resetAction [4]string) error {
+	buttonName := resetAction[0]
+	buttonValue := resetAction[1]
+	question := resetAction[2]
+	warning := resetAction[3]
 
 	if askYesNo(answerYes, rc.colorMode, question, warning) {
 		// Get nonce from page
@@ -521,8 +584,8 @@ func (rc *GatewayClient) getPage(action string, answerYes bool, filter string, n
 	path := returnPath(page)
 
 	if page == "reset" {
-		may_warning := "This may take down your internet immediately."
-		will_warning := "Note this will take down your internet immediately."
+		mayWarning := "This may take down your internet immediately."
+		willWarning := "Note this will take down your internet immediately."
 
 		parts := strings.Split(action, "-")
 		task := parts[0]
@@ -531,16 +594,16 @@ func (rc *GatewayClient) getPage(action string, answerYes bool, filter string, n
 		question := formatQuestion(task, resource)
 
 		// The buttonNames and buttonValues have to be exact
-		reset_actions := map[string][4]string{
-			"reset-connection": {"ResetConn", "Reset Connection", question, may_warning},
-			"reset-device":     {"Reset", "Reset Device...", question, may_warning},
-			"reset-firewall":   {"FReset", "Reset Firewall Config", question, may_warning},
-			"reset-ip":         {"ResetIP", "Reset IP", question, may_warning},
-			"reset-wifi":       {"WReset", "Reset Wi-Fi Config", question, may_warning},
-			"restart-gateway":  {"Restart", "Restart", question, will_warning},
+		resetActions := map[string][4]string{
+			"reset-connection": {"ResetConn", "Reset Connection", question, mayWarning},
+			"reset-device":     {"Reset", "Reset Device...", question, mayWarning},
+			"reset-firewall":   {"FReset", "Reset Firewall Config", question, mayWarning},
+			"reset-ip":         {"ResetIP", "Reset IP", question, mayWarning},
+			"reset-wifi":       {"WReset", "Reset Wi-Fi Config", question, mayWarning},
+			"restart-gateway":  {"Restart", "Restart", question, willWarning},
 		}
 
-		err := rc.submitForm(action, answerYes, page, path, reset_actions[action])
+		err := rc.submitForm(action, answerYes, page, path, resetActions[action])
 		if err != nil {
 			log.Fatalf("Submission failed: %v", err)
 		}
@@ -738,6 +801,24 @@ func main() {
 		colorMode = false
 	}
 
+	configFilename := "att-fiber-gateway-info.yml"
+
+        var configFile string
+
+	// Set configFile based on GOOS
+	switch runtime.GOOS {
+	case "windows":
+		configFile = configFilename
+	default: // Linux and other Unix-like systems
+		configFile = "." + configFilename
+	}
+
+	// Load configuration from file
+	config, err := loadConfig(configFile)
+	if err != nil {
+		log.Fatalf("Error loading configuration: %v", err)
+	}
+
 	actions := []string{
 		"broadband-status", "device-list", "fiber-status", "home-network-status",
 		"ip-allocation", "nat-check", "nat-connections", "nat-destinations",
@@ -746,22 +827,22 @@ func main() {
 		"system-information",
 	}
 
-	actions_help := []string{}
+	actionsHelp := []string{}
 
 	for _, action := range actions {
-		actions_help = append(actions_help, action)
+		actionsHelp = append(actionsHelp, action)
 	}
 
-	actionDescription := fmt.Sprintf("Action to perform (%s)", strings.Join(actions_help, ", "))
+	actionDescription := fmt.Sprintf("Action to perform (%s)", strings.Join(actionsHelp, ", "))
 
 	filters := []string{"icmp", "ipv4", "ipv6", "tcp", "udp"}
-	filters_help := []string{}
+	filtersHelp := []string{}
 
 	for _, filter := range filters {
-		filters_help = append(filters_help, filter)
+		filtersHelp = append(filtersHelp, filter)
 	}
 
-	filterDescription := fmt.Sprintf("Filter to perform (%s)", strings.Join(filters_help, ", "))
+	filterDescription := fmt.Sprintf("Filter to perform (%s)", strings.Join(filtersHelp, ", "))
 
 	// Define a map linking actions to their corresponding page names
 	actionPages := map[string]string{
@@ -789,33 +870,34 @@ func main() {
 		}
 	}
 
-	gatewayBaseURL := "https://192.168.1.254"
+	cookieFilename := "att-fiber-gateway-info_cookies.gob"
 
-	var cookieFilename string
+	var cookiePath string
 
-	// Set cookieFilename based on GOOS
+	// Set cookieFile based on GOOS
 	switch runtime.GOOS {
 	case "windows":
-		cookieFilename = "C:\\Windows\\Temp\\att-fiber-gateway-info_cookies.gob"
+		cookiePath = "C:\\Windows\\Temp\\" + cookieFilename
 	default: // Linux and other Unix-like systems
-		cookieFilename = "/var/tmp/.att-fiber-gateway-info_cookies.gob"
+		cookiePath = "/var/tmp/" + cookieFilename
 	}
 
 	loginPath := returnPath("login")
 
-	// Parse command line arguments
-	baseURL := flag.String("url", gatewayBaseURL, "Gateway base URL")
-	password := flag.String("password", "", "Gateway password")
 	action := flag.String("action", "", actionDescription)
-	filter := flag.String("filter", "", filterDescription)
-	cookieFile := flag.String("cookiefile", cookieFilename, "File to save session cookies")
-	debug := flag.Bool("debug", false, "Enable debug mode")
 	answerYes := flag.Bool("yes", false, "Answer yes to any questions")
-	pretty := flag.Bool("pretty", false, "Enable pretty mode for nat-connections")
+	baseURLFlag := flag.String("url", "", "Gateway base URL")
+	cookieFile := flag.String("cookiefile", cookiePath, "File to save session cookies")
+	debug := flag.Bool("debug", false, "Enable debug mode")
+	filter := flag.String("filter", "", filterDescription)
+
 	freshCookies := flag.Bool(
 		"fresh", false,
 		"Do not use existing cookies (Warning: If you use all the time you will run out of sessions. There is a max.)",
 	)
+
+	passwordFlag := flag.String("password", "", "Gateway password")
+	pretty := flag.Bool("pretty", false, "Enable pretty mode for nat-connections")
 
 	if colorMode {
 		// Replace the default Usage with our colored version
@@ -824,9 +906,29 @@ func main() {
 
 	flag.Parse()
 
-	if *password == "" {
+	var baseURL string
+
+	// Merge with configuration
+	if *baseURLFlag == "" {
+		baseURL = config.BaseURL
+	} else {
+		baseURL = *baseURLFlag
+	}
+
+	var password string
+
+	if *passwordFlag == "" {
+		password = config.Password
+	} else {
+		password = *passwordFlag
+	}
+
+	if password == "" {
 		log.Fatal("Password is required")
 	}
+
+	debugLog(*debug, "baseURL: "+baseURL)
+	debugLog(*debug, "password: "+password)
 
 	isValidAction := false
 
@@ -838,7 +940,7 @@ func main() {
 	}
 
 	if !isValidAction {
-		actionError := fmt.Sprintf("Action must be one of these (%s)", strings.Join(actions_help, ", "))
+		actionError := fmt.Sprintf("Action must be one of these (%s)", strings.Join(actionsHelp, ", "))
 		log.Fatal(actionError)
 	}
 
@@ -856,19 +958,19 @@ func main() {
 	}
 
 	if !isValidFilter {
-		filterError := fmt.Sprintf("Filter must be one of these (%s)", strings.Join(filters_help, ", "))
+		filterError := fmt.Sprintf("Filter must be one of these (%s)", strings.Join(filtersHelp, ", "))
 		log.Fatal(filterError)
 	}
 
 	// Create router client
-	client, err := NewGatewayClient(*baseURL, colorMode, *cookieFile, *debug, *freshCookies, loginPath)
+	client, err := NewGatewayClient(baseURL, colorMode, *cookieFile, *debug, *freshCookies, loginPath)
 
 	if err != nil {
 		log.Fatalf("Failed to create router client: %v", err)
 	}
 
 	// Perform login
-	if err := client.login(*password); err != nil {
+	if err := client.login(password); err != nil {
 		log.Fatalf("Login failed: %v", err)
 	}
 
