@@ -17,6 +17,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"sort"
 	"strconv"
@@ -778,12 +779,19 @@ func ColoredUsage() {
 		s := fmt.Sprintf("  ")
 		s += boldGreen.Sprintf("-%s", f.Name)
 
+		// Use reflection to get the type of the flag's value and clean it
+		flagType := reflect.TypeOf(f.Value).Elem().Name()
+		if strings.HasSuffix(flagType, "Value") {
+			flagType = strings.TrimSuffix(flagType, "Value")
+		}
+		s += blue.Sprintf(" %s", flagType)
+
 		// Add default value if it exists and isn't empty
 		if f.DefValue != "" {
 			s += blue.Sprintf(" (default: %v)", f.DefValue)
 		}
 
-		// Add the usage description in blue
+		// Add the usage description in cyan
 		if f.Usage != "" {
 			s += "\n    \t" + cyan.Sprintf(f.Usage)
 		}

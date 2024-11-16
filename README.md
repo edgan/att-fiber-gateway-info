@@ -23,23 +23,24 @@ Usage of ./att-fiber-gateway-info:
                            nat-sources, nat-totals, reset-connection, reset-device,
                            reset-firewall, reset-ip, reset-wifi, restart-gateway,
                            system-information)
-  -cookiefile string
-        File to save session cookies (default "/var/tmp/att-fiber-gateway-info_cookies.gob")
-  -debug
+  -cookiefile string (default: /var/tmp/att-fiber-gateway-info_cookies.gob)
+        File to save session cookies
+  -debug bool (default: false)
         Enable debug mode
   -filter string
         Filter to perform (icmp, ipv4, ipv6, tcp, udp)
-  -fresh
+  -fresh bool (default: false)
         Do not use existing cookies (Warning: If you use all the time you will run out of
         sessions. There is a max.)
   -password string
         Gateway password
-  -pretty
+  -pretty bool (default: false)
         Enable pretty mode for nat-connections
   -url string
-        Gateway base URL (default "https://192.168.1.254")
-  -yes
+        Gateway base URL
+  -yes bool (default: false)
         Answer yes to any questions
+
 ```
 
 ## Compiling
