@@ -63,7 +63,7 @@ Colors for some of the output has been added, if the terminal supports it.
 
 It can be disabled with `TERM=` or `NO_COLOR=`. `NO_COLOR` can be set to any
 value other than empty to disable colors. This `NO_COLOR` any value behavior
-seems to come from the shell, and isn't written into att-fiber-gateway-info.
+seems to come from the shell, and isn't written into this code.
 
 Examples:
 ```
