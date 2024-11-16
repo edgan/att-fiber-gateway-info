@@ -78,7 +78,7 @@ There is now a configuration file stored in your home directory as
 `att-fiber-gateway-info.yml`. The file is automatically created if it does not
 exist.
 
-The default file permissions are read-write for the user on Linux and MacOS.
+The default file permissions are read-write for the user only on Linux and MacOS.
 
 The baseURL, with a default of `https://192.168.1.254`, is in the configuration
 file. The command line argument overrides the configuration file. You can
