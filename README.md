@@ -17,13 +17,28 @@ To binaries for all supported combinations of operating systems and architecture
 ```
 
 ## Builds
-See the `.builds` file for the list of supported combinations of operating systems and architectures.
+See the `.builds` file for the list of supported combinations of operating
+systems and architectures.
+
+### Color
+Colors for some of the output has been added, if the terminal supports it.
+
+It can be disabled with `TERM=` or `NO_COLOR=`. `NO_COLOR` can be set to any
+value other than empty to disable colors. This `NO_COLOR` any value behavior
+seems to come from the shell, and isn't written into att-fiber-gateway-info.
+
+Examples:
+```
+TERM= ./att-fiber-gateway-info --help
+NO_COLOR=1 ./att-fiber-gateway-info --help
+NO_COLOR=false ./att-fiber-gateway-info --help # When set to anything, no color
+```
 
 ## Usage
 ```
 Usage of ./att-fiber-gateway-info:
   -action string
-        Action to perform (broadband-status, device-list, fiber-status, home-network-status, ip-allocation, nat-check, nat-connections, nat-destinations, nat-sources, nat-totals, restart, system-information)
+        Action to perform (broadband-status, device-list, fiber-status, home-network-status, ip-allocation, nat-check, nat-connections, nat-destinations, nat-sources, nat-totals, reset-connection, reset-device, reset-firewall, reset-ip, reset-wifi, restart-gateway, system-information)
   -cookiefile string
         File to save session cookies (default "/var/tmp/.att-fiber-gateway-info_cookies.gob")
   -debug
@@ -102,7 +117,7 @@ Status: on
 Allocation: dhcp
 Connection Type:
   Ethernet LAN-1
-Connection Speed: 2500Mbps	fullduplex
+Connection Speed: 2500Mbps    fullduplex
 Mesh Client: No
 IPv6 Address: fe80::f6f5:d8ff:fec8:1039
 Type: slaac
@@ -361,11 +376,53 @@ Total number of tcp connections: 95
 Total number of udp connections: 43
 ```
 
-### restart
-This asks you if you are sure you want to restart your gateway. If you answer
+### reset-connection
+This asks you if you are sure you want to reset the connection. If you answer
+yes it resets the router via
+[Dianostics|Resets](https://192.168.1.254/cgi-bin/resets.ha) page. There is
+also the -yes flag to skip the question.
+
+Be careful with this action.
+
+### reset-device
+This asks you if you are sure you want to reset the device. If you answer
+yes it resets the router via
+[Dianostics|Resets](https://192.168.1.254/cgi-bin/resets.ha) page. There is
+also the -yes flag to skip the question.
+
+Be careful with this action.
+
+### reset-firewall
+This asks you if you are sure you want to reset the firewall. If you answer
+yes it resets the router via
+[Dianostics|Resets](https://192.168.1.254/cgi-bin/resets.ha) page. There is
+also the -yes flag to skip the question.
+
+Be careful with this action.
+
+### reset-ip
+This asks you if you are sure you want to reset the ip. If you answer
+yes it resets the router via
+[Dianostics|Resets](https://192.168.1.254/cgi-bin/resets.ha) page. There is
+also the -yes flag to skip the question.
+
+Be careful with this action.
+
+### reset-wifi
+This asks you if you are sure you want to reset the wifi. If you answer
+yes it resets the router via
+[Dianostics|Resets](https://192.168.1.254/cgi-bin/resets.ha) page. There is
+also the -yes flag to skip the question.
+
+Be careful with this action.
+
+### restart-gateway
+This asks you if you are sure you want to restart the gateway. If you answer
 yes it restarts the router via
 [Dianostics|Resets](https://192.168.1.254/cgi-bin/resets.ha) page. There is
 also the -yes flag to skip the question.
+
+Be careful with this action.
 
 ### system-information
 This returns the values from the

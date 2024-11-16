@@ -20,12 +20,14 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/fatih/color"
 	"golang.org/x/net/html"
 )
 
 type GatewayClient struct {
 	client        *http.Client
 	baseURL       string
+	colorMode     bool
 	cookieFile    string
 	loadedCookies int
 	loginPath     string
@@ -38,7 +40,7 @@ func debugLog(enabled bool, message string) {
 	}
 }
 
-func NewGatewayClient(baseURL string, loginPath string, cookieFile string, debug bool, freshCookies bool) (*GatewayClient, error) {
+func NewGatewayClient(baseURL string, colorMode bool, cookieFile string, debug bool, freshCookies bool, loginPath string) (*GatewayClient, error) {
 	loadedCookies := 0
 
 	// Create cookie jar
@@ -76,6 +78,7 @@ func NewGatewayClient(baseURL string, loginPath string, cookieFile string, debug
 	return &GatewayClient{
 		client:        client,
 		baseURL:       baseURL,
+		colorMode:     colorMode,
 		cookieFile:    cookieFile,
 		loadedCookies: loadedCookies,
 		loginPath:     loginPath,
@@ -403,7 +406,7 @@ func calculateHash(password, nonce string) string {
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-func (rc *GatewayClient) submitForm(path string, formData url.Values) error {
+func (rc *GatewayClient) postForm(path string, formData url.Values) error {
 	// Submit form
 	resp, err := rc.client.PostForm(rc.baseURL+path, formData)
 
@@ -449,7 +452,7 @@ func (rc *GatewayClient) login(password string) error {
 		"Continue":     {"Continue"}, // submit button
 	}
 
-	if err := rc.submitForm(rc.loginPath, formData); err != nil {
+	if err := rc.postForm(rc.loginPath, formData); err != nil {
 		log.Fatalf("Submission to %s failed: %v", rc.loginPath, err)
 	}
 
@@ -482,33 +485,65 @@ func (rc *GatewayClient) getPath(path string) (string, error) {
 	return bodyStr, nil
 }
 
-func (rc *GatewayClient) getPage(page string, action string, filter string, natActionPrefix string, answerYes bool, pretty bool) error {
+func (rc *GatewayClient) submitForm(action string, answerYes bool, page string, path string, reset_action [4]string) error {
+	buttonName := reset_action[0]
+	buttonValue := reset_action[1]
+	question := reset_action[2]
+	warning := reset_action[3]
+
+	if askYesNo(answerYes, rc.colorMode, question, warning) {
+		// Get nonce from page
+		nonce, err := rc.getNonce(page)
+		if err != nil {
+			return fmt.Errorf("failed to get nonce: %v", err)
+		}
+
+		// Prepare form data
+		formData := url.Values{
+			"nonce":    {nonce},
+			buttonName: {buttonValue}, // Dynamically use the submit button
+		}
+
+		// Submit the form
+		if err := rc.postForm(path, formData); err != nil {
+			return fmt.Errorf("submission to %s in %s failed: %v", action, path, err)
+		}
+	}
+
+	return nil
+}
+
+func formatQuestion(task string, resource string) string {
+	return fmt.Sprintf("Do you want to %s the %s?", task, resource)
+}
+
+func (rc *GatewayClient) getPage(action string, answerYes bool, filter string, natActionPrefix string, page string, pretty bool) error {
 	path := returnPath(page)
 
 	if page == "reset" {
-		question := "Do you want to restart your gateway? " +
-			"Note this will take down your internet immediately."
+		may_warning := "This may take down your internet immediately."
+		will_warning := "Note this will take down your internet immediately."
 
-		if askYesNo(question, answerYes) {
+		parts := strings.Split(action, "-")
+		task := parts[0]
+		resource := parts[1]
 
-			// Get nonce from page
-			nonce, err := rc.getNonce(page)
+		question := formatQuestion(task, resource)
 
-			if err != nil {
-				return fmt.Errorf("failed to get nonce: %v", err)
-			}
-
-			// Prepare form data
-			formData := url.Values{
-				"nonce":   {nonce},
-				"Restart": {"Restart"}, // submit button
-			}
-
-			if err := rc.submitForm(path, formData); err != nil {
-				log.Fatalf("Submission to %s failed: %v", path, err)
-			}
+		// The buttonNames and buttonValues have to be exact
+		reset_actions := map[string][4]string{
+			"reset-connection": {"ResetConn", "Reset Connection", question, may_warning},
+			"reset-device":     {"Reset", "Reset Device...", question, may_warning},
+			"reset-firewall":   {"FReset", "Reset Firewall Config", question, may_warning},
+			"reset-ip":         {"ResetIP", "Reset IP", question, may_warning},
+			"reset-wifi":       {"WReset", "Reset Wi-Fi Config", question, may_warning},
+			"restart-gateway":  {"Restart", "Restart", question, will_warning},
 		}
 
+		err := rc.submitForm(action, answerYes, page, path, reset_actions[action])
+		if err != nil {
+			log.Fatalf("Submission failed: %v", err)
+		}
 	} else {
 
 		// Get body using the new getPath function
@@ -632,11 +667,16 @@ func returnPath(page string) string {
 }
 
 // Prompt the user for yes/no input
-func askYesNo(prompt string, answerYes bool) bool {
+func askYesNo(answerYes bool, colorMode bool, question string, warning string) bool {
+	if colorMode {
+		red := color.New(color.FgRed)
+		warning = red.Sprint(warning)
+	}
+
 	if !answerYes {
 		reader := bufio.NewReader(os.Stdin)
 		for {
-			fmt.Print(prompt + " (yes/no): ")
+			fmt.Print(question + " " + warning + " (yes/no): ")
 			input, err := reader.ReadString('\n')
 
 			if err != nil {
@@ -660,42 +700,92 @@ func askYesNo(prompt string, answerYes bool) bool {
 	return true
 }
 
+func ColoredUsage() {
+	// Create color functions
+	blue := color.New(color.FgBlue)
+	boldGreen := color.New(color.FgGreen, color.Bold)
+	cyan := color.New(color.FgCyan)
+	green := color.New(color.FgGreen)
+
+	// Print usage header
+	fmt.Printf("Usage of %s:\n", green.Sprintf(os.Args[0]))
+
+	flag.VisitAll(func(f *flag.Flag) {
+		// Format flag name with color
+		s := fmt.Sprintf("  ")
+		s += boldGreen.Sprintf("-%s", f.Name)
+
+		// Add default value if it exists and isn't empty
+		if f.DefValue != "" {
+			s += blue.Sprintf(" (default: %v)", f.DefValue)
+		}
+
+		// Add the usage description in blue
+		if f.Usage != "" {
+			s += "\n    \t" + cyan.Sprintf(f.Usage)
+		}
+
+		fmt.Println(s)
+	})
+}
+
 func main() {
-	actionSlice := []string{"broadband-status", "device-list", "fiber-status", "home-network-status", "ip-allocation", "nat-check", "nat-connections", "nat-destinations", "nat-sources", "nat-totals", "restart", "system-information"}
+	colorTerminal := isColorTerminal()
+
+	colorMode := true
+
+	if !colorTerminal {
+		colorMode = false
+	}
+
+	actions := []string{
+		"broadband-status", "device-list", "fiber-status", "home-network-status",
+		"ip-allocation", "nat-check", "nat-connections", "nat-destinations",
+		"nat-sources", "nat-totals", "reset-connection", "reset-device",
+		"reset-firewall", "reset-ip", "reset-wifi", "restart-gateway",
+		"system-information",
+	}
+
 	actions_help := []string{}
 
-	for _, action := range actionSlice {
+	for _, action := range actions {
 		actions_help = append(actions_help, action)
 	}
 
 	actionDescription := fmt.Sprintf("Action to perform (%s)", strings.Join(actions_help, ", "))
 
-	filterSlice := []string{"icmp", "ipv4", "ipv6", "tcp", "udp"}
+	filters := []string{"icmp", "ipv4", "ipv6", "tcp", "udp"}
 	filters_help := []string{}
 
-	for _, filter := range filterSlice {
+	for _, filter := range filters {
 		filters_help = append(filters_help, filter)
 	}
 
 	filterDescription := fmt.Sprintf("Filter to perform (%s)", strings.Join(filters_help, ", "))
 
 	// Define a map linking actions to their corresponding page names
-	actionPageMap := map[string]string{
+	actionPages := map[string]string{
 		"broadband-status":    "broadbandstatistics",
 		"device-list":         "devices",
 		"fiber-status":        "fiberstat",
 		"home-network-status": "lanstatistics",
 		"ip-allocation":       "ipalloc",
-		"restart":             "reset",
+		"restart-gateway":     "reset",
 		"system-information":  "sysinfo",
 	}
 
 	// All "nat-" prefixed actions use "nattable" page
 	natActionPrefix := "nat-"
 
-	for _, action := range actionSlice {
+	// All "reset-" prefixed actions use "reset" page
+	resetActionPrefix := "reset-"
+
+	for _, action := range actions {
 		if strings.HasPrefix(action, natActionPrefix) {
-			actionPageMap[action] = "nattable"
+			actionPages[action] = "nattable"
+		}
+		if strings.HasPrefix(action, resetActionPrefix) {
+			actionPages[action] = "reset"
 		}
 	}
 
@@ -722,7 +812,15 @@ func main() {
 	debug := flag.Bool("debug", false, "Enable debug mode")
 	answerYes := flag.Bool("yes", false, "Answer yes to any questions")
 	pretty := flag.Bool("pretty", false, "Enable pretty mode for nat-connections")
-	freshCookies := flag.Bool("fresh", false, "Do not use existing cookies (Warning: If you use all the time you will run out of sessions. There is a max.)")
+	freshCookies := flag.Bool(
+		"fresh", false,
+		"Do not use existing cookies (Warning: If you use all the time you will run out of sessions. There is a max.)",
+	)
+
+	if colorMode {
+		// Replace the default Usage with our colored version
+		flag.Usage = ColoredUsage
+	}
 
 	flag.Parse()
 
@@ -732,7 +830,7 @@ func main() {
 
 	isValidAction := false
 
-	for _, a := range actionSlice {
+	for _, a := range actions {
 		if *action == a {
 			isValidAction = true
 			break
@@ -749,7 +847,7 @@ func main() {
 	// Validate filter only if it's provided
 	isValidFilter = *filter == "" // Default to valid if filter is empty (optional)
 	if *filter != "" {
-		for _, f := range filterSlice {
+		for _, f := range filters {
 			if *filter == f {
 				isValidFilter = true
 				break
@@ -763,7 +861,7 @@ func main() {
 	}
 
 	// Create router client
-	client, err := NewGatewayClient(*baseURL, loginPath, *cookieFile, *debug, *freshCookies)
+	client, err := NewGatewayClient(*baseURL, colorMode, *cookieFile, *debug, *freshCookies, loginPath)
 
 	if err != nil {
 		log.Fatalf("Failed to create router client: %v", err)
@@ -775,14 +873,14 @@ func main() {
 	}
 
 	// Determine the page based on action
-	page, exists := actionPageMap[*action]
+	page, exists := actionPages[*action]
 
 	if !exists {
 		log.Fatalf("Unknown action: %s", *action)
 	}
 
 	// Get the specified page
-	if err := client.getPage(page, *action, *filter, natActionPrefix, *answerYes, *pretty); err != nil {
+	if err := client.getPage(*action, *answerYes, *filter, natActionPrefix, page, *pretty); err != nil {
 		log.Fatalf("Failed to get %s: %v", *action, err)
 	}
 

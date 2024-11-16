@@ -3,7 +3,6 @@
 DEBUG="$1"
 
 BUILDS_FILE='.go_builds'
-CODE='main.go'
 DELIMITER='_'
 NAME=`grep module go.mod | cut -f2 -d/`
 
@@ -27,7 +26,7 @@ for BUILD in "${BUILDS[@]}"; do
   fi
 
   BUILD_FILENAME="${NAME}${DELIMITER}${BUILD}${EXTENSION}"
-  CMD="GOOS=${GOOS} GOARCH=${GOARCH} ${BUILD_CMD} -o ${BUILD_FILENAME} ${CODE}"
+  CMD="GOOS=${GOOS} GOARCH=${GOARCH} ${BUILD_CMD} -o ${BUILD_FILENAME}"
   eval ${CMD}
 
 done
