@@ -81,9 +81,8 @@ exist.
 The default file permissions are read-write for the user only on Linux and MacOS.
 
 The baseURL, with a default of `https://192.168.1.254`, is in the configuration
-file. The command line argument overrides the configuration file. You can
-override it with the command line. This value in the configuration file is not
-optional.
+file. The command line argument overrides the configuration file. This value in
+the configuration file is not optional.
 
 The password is also in the configuration file. It is optional, and it is
 commented out by default. It is recommended to set the password in the
