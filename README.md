@@ -30,8 +30,8 @@ Usage of ./att-fiber-gateway-info:
   -filter string
         Filter to perform (icmp, ipv4, ipv6, tcp, udp)
   -fresh bool (default: false)
-        Do not use existing cookies (Warning: If you use all the time you will run out of
-        sessions. There is a max.)
+        Do not use existing cookies (Warning: If always used the gateway will
+        run out of sessions.)
   -password string
         Gateway password
   -pretty bool (default: false)
@@ -44,7 +44,7 @@ Usage of ./att-fiber-gateway-info:
 ```
 
 ## Compiling
-To build for only your platform:
+To build for only system's platform:
 ```
 go build
 ```
@@ -73,7 +73,7 @@ NO_COLOR=false ./att-fiber-gateway-info --help # When set to anything, no color
 ```
 
 ## Configuration file
-There is now a configuration file stored in your home directory as
+There is now a configuration file stored in the user's home directory as
 `.att-fiber-gateway-info.yml` for Linux and MacOS. For Windows it is
 `att-fiber-gateway-info.yml`. The file is automatically created if it does not
 exist.
