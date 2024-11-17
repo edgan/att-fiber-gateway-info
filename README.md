@@ -51,12 +51,30 @@ go build
 
 To binaries for all supported combinations of operating systems and architectures:
 ```
-./builds.sh
+scripts/builds.sh
 ```
 
 ## Builds
 See the `.builds` file for the list of supported combinations of operating
 systems and architectures.
+
+## Tests
+```
+# Run all tests
+scripts/tests.sh
+
+# Run all tests
+scripts/tests.sh all
+
+# Run tests for actions that do not require login
+scripts/tests.sh nologin
+
+# Run tests for actions that require login, but not resets or restart
+scripts/tests.sh login
+
+# Run tests for reset or restart actions
+scripts/tests.sh reset
+```
 
 ## Color
 Colors for some of the output has been added, if the terminal supports it.

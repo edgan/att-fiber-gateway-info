@@ -47,7 +47,33 @@ func printData(action string, class string, currentHeader string, pretty bool, t
 }
 
 func printTableData(action string, class string, header string, pretty bool, tableData [][]string) {
-	if action == "home-network-status" {
+	if action == "device-list" {
+		for _, row := range tableData {
+			count := len(row)
+
+			// ipv4 address / name
+			if row[0] == "IPv4 Address / Name" {
+				row[0] = "IPv4 Address"
+			}
+
+			substring := " / "
+
+			if count > 1 {
+				if strings.Contains(row[1], substring) {
+					row[1] = strings.Replace(row[1], substring, "Name: ", 1)
+				}
+			}
+
+			line := strings.Join(row, ": ")
+
+			// connection-type
+			if row[0] == "Connection Type" {
+				line = strings.Join(row, ": \n  ")
+			}
+
+			fmt.Println(line)
+		}
+	} else if action == "home-network-status" {
 		for _, row := range tableData {
 			count := len(row)
 			if row[0] != "" && count > 1 {
@@ -135,33 +161,8 @@ func printTableData(action string, class string, header string, pretty bool, tab
 			}
 		}
 	} else {
-		// Print each row in a default format
 		for _, row := range tableData {
-			if action == "device-list" {
-				count := len(row)
-
-				// ipv4 address / name
-				if row[0] == "IPv4 Address / Name" {
-					row[0] = "IPv4 Address"
-				}
-
-				substring := " / "
-
-				if count > 1 {
-					if strings.Contains(row[1], substring) {
-						row[1] = strings.Replace(row[1], substring, "Name: ", 1)
-					}
-				}
-			}
-
 			line := strings.Join(row, ": ")
-
-			if action == "device-list" {
-				// connection-type
-				if row[0] == "Connection Type" {
-					line = strings.Join(row, ": \n  ")
-				}
-			}
 
 			if !strings.Contains(line, "Legal Disclaimer") {
 				fmt.Println(line)

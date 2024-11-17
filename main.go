@@ -26,24 +26,18 @@ func main() {
 	cookiePath := determineCookiePath()
 
 	// Flags
-	action, answerYes, baseURLFlag, cookieFile, debug, filter, freshCookies,
+	action, answerNo, answerYes, baseURLFlag, cookieFile, debug, filter, freshCookies,
 		passwordFlag, pretty := returnFlags(actionsDescription, colorMode, cookiePath, filtersDescription)
 
 	// Validate flags
-	baseURL, password := validateFlags(action, actionPages, baseURLFlag, config, filter, passwordFlag)
+	baseURL, loginRequired, page, password := validateFlags(action, actionPages, baseURLFlag, config, filter, passwordFlag)
 
-	// Create gateway client
 	client, err := createGatewayClient(baseURL, colorMode, *cookieFile, *debug, *freshCookies)
 	if err != nil {
 		log.Fatalf("Failed to create router client: %v", err)
 	}
 
-	// Perform login
-	performLogin(client, password)
-
-	// Get the specified page based on action
-	page := getActionPage(actionPages, *action)
-	if err := client.getPage(*action, *answerYes, *filter, "nat-", page, *pretty); err != nil {
+	if err := client.getPage(*action, *answerNo, *answerYes, *filter, loginRequired, "nat-", page, password, *pretty); err != nil {
 		log.Fatalf("Failed to get %s: %v", action, err)
 	}
 

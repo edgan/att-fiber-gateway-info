@@ -7,7 +7,6 @@ import (
 	"strings"
 )
 
-// getPath is a generic function that fetches and returns the response body as a string.
 func (rc *GatewayClient) getPath(path string) (string, error) {
 	resp, err := rc.client.Get(rc.baseURL + path)
 
@@ -33,8 +32,12 @@ func (rc *GatewayClient) getPath(path string) (string, error) {
 	return bodyStr, nil
 }
 
-func (rc *GatewayClient) getPage(action string, answerYes bool, filter string, natActionPrefix string, page string, pretty bool) error {
+func (rc *GatewayClient) getPage(action string, answerNo bool, answerYes bool, filter string, loginRequired bool, natActionPrefix string, page string, password string, pretty bool) error {
 	path := returnPath(page)
+
+	if loginRequired {
+		performLogin(rc, password)
+	}
 
 	if page == "reset" {
 		mayWarning := "This may take down your internet immediately."
@@ -56,7 +59,7 @@ func (rc *GatewayClient) getPage(action string, answerYes bool, filter string, n
 			"restart-gateway":  {"Restart", "Restart", question, willWarning},
 		}
 
-		err := rc.submitForm(action, answerYes, page, path, resetActions[action])
+		err := rc.submitForm(action, answerNo, answerYes, page, path, resetActions[action])
 		if err != nil {
 			log.Fatalf("Submission failed: %v", err)
 		}

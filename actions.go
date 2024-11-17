@@ -60,7 +60,7 @@ func returnActionPages() map[string]string {
 }
 
 // getActionPage gets the page for a specific action
-func getActionPage(actionPages map[string]string, action string) string {
+func getActionPage(action string, actionPages map[string]string) string {
 	page, exists := actionPages[action]
 	if !exists {
 		log.Fatalf("Unknown action: %s", action)

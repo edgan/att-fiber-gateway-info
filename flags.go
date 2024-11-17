@@ -11,9 +11,9 @@ import (
 	"github.com/fatih/color"
 )
 
-// returnFlags returns the command line flags
-func returnFlags(actionDescription string, colorMode bool, cookiePath string, filterDescription string) (*string, *bool, *string, *string, *bool, *string, *bool, *string, *bool) {
+func returnFlags(actionDescription string, colorMode bool, cookiePath string, filterDescription string) (*string, *bool, *bool, *string, *string, *bool, *string, *bool, *string, *bool) {
 	action := flag.String("action", "", actionDescription)
+	answerNo := flag.Bool("no", false, "Answer no to any questions")
 	answerYes := flag.Bool("yes", false, "Answer yes to any questions")
 	baseURLFlag := flag.String("url", "", "Gateway base URL")
 	cookieFile := flag.String("cookiefile", cookiePath, "File to save session cookies")
@@ -35,11 +35,16 @@ func returnFlags(actionDescription string, colorMode bool, cookiePath string, fi
 
 	flag.Parse()
 
-	return action, answerYes, baseURLFlag, cookieFile, debug, filter, freshCookies, passwordFlag, pretty
+	return action, answerNo, answerYes, baseURLFlag, cookieFile, debug, filter, freshCookies, passwordFlag, pretty
 }
 
-// validateFlags validates the provided flags
-func validateFlags(actionFlag *string, actionPages map[string]string, baseURLFlag *string, config *Config, filterFlag *string, passwordFlag *string) (string, string) {
+func validateFlags(actionFlag *string, actionPages map[string]string, baseURLFlag *string, config *Config, filterFlag *string, passwordFlag *string) (string, bool, string, string) {
+	// login is not required for most pages
+	loginRequired := false
+
+	// Get the specified page based on action
+	page := getActionPage(*actionFlag, actionPages)
+
 	var baseURL string
 
 	if *baseURLFlag == "" {
@@ -56,8 +61,16 @@ func validateFlags(actionFlag *string, actionPages map[string]string, baseURLFla
 		password = *passwordFlag
 	}
 
-	if password == "" {
-		log.Fatal("Password is required")
+	// pages that require login
+	loginPages := []string{"ipalloc", "nat-table", "reset"}
+
+	for _, loginPage := range loginPages {
+		if page == loginPage {
+			if password == "" {
+				log.Fatal("Password is required")
+			}
+			loginRequired = true
+		}
 	}
 
 	// Action validation
@@ -98,7 +111,7 @@ func validateFlags(actionFlag *string, actionPages map[string]string, baseURLFla
 		log.Fatal(filterError)
 	}
 
-	return baseURL, password
+	return baseURL, loginRequired, page, password
 }
 
 func ColoredUsage() {
