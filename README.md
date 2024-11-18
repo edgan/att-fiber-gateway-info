@@ -34,6 +34,8 @@ Usage of ./att-fiber-gateway-info:
         run out of sessions.)
   -metrics bool (default: false)
         Return metrics instead of table data
+  -no bool (default: false)
+        Answer no to any questions
   -password string
         Gateway password
   -pretty bool (default: false)
