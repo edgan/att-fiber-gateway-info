@@ -1,14 +1,34 @@
 #!/bin/bash
 
+if [[ "$TERM" == "xterm"* ]] || [[ "$TERM" == "screen"* ]] || [[ "$TERM" == "linux" ]] || [[ "$TERM" == "tmux" ]]; then
+	SUPPORTS_COLOR=true
+else
+	SUPPORTS_COLOR=false
+fi
+
 # Text colors
 BLUE='\e[34m'
 GREEN='\e[32m'
 RESET='\e[0m'
 
+# Function to print colored text conditionally
+print_color_conditional() {
+  local color=$1
+  local text=$2
+
+  if [ "${SUPPORTS_COLOR}" == "true" ]; then
+    # Directly print the color-corrected text using indirect expansion
+    echo -e "${!color}${text}${RESET}"
+  else
+    echo "${text}"
+  fi
+}
+
 print_separator() {
   local full_command="$1"
   local separator="##################################################"
-  echo -e "${BLUE}${separator} ${full_command} ${separator}${RESET}"
+  local text="${separator} ${full_command} ${separator}"
+  print_color_conditional "BLUE" "${text}"
 }
 
 run_commands() {
@@ -67,7 +87,8 @@ detect_os_arch() {
 build_binary() {
   if [ ! -f "${COMMAND}" ]; then
     local build_script='scripts/build.sh'
-    echo -e "${GREEN}Running ${build_script}${RESET}"
+    local text="Running ${build_script}"
+    print_color_conditional "GREEN" "${text}"
     echo
     ${build_script}
   fi
