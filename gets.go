@@ -32,13 +32,9 @@ func (rc *GatewayClient) getPath(path string) (string, error) {
 	return bodyStr, nil
 }
 
-func (rc *GatewayClient) getPage(action string, answerNo bool, answerYes bool, filter string, loginRequired bool, metrics bool, model string, natActionPrefix string, page string, password string, pretty bool, returnFact string) (string, error) {
+func (rc *GatewayClient) getPage(action string, answerNo bool, answerYes bool, filter string, metrics bool, model string, natActionPrefix string, page string, password string, pretty bool, returnFact string) (string, error) {
 	fact := ""
 	path := returnPath(page)
-
-	if loginRequired {
-		performLogin(rc, password)
-	}
 
 	if page == "reset" {
 		mayWarning := "This may take down your internet immediately."

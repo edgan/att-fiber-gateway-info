@@ -29,11 +29,11 @@ func main() {
 	cookiePath := determineCookiePath()
 
 	// Flags
-	action, answerNo, answerYes, baseURLFlag, cookieFile, debug, filter, freshCookies, metrics,
+	action, allmetrics, answerNo, answerYes, baseURLFlag, cookieFile, debug, filter, freshCookies, metrics,
 		passwordFlag, pretty := returnFlags(actionsDescription, colorMode, cookiePath, filtersDescription)
 
 	// Validate flags
-	baseURL, loginRequired, page, password := validateFlags(action, actionPages, baseURLFlag, config, filter, passwordFlag)
+	allmetrics, baseURL, metrics, password := validateFlags(action, actionPages, allmetrics, baseURLFlag, config, filter, metrics, passwordFlag)
 
 	client, err := createGatewayClient(baseURL, colorMode, *cookieFile, *debug, *freshCookies)
 	if err != nil {
@@ -41,13 +41,33 @@ func main() {
 	}
 
 	returnFact := "model"
-	model, err := client.getPage("system-information", *answerNo, *answerYes, *filter, false, *metrics, "", actionPrefixes["nat"], "sysinfo", password, *pretty, returnFact)
+
+	model, err := client.retrieveAction("system-information", actionPages, *answerNo, *answerYes, *filter, *metrics, "", actionPrefixes["nat"], password, *pretty, returnFact)
+
 	if err != nil {
 		log.Fatalf("Failed to get %s: %v", action, err)
 	}
 
+	if *allmetrics {
+		actions := []string{"broadband-status", "fiber-status", "home-network-status"}
+
+                returnFact = ""
+
+		for _, action := range actions {
+			_, err = client.retrieveAction(action, actionPages, *answerNo, *answerYes, *filter, *metrics, model, actionPrefixes["nat"], password, *pretty, returnFact)
+
+			if err != nil {
+				log.Fatalf("Failed to get %s: %v", action, err)
+			}
+		}
+
+		os.Exit(0)
+	}
+
 	returnFact = ""
-	_, err = client.getPage(*action, *answerNo, *answerYes, *filter, loginRequired, *metrics, model, actionPrefixes["nat"], page, password, *pretty, returnFact)
+
+	_, err = client.retrieveAction(*action, actionPages, *answerNo, *answerYes, *filter, *metrics, model, actionPrefixes["nat"], password, *pretty, returnFact)
+
 	if err != nil {
 		log.Fatalf("Failed to get %s: %v", action, err)
 	}

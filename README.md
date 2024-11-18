@@ -23,6 +23,8 @@ Usage of ./att-fiber-gateway-info:
                            nat-sources, nat-totals, reset-connection, reset-device,
                            reset-firewall, reset-ip, reset-wifi, restart-gateway,
                            system-information)
+  -allmetrics bool (default: false)
+        Return all metrics
   -cookiefile string (default: /var/tmp/att-fiber-gateway-info_cookies.gob)
         File to save session cookies
   -debug bool (default: false)

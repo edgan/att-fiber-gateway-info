@@ -11,8 +11,9 @@ import (
 	"github.com/fatih/color"
 )
 
-func returnFlags(actionDescription string, colorMode bool, cookiePath string, filterDescription string) (*string, *bool, *bool, *string, *string, *bool, *string, *bool, *bool, *string, *bool) {
+func returnFlags(actionDescription string, colorMode bool, cookiePath string, filterDescription string) (*string, *bool, *bool, *bool, *string, *string, *bool, *string, *bool, *bool, *string, *bool) {
 	action := flag.String("action", "", actionDescription)
+	allmetrics := flag.Bool("allmetrics", false, "Return all metrics")
 	answerNo := flag.Bool("no", false, "Answer no to any questions")
 	answerYes := flag.Bool("yes", false, "Answer yes to any questions")
 	baseURLFlag := flag.String("url", "", "Gateway base URL")
@@ -25,7 +26,7 @@ func returnFlags(actionDescription string, colorMode bool, cookiePath string, fi
 		"Do not use existing cookies (Warning: If always used the gateway will run out of sessions.)",
 	)
 
-	metrics := flag.Bool("metrics", false, "Return metrics instead of table data")
+	metrics := flag.Bool("metrics", false, "Return metrics instead from table data")
 	passwordFlag := flag.String("password", "", "Gateway password")
 	pretty := flag.Bool("pretty", false, "Enable pretty mode for nat-connections")
 
@@ -36,16 +37,10 @@ func returnFlags(actionDescription string, colorMode bool, cookiePath string, fi
 
 	flag.Parse()
 
-	return action, answerNo, answerYes, baseURLFlag, cookieFile, debug, filter, freshCookies, metrics, passwordFlag, pretty
+	return action, allmetrics, answerNo, answerYes, baseURLFlag, cookieFile, debug, filter, freshCookies, metrics, passwordFlag, pretty
 }
 
-func validateFlags(actionFlag *string, actionPages map[string]string, baseURLFlag *string, config *Config, filterFlag *string, passwordFlag *string) (string, bool, string, string) {
-	// login is not required for most pages
-	loginRequired := false
-
-	// Get the specified page based on action
-	page := getActionPage(*actionFlag, actionPages)
-
+func validateFlags(actionFlag *string, actionPages map[string]string, allmetrics *bool, baseURLFlag *string, config *Config, filterFlag *string, metrics *bool, passwordFlag *string) (*bool, string, *bool, string) {
 	var baseURL string
 
 	if *baseURLFlag == "" {
@@ -62,16 +57,8 @@ func validateFlags(actionFlag *string, actionPages map[string]string, baseURLFla
 		password = *passwordFlag
 	}
 
-	// pages that require login
-	loginPages := []string{"ipalloc", "nat-table", "reset"}
-
-	for _, loginPage := range loginPages {
-		if page == loginPage {
-			if password == "" {
-				log.Fatal("Password is required")
-			}
-			loginRequired = true
-		}
+	if *allmetrics {
+		*metrics = true
 	}
 
 	// Action validation
@@ -88,7 +75,7 @@ func validateFlags(actionFlag *string, actionPages map[string]string, baseURLFla
 		}
 	}
 
-	if !isValidAction {
+	if !isValidAction && !*allmetrics {
 		actionError := fmt.Sprintf("Action must be one of these (%s)", strings.Join(actionsHelp, ", "))
 		log.Fatal(actionError)
 	}
@@ -112,7 +99,7 @@ func validateFlags(actionFlag *string, actionPages map[string]string, baseURLFla
 		log.Fatal(filterError)
 	}
 
-	return baseURL, loginRequired, page, password
+	return allmetrics, baseURL, metrics, password
 }
 
 func ColoredUsage() {

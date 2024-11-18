@@ -1,23 +1,34 @@
 # Metrics
 
-There is a `-metrics` flag that scraps the some pages via the corresponding actions. It looks for tables with `Statistics` at the end of the name.
+There is the `-metrics` flag that returns the metrics for the action specified. It looks for tables with `Statistics` at the end of the name.
 
-It pulls the model from the `System Information` page used by the `system-information` action. It converts dashes and spaces to dots. It adds `.0` the end to make it a `float` for reporting to [Datadog](https://www.datadoghq.com/) as a metrics.
+There is also the `-allmetrics` flag that returns mertics for all actions known to have metrics.
+
+## Naming and formatting
+It pulls the `model` from the `System Information` page returned by the `system-information` action. It converts dashes and spaces to dots. It adds `.0` the end to make it a `float` for reporting to [Datadog](https://www.datadoghq.com/) as metrics.
 
 
-`model.action.metric=value` = `bgw320-505.broadband-status.Receive Packets=46538166` = `bgw320505.broadband.status.receive.packets=46538166.0`
+```
+model.action.metric=value
+            |
+            V
+bgw320-505.broadband-status.Receive Packets=46538166
+            |
+            V
+bgw320505.broadband.status.receive.packets=46538166.0
+```
 
-
-Usage:
+## Usage
 ```
 att-fiber-gateway-info -action broadband-status -metrics
 att-fiber-gateway-info -action fiber-status -metrics
 att-fiber-gateway-info -action home-network-status -metrics
+att-fiber-gateway-info -allmetrics
 ```
 
-Examples:
+## Examples
 
-broadband-status:
+### broadband-status
 ```
 bgw320505.broadband.status.receive.packets=46538166.0
 bgw320505.broadband.status.transmit.packets=11006967.0
@@ -37,7 +48,7 @@ bgw320505.broadband.status.transmit.errors=0.0
 bgw320505.broadband.status.transmit.discards=7.0
 ```
 
-fiber-status:
+### fiber-status
 ```
 bgw320505.fiber.status.temperature=42
 bgw320505.fiber.status.vcc=3
@@ -46,7 +57,7 @@ bgw320505.fiber.status.tx.power=59
 bgw320505.fiber.status.rx.power=-223
 ```
 
-home-network-status:
+### home-network-status
 ```
 bgw320505.home.network.status.transmit.packets=45229281.0
 bgw320505.home.network.status.transmit.errors=0.0
