@@ -72,13 +72,16 @@ scripts/tests.sh
 # Run all tests
 scripts/tests.sh all
 
-# Run tests for actions that do not require login
+# Run tests for actions that do not require a login
 scripts/tests.sh nologin
 
-# Run tests for actions that require login, but not resets or restart
+# Run tests for actions that are known to have metrics, and the -allmetrics flag
+scripts/tests.sh metrics
+
+# Run tests for actions that require login, but not the reset or restart actions
 scripts/tests.sh login
 
-# Run tests for reset or restart actions
+# Run tests for the reset or restart actions
 scripts/tests.sh reset
 ```
 
