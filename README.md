@@ -57,7 +57,7 @@ scripts/builds.sh
 ```
 
 ## Builds
-See the `.builds` file for the list of supported combinations of operating
+See the `.go_builds` file for the list of supported combinations of operating
 systems and architectures.
 
 ## Tests
