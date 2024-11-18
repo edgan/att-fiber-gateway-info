@@ -1,50 +1,113 @@
 #!/bin/bash
 
+# Text colors
+BLUE='\e[34m'
+GREEN='\e[32m'
+RESET='\e[0m'
+
+print_separator() {
+  local full_command="$1"
+  local separator="##################################################"
+  echo -e "${BLUE}${separator} ${full_command} ${separator}${RESET}"
+}
+
+run_commands() {
+  local flag="$1"
+  shift
+  local actions=("$@") # Store remaining arguments as actions
+
+  if [ "${#actions[@]}" -eq 0 ]; then
+    local full_command="${COMMAND} ${flag}"
+    print_separator "${full_command}"
+    ${full_command}
+  else
+    for action in "${actions[@]}"; do
+      local full_command="${ACTION_COMMAND} ${action} ${flag}"
+      print_separator "${full_command}"
+      ${full_command}
+    done
+  fi
+}
+
+# Determine OS and architecture
+detect_os_arch() {
+  os=$(uname -s)
+  case "$os" in
+    Linux)
+      if grep -q Microsoft /proc/version 2>/dev/null || grep -q WSL /proc/sys/kernel/osrelease 2>/dev/null; then
+        GOOS="windows"
+      else
+        GOOS="linux"
+      fi
+      ;;
+    Darwin)
+      GOOS="darwin"
+      ;;
+    CYGWIN* | MINGW* | MSYS*)
+      GOOS="windows"
+      ;;
+    *)
+      echo "Unknown OS: $os"
+      GOOS="unknown"
+      ;;
+  esac
+
+  arch=$(uname -m)
+  case "$arch" in
+    arm64)
+      GOARCH="arm64"
+      ;;
+    x86_64)
+      GOARCH="amd64"
+      ;;
+  esac
+}
+
+# Build the binary if it doesn't exist
+build_binary() {
+  if [ ! -f "${COMMAND}" ]; then
+    local build_script='scripts/build.sh'
+    echo -e "${GREEN}Running ${build_script}${RESET}"
+    echo
+    ${build_script}
+  fi
+}
+
 TESTS="$1"
+[ -z "${TESTS}" ] && TESTS="all"
 
-if [ "${TESTS}" == "" ]; then
-  TESTS=all
+detect_os_arch
+
+if [ "${GOOS}" == "windows" ]; then
+  COMMAND="bin/att-fiber-gateway-info_${GOOS}_${GOARCH}.exe"
+else
+  COMMAND="bin/att-fiber-gateway-info_${GOOS}_${GOARCH}"
 fi
 
-COMMAND='./att-fiber-gateway-info -action'
-SEPARATOR='##################################################'
+build_binary
 
-if [[ ${TESTS} == "nologin" || ${TESTS} == "all" ]]; then
-  NO_LOGIN_METRICS_ACTIONS=(broadband-status device-list fiber-status home-network-status system-information)
+ACTION_COMMAND="${COMMAND} -action"
 
-  for ACTION in ${NO_LOGIN_METRICS_ACTIONS[@]}; do
-    echo
-    echo "${SEPARATOR} ${ACTION} ${SEPARATOR}"
-    ${COMMAND} ${ACTION}
-  done
+if [[ "${TESTS}" == "nologin" || "${TESTS}" == "all" ]]; then
+  NO_LOGIN_ACTIONS=(broadband-status device-list fiber-status home-network-status system-information)
+  run_commands "" "${NO_LOGIN_ACTIONS[@]}"
 fi
 
-if [[ ${TESTS} == "metrics" || ${TESTS} == "all" ]]; then
+if [[ "${TESTS}" == "metrics" || "${TESTS}" == "all" ]]; then
   METRICS_ACTIONS=(broadband-status fiber-status home-network-status)
+  run_commands "-metrics" "${METRICS_ACTIONS[@]}"
 
-  for ACTION in ${METRICS_ACTIONS[@]}; do
-    echo
-    echo "${SEPARATOR} ${ACTION} ${SEPARATOR}"
-    ${COMMAND} ${ACTION} -metrics
-  done
+  run_commands "-allmetrics"
 fi
 
-if [[ ${TESTS} == "login" || ${TESTS} == "all" ]]; then
-  LOGIN_METRICS_ACTIONS=(ip-allocation nat-check nat-connections nat-destinations nat-sources nat-totals)
+if [[ "${TESTS}" == "login" || "${TESTS}" == "all" ]]; then
+  LOGIN_ACTIONS=(ip-allocation nat-check nat-connections nat-destinations nat-sources nat-totals)
+  run_commands "" "${LOGIN_ACTIONS[@]}"
 
-  for ACTION in ${LOGIN_METRICS_ACTIONS[@]}; do
-    echo
-    echo "${SEPARATOR} ${ACTION} ${SEPARATOR}"
-    ${COMMAND} ${ACTION}
-  done
+  run_commands "-pretty" "nat-connections"
 fi
 
-if [[ ${TESTS} == "reset" || ${TESTS} == "all" ]]; then
+if [[ "${TESTS}" == "reset" || "${TESTS}" == "all" ]]; then
   RESET_ACTIONS=(reset-connection reset-device reset-firewall reset-ip reset-wifi restart-gateway)
-
-  for ACTION in ${RESET_ACTIONS[@]}; do
-    echo
-    echo "${SEPARATOR} ${ACTION} ${SEPARATOR}"
-    ${COMMAND} ${ACTION} -no
-  done
+  run_commands "-no" "${RESET_ACTIONS[@]}"
 fi
