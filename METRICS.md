@@ -5,7 +5,7 @@ There is the `-metrics` flag that returns the metrics for the action specified. 
 There is also the `-allmetrics` flag that returns mertics for all actions known to have metrics.
 
 ## Naming and formatting
-It pulls the `model` from the `System Information` page returned by the `system-information` action. It converts dashes and spaces to dots. It adds `.0` the end to make it a `float` for reporting to [Datadog](https://www.datadoghq.com/) as metrics.
+It pulls the `model` from the `System Information` page returned by the `system-information` action. It converts dashes and spaces to dots. It adds `.0` the end to make it a `float` for reporting to [Datadog](https://www.datadoghq.com/) as a metric.
 
 
 ```
