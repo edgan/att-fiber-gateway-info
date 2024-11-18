@@ -8,7 +8,8 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-func extractHeadersAndTableData(action string, doc *goquery.Document, filter string, pretty bool) {
+func extractHeadersAndTableData(action string, doc *goquery.Document, filter string, metrics bool, model string, pretty bool, returnFact string) string {
+	fact := ""
 	// Track current section header
 	var currentHeader string
 
@@ -66,25 +67,35 @@ func extractHeadersAndTableData(action string, doc *goquery.Document, filter str
 							}
 						})
 
-						printData(action, class, currentHeader, pretty, tableData)
+						if returnFact != "" {
+							if returnFact == "model" {
+								fact = strings.Replace(tableData[1][1], "-", "", 1)
+							}
+						} else {
+							printData(action, class, currentHeader, metrics, model, pretty, tableData)
+						}
 					}
 				}
 			}
 		}
 	})
+
+	return fact
 }
 
-func extractData(action string, content string, filter string, natActionPrefix string, pretty bool) error {
+func extractData(action string, content string, filter string, metrics bool, model string, natActionPrefix string, pretty bool, returnFact string) (string, error) {
+	fact := ""
+
 	// Load the HTML content into goquery
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(content))
 
 	if err != nil {
-		return fmt.Errorf("failed to parse content: %v", err)
+		return fact, fmt.Errorf("failed to parse content: %v", err)
 	}
 
-	extractHeadersAndTableData(action, doc, filter, pretty)
+	fact = extractHeadersAndTableData(action, doc, filter, metrics, model, pretty, returnFact)
 
-	return nil
+	return fact, err
 }
 
 func extractContentSub(htmlStr string) (string, error) {

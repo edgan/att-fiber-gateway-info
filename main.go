@@ -13,8 +13,11 @@ func main() {
 	configFile := determineConfigFile()
 	config := loadAppConfig(configFile)
 
+	// Return action prefixes
+	actionPrefixes := returnActionPrefixes()
+
 	// Return action pages
-	actionPages := returnActionPages()
+	actionPages := returnActionPages(actionPrefixes)
 
 	// Return a actions description
 	actionsDescription := actionsHelp()
@@ -26,7 +29,7 @@ func main() {
 	cookiePath := determineCookiePath()
 
 	// Flags
-	action, answerNo, answerYes, baseURLFlag, cookieFile, debug, filter, freshCookies,
+	action, answerNo, answerYes, baseURLFlag, cookieFile, debug, filter, freshCookies, metrics,
 		passwordFlag, pretty := returnFlags(actionsDescription, colorMode, cookiePath, filtersDescription)
 
 	// Validate flags
@@ -37,7 +40,15 @@ func main() {
 		log.Fatalf("Failed to create router client: %v", err)
 	}
 
-	if err := client.getPage(*action, *answerNo, *answerYes, *filter, loginRequired, "nat-", page, password, *pretty); err != nil {
+	returnFact := "model"
+	model, err := client.getPage("system-information", *answerNo, *answerYes, *filter, false, *metrics, "", actionPrefixes["nat"], "sysinfo", password, *pretty, returnFact)
+	if err != nil {
+		log.Fatalf("Failed to get %s: %v", action, err)
+	}
+
+	returnFact = ""
+	_, err = client.getPage(*action, *answerNo, *answerYes, *filter, loginRequired, *metrics, model, actionPrefixes["nat"], page, password, *pretty, returnFact)
+	if err != nil {
 		log.Fatalf("Failed to get %s: %v", action, err)
 	}
 

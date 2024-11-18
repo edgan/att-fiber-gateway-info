@@ -32,6 +32,8 @@ Usage of ./att-fiber-gateway-info:
   -fresh bool (default: false)
         Do not use existing cookies (Warning: If always used the gateway will
         run out of sessions.)
+  -metrics bool (default: false)
+        Return metrics instead of table data
   -password string
         Gateway password
   -pretty bool (default: false)
@@ -109,6 +111,9 @@ configuration file.
 
 ## Actions
 See [ACTIONS.md](ACTIONS.md) in this git repository.
+
+## Metrics
+See [METRICS.md](METRICS.md) in this git repository.
 
 ## Story
   I just had [AT&T Fiber](https://www.att.com/internet/fiber/) installed. As

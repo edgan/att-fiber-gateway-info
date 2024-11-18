@@ -32,7 +32,8 @@ func (rc *GatewayClient) getPath(path string) (string, error) {
 	return bodyStr, nil
 }
 
-func (rc *GatewayClient) getPage(action string, answerNo bool, answerYes bool, filter string, loginRequired bool, natActionPrefix string, page string, password string, pretty bool) error {
+func (rc *GatewayClient) getPage(action string, answerNo bool, answerYes bool, filter string, loginRequired bool, metrics bool, model string, natActionPrefix string, page string, password string, pretty bool, returnFact string) (string, error) {
+	fact := ""
 	path := returnPath(page)
 
 	if loginRequired {
@@ -69,7 +70,7 @@ func (rc *GatewayClient) getPage(action string, answerNo bool, answerYes bool, f
 		body, err := rc.getPath(path)
 
 		if err != nil {
-			return err
+			return fact, err
 		}
 
 		// Extract content-sub div
@@ -79,11 +80,12 @@ func (rc *GatewayClient) getPage(action string, answerNo bool, answerYes bool, f
 			log.Fatal(err)
 		}
 
-		if err := extractData(action, content, filter, natActionPrefix, pretty); err != nil {
+		fact, err = extractData(action, content, filter, metrics, model, natActionPrefix, pretty, returnFact)
+		if err != nil {
 			log.Fatalf("Error extracting %s", action)
 		}
 
 	}
 
-	return nil
+	return fact, nil
 }

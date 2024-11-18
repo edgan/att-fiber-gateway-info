@@ -31,7 +31,17 @@ func actionsHelp() string {
 }
 
 // returnActionPages returns action to page mappings
-func returnActionPages() map[string]string {
+func returnActionPrefixes() map[string]string {
+	actionPrefixes := map[string]string{
+		"nat":   "nat-",
+		"reset": "reset-",
+	}
+
+	return actionPrefixes
+}
+
+// returnActionPages returns action to page mappings
+func returnActionPages(actionPrefixes map[string]string) map[string]string {
 	actions := returnActions()
 
 	actionPages := map[string]string{
@@ -44,14 +54,11 @@ func returnActionPages() map[string]string {
 		"system-information":  "sysinfo",
 	}
 
-	natActionPrefix := "nat-"
-	resetActionPrefix := "reset-"
-
 	for _, action := range actions {
-		if strings.HasPrefix(action, natActionPrefix) {
+		if strings.HasPrefix(action, actionPrefixes["nat"]) {
 			actionPages[action] = "nattable"
 		}
-		if strings.HasPrefix(action, resetActionPrefix) {
+		if strings.HasPrefix(action, actionPrefixes["reset"]) {
 			actionPages[action] = "reset"
 		}
 	}
