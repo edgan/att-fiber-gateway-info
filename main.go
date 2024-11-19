@@ -29,11 +29,11 @@ func main() {
 	cookiePath := determineCookiePath()
 
 	// Flags
-	action, allmetrics, answerNo, answerYes, baseURLFlag, cookieFile, debug, filter, freshCookies, metrics,
-		passwordFlag, pretty := returnFlags(actionsDescription, colorMode, cookiePath, filtersDescription)
+	action, allmetrics, answerNo, answerYes, baseURLFlag, cookieFile, datadog, debug, filter, freshCookies, metrics,
+		passwordFlag, pretty, statsdIPPortFlag := returnFlags(actionsDescription, colorMode, cookiePath, filtersDescription)
 
 	// Validate flags
-	allmetrics, baseURL, metrics, password := validateFlags(action, actionPages, allmetrics, baseURLFlag, config, filter, metrics, passwordFlag)
+	allmetrics, baseURL, metrics, password, statsdIPPort := validateFlags(action, actionPages, allmetrics, baseURLFlag, config, datadog, filter, metrics, passwordFlag, statsdIPPortFlag)
 
 	client, err := createGatewayClient(baseURL, colorMode, *cookieFile, *debug, *freshCookies)
 	if err != nil {
@@ -42,7 +42,7 @@ func main() {
 
 	returnFact := "model"
 
-	model, err := client.retrieveAction("system-information", actionPages, *answerNo, *answerYes, *filter, *metrics, "", actionPrefixes["nat"], password, *pretty, returnFact)
+	model, err := client.retrieveAction("system-information", actionPages, *answerNo, *answerYes, *datadog, *filter, *metrics, "", actionPrefixes["nat"], password, *pretty, returnFact, statsdIPPort)
 
 	if err != nil {
 		log.Fatalf("Failed to get %s: %v", action, err)
@@ -51,10 +51,10 @@ func main() {
 	if *allmetrics {
 		actions := []string{"broadband-status", "fiber-status", "home-network-status"}
 
-                returnFact = ""
+		returnFact = ""
 
 		for _, action := range actions {
-			_, err = client.retrieveAction(action, actionPages, *answerNo, *answerYes, *filter, *metrics, model, actionPrefixes["nat"], password, *pretty, returnFact)
+			_, err = client.retrieveAction(action, actionPages, *answerNo, *answerYes, *datadog, *filter, *metrics, model, actionPrefixes["nat"], password, *pretty, returnFact, statsdIPPort)
 
 			if err != nil {
 				log.Fatalf("Failed to get %s: %v", action, err)
@@ -66,7 +66,7 @@ func main() {
 
 	returnFact = ""
 
-	_, err = client.retrieveAction(*action, actionPages, *answerNo, *answerYes, *filter, *metrics, model, actionPrefixes["nat"], password, *pretty, returnFact)
+	_, err = client.retrieveAction(*action, actionPages, *answerNo, *answerYes, *datadog, *filter, *metrics, model, actionPrefixes["nat"], password, *pretty, returnFact, statsdIPPort)
 
 	if err != nil {
 		log.Fatalf("Failed to get %s: %v", action, err)

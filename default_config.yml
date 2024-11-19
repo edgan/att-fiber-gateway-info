@@ -6,3 +6,6 @@ baseURL: https://192.168.1.254
 ## 1. The convenience of not having to set it on the command line
 ## 2. Better security by not putting it on the command line
 #password: changeMe
+
+## This is required to be set to a value.
+statsdIPPort: 127.0.0.1:8125

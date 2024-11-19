@@ -33,102 +33,28 @@ func prettyPrint(tableData [][]string) {
 	}
 }
 
-func printMetrics(action string, header string, model string, statsHeaderSuffix string, tableData [][]string) {
-	shortHeader := ""
-	fiber := "Currently"
-
-	if action == "fiber-status" {
-		if strings.Contains(header, fiber) {
-			shortHeader = strings.Replace(header, fiber, "", 1)
-			shortHeader = strings.Replace(shortHeader, "\u00A0\u00A0 ", "=", 1)
-			shortHeader = strings.Replace(shortHeader, " ", ".", 1)
-		}
-	}
-
-	actionMetric := strings.Replace(action, "-", ".", 2)
-	actionMetric = strings.Replace(actionMetric, " ", ".", 1)
-	actionMetric = actionMetric + "." + shortHeader
-
-	if action == "fiber-status" {
-		if strings.Contains(header, fiber) {
-			metric := model + "." + actionMetric
-			fmt.Println(strings.ToLower(metric))
-		}
-	}
-
-	count := 1
-
-	if action != "fiber-status" {
-		if strings.HasSuffix(header, statsHeaderSuffix) {
-			metric := ""
-			for _, row := range tableData {
-				if row[0] == "" {
-					continue
-				}
-
-				length := len(row)
-
-				stat := ""
-				for i := range length {
-					stat = row[0]
-					stat = strings.Replace(stat, " ", ".", 1)
-					if i != 0 {
-						if length > 2 {
-							portNumber := strconv.Itoa(count)
-							metric = model + "." + actionMetric + "port" + portNumber + "." + stat + "="
-						} else {
-							metric = model + "." + actionMetric + stat + "="
-						}
-						if _, err := strconv.Atoi(row[i]); err == nil {
-							row[i] = row[i] + ".0"
-						}
-						row[i] = metric + row[i] + "\n"
-						if length > 2 {
-							count = count + 1
-							if count == length {
-								count = 1
-							}
-						}
-					}
-				}
-
-				line := ""
-
-				for i, column := range row {
-					if i != 0 {
-						line = line + column
-					}
-				}
-
-				fmt.Printf(strings.ToLower(line))
-			}
-
-		}
+func printMetrics(metrics []string) {
+	for _, m := range metrics {
+		fmt.Println(strings.ToLower(m))
 	}
 }
 
-func printData(action string, class string, currentHeader string, metrics bool, model string, pretty bool, tableData [][]string) {
+func printData(action string, class string, currentHeader string, model string, pretty bool, tableData [][]string) {
 	// If the table has data, process it
 	if len(tableData) > 0 {
 		// Process and print table data
-		printTableData(action, class, currentHeader, metrics, model, pretty, tableData)
+		printTableData(action, class, currentHeader, model, pretty, tableData)
 	}
 }
 
-func printTableData(action string, class string, header string, metrics bool, model string, pretty bool, tableData [][]string) {
-	if !metrics {
-		// Output the section header if it's available
-		if header != "" {
-			fmt.Printf("\n%s\n", header)
-			fmt.Println(strings.Repeat("-", len(header)))
-		}
+func printTableData(action string, class string, header string, model string, pretty bool, tableData [][]string) {
+	// Output the section header if it's available
+	if header != "" {
+		fmt.Printf("\n%s\n", header)
+		fmt.Println(strings.Repeat("-", len(header)))
 	}
 
-	statsHeaderSuffix := " Statistics"
-
-	if metrics {
-		printMetrics(action, header, model, statsHeaderSuffix, tableData)
-	} else if action == "device-list" {
+	if action == "device-list" {
 		for _, row := range tableData {
 			count := len(row)
 

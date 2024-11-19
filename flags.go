@@ -11,13 +11,14 @@ import (
 	"github.com/fatih/color"
 )
 
-func returnFlags(actionDescription string, colorMode bool, cookiePath string, filterDescription string) (*string, *bool, *bool, *bool, *string, *string, *bool, *string, *bool, *bool, *string, *bool) {
+func returnFlags(actionDescription string, colorMode bool, cookiePath string, filterDescription string) (*string, *bool, *bool, *bool, *string, *string, *bool, *bool, *string, *bool, *bool, *string, *bool, *string) {
 	action := flag.String("action", "", actionDescription)
 	allmetrics := flag.Bool("allmetrics", false, "Return all metrics")
 	answerNo := flag.Bool("no", false, "Answer no to any questions")
 	answerYes := flag.Bool("yes", false, "Answer yes to any questions")
 	baseURLFlag := flag.String("url", "", "Gateway base URL")
 	cookieFile := flag.String("cookiefile", cookiePath, "File to save session cookies")
+	datadog := flag.Bool("datadog", false, "Send metrics to datadog")
 	debug := flag.Bool("debug", false, "Enable debug mode")
 	filter := flag.String("filter", "", filterDescription)
 
@@ -29,6 +30,7 @@ func returnFlags(actionDescription string, colorMode bool, cookiePath string, fi
 	metrics := flag.Bool("metrics", false, "Return metrics instead from table data")
 	passwordFlag := flag.String("password", "", "Gateway password")
 	pretty := flag.Bool("pretty", false, "Enable pretty mode for nat-connections")
+	statsdIPPortFlag := flag.String("statsdipport", "", "Statsd ip:port")
 
 	if colorMode {
 		// Replace the default Usage with our colored version
@@ -37,10 +39,10 @@ func returnFlags(actionDescription string, colorMode bool, cookiePath string, fi
 
 	flag.Parse()
 
-	return action, allmetrics, answerNo, answerYes, baseURLFlag, cookieFile, debug, filter, freshCookies, metrics, passwordFlag, pretty
+	return action, allmetrics, answerNo, answerYes, baseURLFlag, cookieFile, datadog, debug, filter, freshCookies, metrics, passwordFlag, pretty, statsdIPPortFlag
 }
 
-func validateFlags(actionFlag *string, actionPages map[string]string, allmetrics *bool, baseURLFlag *string, config *Config, filterFlag *string, metrics *bool, passwordFlag *string) (*bool, string, *bool, string) {
+func validateFlags(actionFlag *string, actionPages map[string]string, allmetrics *bool, baseURLFlag *string, config *Config, datadog *bool, filterFlag *string, metrics *bool, passwordFlag *string, statsdIPPortFlag *string) (*bool, string, *bool, string, string) {
 	var baseURL string
 
 	if *baseURLFlag == "" {
@@ -57,8 +59,21 @@ func validateFlags(actionFlag *string, actionPages map[string]string, allmetrics
 		password = *passwordFlag
 	}
 
+	var statsdIPPort string
+
+	if *statsdIPPortFlag == "" {
+		statsdIPPort = config.StatsdIPPort
+	} else {
+		statsdIPPort = *statsdIPPortFlag
+	}
+
 	if *allmetrics {
 		*metrics = true
+	}
+
+	if *datadog && !*metrics {
+		datadogError := fmt.Sprintf("Metrics must be enabled when enabling datadog")
+		log.Fatal(datadogError)
 	}
 
 	// Action validation
@@ -99,7 +114,7 @@ func validateFlags(actionFlag *string, actionPages map[string]string, allmetrics
 		log.Fatal(filterError)
 	}
 
-	return allmetrics, baseURL, metrics, password
+	return allmetrics, baseURL, metrics, password, statsdIPPort
 }
 
 func ColoredUsage() {

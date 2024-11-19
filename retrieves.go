@@ -4,7 +4,7 @@ import (
 	"log"
 )
 
-func (rc *GatewayClient) retrieveAction(action string, actionPages map[string]string, answerNo bool, answerYes bool, filter string, metrics bool, model string, natActionPrefix string, password string, pretty bool, returnFact string) (string, error) {
+func (rc *GatewayClient) retrieveAction(action string, actionPages map[string]string, answerNo bool, answerYes bool, datadog bool, filter string, metrics bool, model string, natActionPrefix string, password string, pretty bool, returnFact string, statsdIPPort string) (string, error) {
 	fact := ""
 
 	// Get the specified page based on action
@@ -29,7 +29,7 @@ func (rc *GatewayClient) retrieveAction(action string, actionPages map[string]st
 		performLogin(rc, password)
 	}
 
-	fact, err := rc.getPage(action, answerNo, answerYes, filter, metrics, model, natActionPrefix, page, password, pretty, returnFact)
+	fact, err := rc.getPage(action, answerNo, answerYes, datadog, filter, metrics, model, natActionPrefix, page, password, pretty, returnFact, statsdIPPort)
 
 	return fact, err
 }

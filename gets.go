@@ -32,7 +32,7 @@ func (rc *GatewayClient) getPath(path string) (string, error) {
 	return bodyStr, nil
 }
 
-func (rc *GatewayClient) getPage(action string, answerNo bool, answerYes bool, filter string, metrics bool, model string, natActionPrefix string, page string, password string, pretty bool, returnFact string) (string, error) {
+func (rc *GatewayClient) getPage(action string, answerNo bool, answerYes bool, datadog bool, filter string, metrics bool, model string, natActionPrefix string, page string, password string, pretty bool, returnFact string, statsdIPPort string) (string, error) {
 	fact := ""
 	path := returnPath(page)
 
@@ -76,7 +76,7 @@ func (rc *GatewayClient) getPage(action string, answerNo bool, answerYes bool, f
 			log.Fatal(err)
 		}
 
-		fact, err = extractData(action, content, filter, metrics, model, natActionPrefix, pretty, returnFact)
+		fact, err = extractData(action, content, datadog, filter, metrics, model, natActionPrefix, pretty, returnFact, statsdIPPort)
 		if err != nil {
 			log.Fatalf("Error extracting %s", action)
 		}

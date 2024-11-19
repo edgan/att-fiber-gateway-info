@@ -74,3 +74,10 @@ func getActionPage(action string, actionPages map[string]string) string {
 	}
 	return page
 }
+
+func returnActionMetric(action string) string {
+	actionMetric := strings.Replace(action, "-", ".", 2)
+	actionMetric = strings.Replace(actionMetric, " ", ".", 1)
+
+	return actionMetric
+}

@@ -2,20 +2,21 @@ package main
 
 import (
 	"fmt"
+	"regexp"
 	"sort"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
-func extractHeadersAndTableData(action string, doc *goquery.Document, filter string, metrics bool, model string, pretty bool, returnFact string) string {
+func extractHeadersAndTableData(action string, datadog bool, doc *goquery.Document, filter string, metrics bool, model string, natActionPrefix string, pretty bool, returnFact string, statsdIPPort string) string {
 	fact := ""
 	// Track current section header
 	var currentHeader string
 
 	// Process h1, h2, and tables
 	doc.Find("h1, h2, table").Each(func(i int, s *goquery.Selection) {
-		if !strings.Contains(action, "nat-") {
+		if !strings.Contains(action, natActionPrefix) {
 			// Check if this is an h1 or h2 element
 			if s.Is("h1") || s.Is("h2") {
 				headerText := strings.TrimSpace(s.Text())
@@ -26,55 +27,97 @@ func extractHeadersAndTableData(action string, doc *goquery.Document, filter str
 			}
 		}
 
-		// Process tables, specifically looking for "grid table100"
+		// Process tables
 		if s.Is("table") {
+			// Check for valid "class" attribute
+			class, hasClass := s.Attr("class")
 			validClasses := []string{"table60", "table75", "table100"}
-			if class, exists := s.Attr("class"); exists {
+			isValidTable := false
+
+			if hasClass {
 				for _, validClass := range validClasses {
 					if strings.Contains(class, validClass) {
-						// Extract rows from the table
-						var tableData [][]string
-						s.Find("tr").Each(func(j int, row *goquery.Selection) {
-							var rowData []string
-
-							// Extract "th" and "td" content
-							row.Find("th, td").Each(func(k int, cell *goquery.Selection) {
-								cellText := strings.TrimSpace(cell.Text())
-								// Check if there is a <pre> tag inside the <td>
-								pre := cell.Find("pre")
-
-								if pre.Length() > 0 {
-									// Process <pre> content with <br> tags replaced by newlines
-									htmlContent, err := pre.Html() // Get HTML inside <pre>, which returns (string, error)
-
-									if err != nil {
-										cellText = "" // or handle error appropriately
-									} else {
-										cellText = strings.ReplaceAll(htmlContent, "Wi-Fi<br/>", "Wi-Fi: ") // Special case for WiFi
-										cellText = strings.ReplaceAll(cellText, "<br/>", "\n  ")            // Replace <br /> with newline
-										cellText = strings.ReplaceAll(cellText, "<br>", "\n")               // Handle <br> tag as well
-									}
-								} else {
-									// No <pre> tag; get text normally
-									cellText = strings.TrimSpace(cell.Text())
-								}
-								rowData = append(rowData, cellText)
-							})
-
-							// Add row data if not empty
-							if len(rowData) > 0 {
-								tableData = append(tableData, rowData)
-							}
-						})
-
-						if returnFact != "" {
-							if returnFact == "model" {
-								fact = strings.Replace(tableData[1][1], "-", "", 1)
-							}
-						} else {
-							printData(action, class, currentHeader, metrics, model, pretty, tableData)
-						}
+						isValidTable = true
+						break
 					}
+				}
+			}
+
+			// Skip table if it doesn't match any valid class
+			if !isValidTable {
+				return
+			}
+
+			shortSummary := ""
+
+			if action != "fiber-status" && returnFact == "" && metrics {
+				// Check for a valid "summary" attribute
+				summary, hasSummary := s.Attr("summary")
+				isValidSummary := false
+
+				if hasSummary {
+					if strings.Contains(strings.ToLower(summary), "statistics") {
+						re := regexp.MustCompile(` [Ss]tatistic.*`)
+						shortSummary = re.ReplaceAllString(summary, "")
+						re = regexp.MustCompile(`Ethernet `)
+						shortSummary = re.ReplaceAllString(shortSummary, "")
+						re = regexp.MustCompile(`This table displays `)
+						shortSummary = re.ReplaceAllString(shortSummary, "")
+
+						isValidSummary = true
+					}
+				}
+
+				// Skip table if it doesn't match the summary filter
+				if !isValidSummary {
+					return
+				}
+			}
+
+			// Extract rows from the table
+			var tableData [][]string
+			s.Find("tr").Each(func(j int, row *goquery.Selection) {
+				var rowData []string
+
+				// Extract "th" and "td" content
+				row.Find("th, td").Each(func(k int, cell *goquery.Selection) {
+					cellText := strings.TrimSpace(cell.Text())
+					// Check if there is a <pre> tag inside the <td>
+					pre := cell.Find("pre")
+
+					if pre.Length() > 0 {
+						// Process <pre> content with <br> tags replaced by newlines
+						htmlContent, err := pre.Html() // Get HTML inside <pre>, which returns (string, error)
+
+						if err != nil {
+							cellText = "" // or handle error appropriately
+						} else {
+							cellText = strings.ReplaceAll(htmlContent, "Wi-Fi<br/>", "Wi-Fi: ") // Special case for WiFi
+							cellText = strings.ReplaceAll(cellText, "<br/>", "\n  ")            // Replace <br /> with newline
+							cellText = strings.ReplaceAll(cellText, "<br>", "\n")               // Handle <br> tag as well
+						}
+					} else {
+						// No <pre> tag; get text normally
+						cellText = strings.TrimSpace(cell.Text())
+					}
+					rowData = append(rowData, cellText)
+				})
+
+				// Add row data if not empty
+				if len(rowData) > 0 {
+					tableData = append(tableData, rowData)
+				}
+			})
+
+			if returnFact != "" {
+				if returnFact == "model" {
+					fact = strings.Replace(tableData[1][1], "-", "", 1)
+				}
+			} else {
+				if metrics {
+					outputMetrics(action, datadog, currentHeader, model, shortSummary, statsdIPPort, tableData)
+				} else {
+					printData(action, class, currentHeader, model, pretty, tableData)
 				}
 			}
 		}
@@ -83,7 +126,7 @@ func extractHeadersAndTableData(action string, doc *goquery.Document, filter str
 	return fact
 }
 
-func extractData(action string, content string, filter string, metrics bool, model string, natActionPrefix string, pretty bool, returnFact string) (string, error) {
+func extractData(action string, content string, datadog bool, filter string, metrics bool, model string, natActionPrefix string, pretty bool, returnFact string, statsdIPPort string) (string, error) {
 	fact := ""
 
 	// Load the HTML content into goquery
@@ -93,7 +136,7 @@ func extractData(action string, content string, filter string, metrics bool, mod
 		return fact, fmt.Errorf("failed to parse content: %v", err)
 	}
 
-	fact = extractHeadersAndTableData(action, doc, filter, metrics, model, pretty, returnFact)
+	fact = extractHeadersAndTableData(action, datadog, doc, filter, metrics, model, natActionPrefix, pretty, returnFact, statsdIPPort)
 
 	return fact, err
 }

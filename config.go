@@ -14,8 +14,9 @@ import (
 
 // Names have to be capitalized
 type Config struct {
-	BaseURL  string `yaml:"baseURL"`
-	Password string `yaml:"password"`
+	BaseURL      string `yaml:"baseURL"`
+	Password     string `yaml:"password"`
+	StatsdIPPort string `yaml:"statsdIPPort"`
 }
 
 // Embed the default configuration file
