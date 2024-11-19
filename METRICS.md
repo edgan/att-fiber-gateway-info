@@ -1,39 +1,21 @@
 # Metrics
 
-There is the `-metrics` flag that returns the metrics for the action specified. It looks for tables with summaries that include `Statistics' or `statistics`. The exception is the action `fiber-status` temperature, vcc, tx bias, tx power, and rx power.
+The general idea is to be able to pull metrics out of various gateway pages.
 
-There is also the `-allmetrics` flag that returns mertics for all actions known to have metrics.
-
-## Statsd
-### What is statsd?
-StatsD is an industry-standard technology stack for monitoring applications and instrumenting any piece of software to deliver custom metrics.
-
-### flags
-There is finally the `-datadog` flag that instead of printing the metrics sends them to statsd as configured by either `-statsdipport` or `statdIPPort` in the configuration file. It defaults to `127.0.0.1:8125`. It only sends the `float` metrics, because that is what `datadog` accepts for metrics. A way to deal with `string` metrics is planned.
-
-### Installation
-Statd can be installed via statsd(Node.JS), datadog-agent(Python), or datadog-dogstatsd(Golang).
-
-## Naming and formatting
-It pulls the `model` from the `System Information` page returned by the `system-information` action. It converts dashes and spaces to dots. All strings are lower cases.  It adds `.0` the end to make it a `float` for reporting to [Datadog](https://www.datadoghq.com/) as a metric.
-
-
-```
-model.action.summary.metric=value
-            |
-            V
-bgw320-505.broadband-status.IPv4.Receive Packets=46538166
-            |
-            V
-bgw320505.broadband.status.ipv4.receive.packets=46538166.0
-```
+## Screenshots
+![First screenshot](/screenshots/datadog-metrics1.png)
+![Second screenshot](/screenshots/datadog-metrics2.png)
 
 ## Usage
 ```
 att-fiber-gateway-info -action broadband-status -metrics
 att-fiber-gateway-info -action fiber-status -metrics
 att-fiber-gateway-info -action home-network-status -metrics
+att-fiber-gateway-info -action broadband-status -metrics -datadog
+att-fiber-gateway-info -action fiber-status -metrics -datadog
+att-fiber-gateway-info -action home-network-status -metrics -datadog
 att-fiber-gateway-info -allmetrics
+att-fiber-gateway-info -allmetrics -datadog
 ```
 
 ## Examples
@@ -134,4 +116,35 @@ bgw320505.home.network.status.lan.ethernet.port1.receive.errors=0.0
 bgw320505.home.network.status.lan.ethernet.port2.receive.errors=0.0
 bgw320505.home.network.status.lan.ethernet.port3.receive.errors=0.0
 bgw320505.home.network.status.lan.ethernet.port4.receive.errors=0.0
+```
+
+## Flags
+
+There is the `-metrics` flag that returns the metrics for the action specified. It looks for tables with summaries that include `Statistics' or `statistics`. The exception is the action `fiber-status` temperature, vcc, tx bias, tx power, and rx power.
+
+There is also the `-allmetrics` flag that returns mertics for all actions known to have metrics.
+
+
+## Statsd
+### What is statsd?
+StatsD is an industry-standard technology stack for monitoring applications and instrumenting any piece of software to deliver custom metrics.
+
+### Flags
+There is finally the `-datadog` flag that instead of printing the metrics sends them to statsd as configured by either `-statsdipport` or `statdIPPort` in the configuration file. It defaults to `127.0.0.1:8125`. It only sends the `float` metrics, because that is what `datadog` accepts for metrics. A way to deal with `string` metrics is planned.
+
+### Installation
+Statd can be installed via statsd(Node.JS), datadog-agent(Python), or datadog-dogstatsd(Golang).
+
+## Naming and formatting
+It pulls the `model` from the `System Information` page returned by the `system-information` action. It converts dashes and spaces to dots. All strings are lower cases.  It adds `.0` the end to make it a `float` for reporting to [Datadog](https://www.datadoghq.com/) as a metric.
+
+
+```
+model.action.summary.metric=value
+            |
+            V
+bgw320-505.broadband-status.IPv4.Receive Packets=46538166
+            |
+            V
+bgw320505.broadband.status.ipv4.receive.packets=46538166.0
 ```
