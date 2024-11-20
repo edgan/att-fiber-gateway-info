@@ -1,6 +1,6 @@
 # att-fiber-gateway-info
 ## Description
-A [golang](https://en.wikipedia.org/wiki/Go_(programming_language)) command line
+A cross platform [golang](https://en.wikipedia.org/wiki/Go_(programming_language)) command line
 tool to pull values from the pages of an
 [AT&T Fiber](https://www.att.com/internet/fiber/) gateways.
 
