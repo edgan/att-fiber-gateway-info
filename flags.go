@@ -55,7 +55,7 @@ func returnFlags(actionDescription string, colorMode bool, cookiePath string, fi
 		Metrics:      flag.Bool("metrics", false, "Return metrics instead from table data"),
 		Password:     flag.String("password", "", "Gateway password"),
 		Pretty:       flag.Bool("pretty", false, "Enable pretty mode for nat-connections"),
-		StatsdIPPort: flag.String("statsdipport", "", "Statsd ip:port"),
+		StatsdIPPort: flag.String("statsdipport", "", "Statsd ip port, like 127.0.0.1:8125"),
 	}
 
 	version := flag.Bool("version", false, "Show version")
@@ -172,7 +172,7 @@ func Usage(colorMode bool) {
 
 	fmt.Println(applicationNameVersion)
 
-	usage := "Usage:\n"
+	usage := "\nUsage:\n"
 
 	if colorMode {
 		usage = green.Sprintf(usage)

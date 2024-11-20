@@ -11,9 +11,11 @@ The general idea is to be able to pull metrics out of various gateway pages.
 att-fiber-gateway-info -action broadband-status -metrics
 att-fiber-gateway-info -action fiber-status -metrics
 att-fiber-gateway-info -action home-network-status -metrics
+att-fiber-gateway-info -action nat-totals -metrics
 att-fiber-gateway-info -action broadband-status -metrics -datadog
 att-fiber-gateway-info -action fiber-status -metrics -datadog
 att-fiber-gateway-info -action home-network-status -metrics -datadog
+att-fiber-gateway-info -action nat-totals -metrics -datadog
 att-fiber-gateway-info -allmetrics
 att-fiber-gateway-info -allmetrics -datadog
 ```
@@ -116,6 +118,13 @@ bgw320505.home.network.status.lan.ethernet.port1.receive.errors=0.0
 bgw320505.home.network.status.lan.ethernet.port2.receive.errors=0.0
 bgw320505.home.network.status.lan.ethernet.port3.receive.errors=0.0
 bgw320505.home.network.status.lan.ethernet.port4.receive.errors=0.0
+```
+
+### nat-totals
+```
+bgw320505.nat.totals.connetions=235.0
+bgw320505.nat.totals.tcp.connections=122.0
+bgw320505.nat.totals.udp.connections=112.0
 ```
 
 ## Flags
