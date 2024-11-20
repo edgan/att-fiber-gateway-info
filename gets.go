@@ -7,10 +7,11 @@ import (
 	"strings"
 )
 
-func (rc *GatewayClient) getPath(path string) (string, error) {
+func (rc *GatewayClient) getPath(flags *Flags, path string) (string, error) {
 	resp, err := rc.client.Get(rc.baseURL + path)
 
 	if err != nil {
+		debugLog(*flags.Debug, "Failed to Get")
 		return "", fmt.Errorf("failed to get path %s: %v", path, err)
 	}
 
@@ -19,6 +20,7 @@ func (rc *GatewayClient) getPath(path string) (string, error) {
 	body, err := io.ReadAll(resp.Body)
 
 	if err != nil {
+		debugLog(*flags.Debug, "Failed to ReadAll")
 		return "", fmt.Errorf("failed to read response for path %s: %v", path, err)
 	}
 
@@ -26,13 +28,14 @@ func (rc *GatewayClient) getPath(path string) (string, error) {
 
 	// Check for login failure
 	if strings.Contains(bodyStr, rc.loginPath) {
+		debugLog(*flags.Debug, "LoginPath in body of page")
 		return "", fmt.Errorf("Login failed. Password likely wrong.")
 	}
 
 	return bodyStr, nil
 }
 
-func (rc *GatewayClient) getPage(action string, answerNo bool, answerYes bool, datadog bool, filter string, metrics bool, model string, natActionPrefix string, page string, password string, pretty bool, returnFact string, statsdIPPort string) (string, error) {
+func (rc *GatewayClient) getPage(action string, configs Configs, flags *Flags, model string, natActionPrefix string, page string, returnFact string) (string, error) {
 	fact := ""
 	path := returnPath(page)
 
@@ -56,27 +59,28 @@ func (rc *GatewayClient) getPage(action string, answerNo bool, answerYes bool, d
 			"restart-gateway":  {"Restart", "Restart", question, willWarning},
 		}
 
-		err := rc.submitForm(action, answerNo, answerYes, page, path, resetActions[action])
+		err := rc.submitForm(action, flags, page, path, resetActions[action])
 		if err != nil {
 			log.Fatalf("Submission failed: %v", err)
 		}
 	} else {
-
 		// Get body using the new getPath function
-		body, err := rc.getPath(path)
+		body, err := rc.getPath(flags, path)
 
 		if err != nil {
-			return fact, err
+			debugLog(*flags.Debug, "Failed to getPath")
+			log.Fatal(err)
 		}
 
 		// Extract content-sub div
 		content, err := extractContentSub(body)
 
 		if err != nil {
+			debugLog(*flags.Debug, "Failed to extractContentSub")
 			log.Fatal(err)
 		}
 
-		fact, err = extractData(action, content, datadog, filter, metrics, model, natActionPrefix, pretty, returnFact, statsdIPPort)
+		fact, err = extractData(action, configs, content, flags, model, natActionPrefix, returnFact)
 		if err != nil {
 			log.Fatalf("Error extracting %s", action)
 		}

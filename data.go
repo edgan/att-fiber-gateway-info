@@ -9,7 +9,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-func extractHeadersAndTableData(action string, datadog bool, doc *goquery.Document, filter string, metrics bool, model string, natActionPrefix string, pretty bool, returnFact string, statsdIPPort string) string {
+func extractHeadersAndTableData(action string, configs Configs, doc *goquery.Document, flags *Flags, model string, natActionPrefix string, returnFact string) string {
 	fact := ""
 	// Track current section header
 	var currentHeader string
@@ -50,13 +50,15 @@ func extractHeadersAndTableData(action string, datadog bool, doc *goquery.Docume
 
 			shortSummary := ""
 
-			if action != "fiber-status" && returnFact == "" && metrics {
+			if action != "fiber-status" && returnFact == "" && *flags.Metrics {
 				// Check for a valid "summary" attribute
 				summary, hasSummary := s.Attr("summary")
 				isValidSummary := false
 
 				if hasSummary {
-					if strings.Contains(strings.ToLower(summary), "statistics") {
+					debugLog(*flags.Debug, summary)
+					// broadband-status / home-network-status, nat-totals
+					if strings.Contains(strings.ToLower(summary), "statistics") || summary == "Summary of nattable connections" || summary == "This table displays a summary of session information." {
 						re := regexp.MustCompile(` [Ss]tatistic.*`)
 						shortSummary = re.ReplaceAllString(summary, "")
 						re = regexp.MustCompile(`Ethernet `)
@@ -114,10 +116,11 @@ func extractHeadersAndTableData(action string, datadog bool, doc *goquery.Docume
 					fact = strings.Replace(tableData[1][1], "-", "", 1)
 				}
 			} else {
-				if metrics {
-					outputMetrics(action, datadog, currentHeader, model, shortSummary, statsdIPPort, tableData)
+				if *flags.Metrics {
+					debugLog(*flags.Debug, "outputMetrics")
+					outputMetrics(action, configs, flags, currentHeader, model, shortSummary, tableData)
 				} else {
-					printData(action, class, currentHeader, model, pretty, tableData)
+					printData(action, class, currentHeader, flags, model, tableData)
 				}
 			}
 		}
@@ -126,17 +129,18 @@ func extractHeadersAndTableData(action string, datadog bool, doc *goquery.Docume
 	return fact
 }
 
-func extractData(action string, content string, datadog bool, filter string, metrics bool, model string, natActionPrefix string, pretty bool, returnFact string, statsdIPPort string) (string, error) {
+func extractData(action string, configs Configs, content string, flags *Flags, model string, natActionPrefix string, returnFact string) (string, error) {
 	fact := ""
 
 	// Load the HTML content into goquery
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(content))
 
 	if err != nil {
+		debugLog(*flags.Debug, "Failed to goquery.NewDocumentFromReader in extractData")
 		return fact, fmt.Errorf("failed to parse content: %v", err)
 	}
 
-	fact = extractHeadersAndTableData(action, datadog, doc, filter, metrics, model, natActionPrefix, pretty, returnFact, statsdIPPort)
+	fact = extractHeadersAndTableData(action, configs, doc, flags, model, natActionPrefix, returnFact)
 
 	return fact, err
 }

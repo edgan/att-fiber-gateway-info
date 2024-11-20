@@ -1,7 +1,7 @@
 package main
 
-func outputMetrics(action string, datadog bool, header string, model string, summary string, statsdIPPort string, tableData [][]string) {
-	actionMetric := returnActionMetric(action)
+func outputMetrics(action string, configs Configs, flags *Flags, header string, model string, summary string, tableData [][]string) {
+	actionMetric := returnActionMetric(action, flags)
 	modelActionMetric := model + "." + actionMetric
 
 	dotZero := ".0"
@@ -11,11 +11,11 @@ func outputMetrics(action string, datadog bool, header string, model string, sum
 	if action == "fiber-status" {
 		metrics = generateFiberMetric(dotZero, header, modelActionMetric, tableData)
 	} else {
-		metrics = generateNonFiberMetric(dotZero, modelActionMetric, summary, tableData)
+		metrics = generateNonFiberMetric(action, dotZero, flags, modelActionMetric, summary, tableData)
 	}
 
-	if datadog {
-		giveMetricsToDatadogStatsd(metrics, model, statsdIPPort)
+	if *flags.Datadog {
+		giveMetricsToDatadogStatsd(configs, metrics, model)
 	} else {
 		printMetrics(metrics)
 	}

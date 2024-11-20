@@ -11,26 +11,53 @@ import (
 	"github.com/fatih/color"
 )
 
-func returnFlags(actionDescription string, colorMode bool, cookiePath string, filterDescription string) (*string, *bool, *bool, *bool, *string, *string, *bool, *bool, *string, *bool, *bool, *string, *bool, *string) {
+type Configs struct {
+	BaseURL      string
+	Password     string
+	StatsdIPPort string
+}
+
+type Flags struct {
+	AllMetrics   *bool
+	AnswerNo     *bool
+	AnswerYes    *bool
+	BaseURL      *string
+	CookieFile   *string
+	Datadog      *bool
+	Debug        *bool
+	Filter       *string
+	FreshCookies *bool
+	Metrics      *bool
+	Password     *string
+	Pretty       *bool
+	StatsdIPPort *string
+}
+
+func returnFlags(actionDescription string, colorMode bool, cookiePath string, filterDescription string) (*string, *Flags) {
+	// action is a special case where there can be more than one action per run, and hence it doesn't work as part of
+	// the flags struct.
 	action := flag.String("action", "", actionDescription)
-	allmetrics := flag.Bool("allmetrics", false, "Return all metrics")
-	answerNo := flag.Bool("no", false, "Answer no to any questions")
-	answerYes := flag.Bool("yes", false, "Answer yes to any questions")
-	baseURLFlag := flag.String("url", "", "Gateway base URL")
-	cookieFile := flag.String("cookiefile", cookiePath, "File to save session cookies")
-	datadog := flag.Bool("datadog", false, "Send metrics to datadog")
-	debug := flag.Bool("debug", false, "Enable debug mode")
-	filter := flag.String("filter", "", filterDescription)
 
-	freshCookies := flag.Bool(
-		"fresh", false,
-		"Do not use existing cookies (Warning: If always used the gateway will run out of sessions.)",
-	)
+	flags := &Flags{
+		AllMetrics: flag.Bool("allmetrics", false, "Return all metrics"),
+		AnswerNo:   flag.Bool("no", false, "Answer no to any questions"),
+		AnswerYes:  flag.Bool("yes", false, "Answer yes to any questions"),
+		BaseURL:    flag.String("url", "", "Gateway base URL"),
+		CookieFile: flag.String("cookiefile", cookiePath, "File to save session cookies"),
+		Datadog:    flag.Bool("datadog", false, "Send metrics to datadog"),
+		Debug:      flag.Bool("debug", false, "Enable debug mode"),
+		Filter:     flag.String("filter", "", filterDescription),
 
-	metrics := flag.Bool("metrics", false, "Return metrics instead from table data")
-	passwordFlag := flag.String("password", "", "Gateway password")
-	pretty := flag.Bool("pretty", false, "Enable pretty mode for nat-connections")
-	statsdIPPortFlag := flag.String("statsdipport", "", "Statsd ip:port")
+		FreshCookies: flag.Bool(
+			"fresh", false,
+			"Do not use existing cookies (Warning: If always used the gateway will run out of sessions.)",
+		),
+
+		Metrics:      flag.Bool("metrics", false, "Return metrics instead from table data"),
+		Password:     flag.String("password", "", "Gateway password"),
+		Pretty:       flag.Bool("pretty", false, "Enable pretty mode for nat-connections"),
+		StatsdIPPort: flag.String("statsdipport", "", "Statsd ip:port"),
+	}
 
 	if colorMode {
 		// Replace the default Usage with our colored version
@@ -39,39 +66,52 @@ func returnFlags(actionDescription string, colorMode bool, cookiePath string, fi
 
 	flag.Parse()
 
-	return action, allmetrics, answerNo, answerYes, baseURLFlag, cookieFile, datadog, debug, filter, freshCookies, metrics, passwordFlag, pretty, statsdIPPortFlag
+	return action, flags
 }
 
-func validateFlags(actionFlag *string, actionPages map[string]string, allmetrics *bool, baseURLFlag *string, config *Config, datadog *bool, filterFlag *string, metrics *bool, passwordFlag *string, statsdIPPortFlag *string) (*bool, string, *bool, string, string) {
-	var baseURL string
+func validateFlags(action string, actionPages map[string]string, config *Config, flags *Flags) (Configs, *Flags) {
+	var configs Configs
 
-	if *baseURLFlag == "" {
-		baseURL = config.BaseURL
+	if *flags.BaseURL == "" {
+		configs.BaseURL = config.BaseURL
 	} else {
-		baseURL = *baseURLFlag
+		configs.BaseURL = *flags.BaseURL
 	}
 
-	var password string
-
-	if *passwordFlag == "" {
-		password = config.Password
+	if *flags.Password == "" {
+		configs.Password = config.Password
 	} else {
-		password = *passwordFlag
+		configs.Password = *flags.Password
 	}
 
-	var statsdIPPort string
-
-	if *statsdIPPortFlag == "" {
-		statsdIPPort = config.StatsdIPPort
+	if *flags.StatsdIPPort == "" {
+		configs.StatsdIPPort = config.StatsdIPPort
 	} else {
-		statsdIPPort = *statsdIPPortFlag
+		configs.StatsdIPPort = *flags.StatsdIPPort
 	}
 
-	if *allmetrics {
-		*metrics = true
+	if *flags.AllMetrics {
+		*flags.Metrics = true
 	}
 
-	if *datadog && !*metrics {
+	if *flags.Metrics && !*flags.AllMetrics {
+		metricActions := returnMeticsActions()
+
+		inSlice := false
+
+		for _, metricAction := range metricActions {
+			if action == metricAction {
+				inSlice = true
+			}
+		}
+
+		if !inSlice {
+			metricActionError := fmt.Sprintf("Action must be one of these (%s) when -metrics is enabled.", strings.Join(metricActions, ", "))
+			log.Fatal(metricActionError)
+		}
+	}
+
+	if *flags.Datadog && !*flags.Metrics {
 		datadogError := fmt.Sprintf("Metrics must be enabled when enabling datadog")
 		log.Fatal(datadogError)
 	}
@@ -84,25 +124,25 @@ func validateFlags(actionFlag *string, actionPages map[string]string, allmetrics
 	}
 
 	for _, a := range actionsHelp {
-		if *actionFlag == a {
+		if action == a {
 			isValidAction = true
 			break
 		}
 	}
 
-	if !isValidAction && !*allmetrics {
+	if !isValidAction && !*flags.AllMetrics {
 		actionError := fmt.Sprintf("Action must be one of these (%s)", strings.Join(actionsHelp, ", "))
 		log.Fatal(actionError)
 	}
 
 	// Filter validation
 	isValidFilter := false
-	isValidFilter = *filterFlag == "" // Default to valid if filter is empty (optional)
+	isValidFilter = *flags.Filter == "" // Default to valid if filter is empty (optional)
 	filters := returnFilters()
 
-	if *filterFlag != "" {
+	if *flags.Filter != "" {
 		for _, f := range filters {
-			if *filterFlag == f {
+			if *flags.Filter == f {
 				isValidFilter = true
 				break
 			}
@@ -114,7 +154,7 @@ func validateFlags(actionFlag *string, actionPages map[string]string, allmetrics
 		log.Fatal(filterError)
 	}
 
-	return allmetrics, baseURL, metrics, password, statsdIPPort
+	return configs, flags
 }
 
 func ColoredUsage() {

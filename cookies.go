@@ -15,7 +15,7 @@ func (rc *GatewayClient) saveSessionCookies() error {
 	return saveCookies(rc.client.Jar, rc.baseURL, rc.cookieFile)
 }
 
-func createAndLoadCookies(baseURL, cookieFile string, debug bool, freshCookies bool) (*cookiejar.Jar, int, error) {
+func createAndLoadCookies(configs Configs, flags *Flags) (*cookiejar.Jar, int, error) {
 	// Create cookie jar
 	jar, err := cookiejar.New(nil)
 	if err != nil {
@@ -24,14 +24,14 @@ func createAndLoadCookies(baseURL, cookieFile string, debug bool, freshCookies b
 
 	loadedCookies := 0
 
-	if !freshCookies {
+	if !*flags.FreshCookies {
 		// Load cookies from file if it exists
-		if _, err := os.Stat(cookieFile); err == nil {
-			if err := loadCookies(jar, baseURL, cookieFile); err != nil {
+		if _, err := os.Stat(*flags.CookieFile); err == nil {
+			if err := loadCookies(configs, flags, jar); err != nil {
 				return nil, loadedCookies, fmt.Errorf("failed to load cookies: %v", err)
 			} else {
 				loadedCookies = 1
-				debugLog(debug, "Stored cookies use") // Assuming debug is true for simplicity
+				debugLog(*flags.Debug, "Stored cookies use") // Assuming debug is true for simplicity
 			}
 		}
 	}
@@ -40,8 +40,8 @@ func createAndLoadCookies(baseURL, cookieFile string, debug bool, freshCookies b
 }
 
 // Function to load cookies from a file
-func loadCookies(jar http.CookieJar, baseURL string, filePath string) error {
-	file, err := os.Open(filePath)
+func loadCookies(configs Configs, flags *Flags, jar http.CookieJar) error {
+	file, err := os.Open(*flags.CookieFile)
 
 	if err != nil {
 		return err
@@ -57,7 +57,7 @@ func loadCookies(jar http.CookieJar, baseURL string, filePath string) error {
 		return err
 	}
 
-	u, err := url.Parse(baseURL)
+	u, err := url.Parse(configs.BaseURL)
 
 	if err != nil {
 		return err

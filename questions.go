@@ -14,17 +14,17 @@ func formatQuestion(task string, resource string) string {
 }
 
 // Prompt the user for yes/no input
-func askYesNo(answerNo bool, answerYes bool, colorMode bool, question string, warning string) bool {
+func askYesNo(colorMode bool, flags *Flags, question string, warning string) bool {
 	if colorMode {
 		red := color.New(color.FgRed)
 		warning = red.Sprint(warning)
 	}
 
-	if !answerYes {
+	if !*flags.AnswerYes {
 		reader := bufio.NewReader(os.Stdin)
 		for {
 			fullQuestion := question + " " + warning + " (yes/no): "
-			if !answerNo {
+			if !*flags.AnswerNo {
 				fmt.Print(fullQuestion)
 				input, err := reader.ReadString('\n')
 

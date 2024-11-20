@@ -14,9 +14,9 @@ type GatewayClient struct {
 	loginPath     string
 }
 
-func NewGatewayClient(baseURL string, colorMode bool, cookieFile string, debug bool, freshCookies bool, loginPath string) (*GatewayClient, error) {
+func NewGatewayClient(configs Configs, colorMode bool, flags *Flags, loginPath string) (*GatewayClient, error) {
 	// Create and load cookies from file if applicable
-	jar, loadedCookies, err := createAndLoadCookies(baseURL, cookieFile, debug, freshCookies)
+	jar, loadedCookies, err := createAndLoadCookies(configs, flags)
 	if err != nil {
 		return nil, err
 	}
@@ -36,17 +36,17 @@ func NewGatewayClient(baseURL string, colorMode bool, cookieFile string, debug b
 
 	return &GatewayClient{
 		client:        client,
-		baseURL:       baseURL,
+		baseURL:       configs.BaseURL,
 		colorMode:     colorMode,
-		cookieFile:    cookieFile,
+		cookieFile:    *flags.CookieFile,
 		loadedCookies: loadedCookies,
 		loginPath:     loginPath,
 	}, nil
 }
 
 // createGatewayClient creates a new client for interacting with the gateway
-func createGatewayClient(baseURL string, colorMode bool, cookieFile string, debug bool, freshCookies bool) (*GatewayClient, error) {
+func createGatewayClient(configs Configs, colorMode bool, flags *Flags) (*GatewayClient, error) {
 	loginPath := returnPath("login")
-	client, err := NewGatewayClient(baseURL, colorMode, cookieFile, debug, freshCookies, loginPath)
+	client, err := NewGatewayClient(configs, colorMode, flags, loginPath)
 	return client, err
 }

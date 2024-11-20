@@ -9,8 +9,8 @@ import (
 	"github.com/DataDog/datadog-go/statsd"
 )
 
-func giveMetricsToDatadogStatsd(metrics []string, model string, statsdIPPort string) {
-	client, err := statsd.New(statsdIPPort) // udp
+func giveMetricsToDatadogStatsd(configs Configs, metrics []string, model string) {
+	client, err := statsd.New(configs.StatsdIPPort) // udp
 
 	if err != nil {
 		log.Fatalf("Error creating StatsD client: %v", err)

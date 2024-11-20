@@ -4,21 +4,21 @@ import (
 	"log"
 )
 
-func (rc *GatewayClient) retrieveAction(action string, actionPages map[string]string, answerNo bool, answerYes bool, datadog bool, filter string, metrics bool, model string, natActionPrefix string, password string, pretty bool, returnFact string, statsdIPPort string) (string, error) {
+func (rc *GatewayClient) retrieveAction(action string, actionPages map[string]string, configs Configs, flags *Flags, model string, natActionPrefix string, returnFact string) (string, error) {
 	fact := ""
 
 	// Get the specified page based on action
-	page := getActionPage(action, actionPages)
+	page := returnActionPage(action, actionPages)
 
 	// login is not required for most pages
 	loginRequired := false
 
 	// pages that require login
-	loginPages := []string{"ipalloc", "nat-table", "reset"}
+	loginPages := []string{"ipalloc", "nattable", "reset"}
 
 	for _, loginPage := range loginPages {
 		if page == loginPage {
-			if password == "" {
+			if configs.Password == "" {
 				log.Fatal("Password is required")
 			}
 			loginRequired = true
@@ -26,10 +26,11 @@ func (rc *GatewayClient) retrieveAction(action string, actionPages map[string]st
 	}
 
 	if loginRequired {
-		performLogin(rc, password)
+		debugLog(*flags.Debug, "LoginRequired true")
+		performLogin(rc, configs)
 	}
 
-	fact, err := rc.getPage(action, answerNo, answerYes, datadog, filter, metrics, model, natActionPrefix, page, password, pretty, returnFact, statsdIPPort)
+	fact, err := rc.getPage(action, configs, flags, model, natActionPrefix, page, returnFact)
 
 	return fact, err
 }

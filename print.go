@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"strconv"
 	"strings"
 )
 
@@ -39,15 +37,15 @@ func printMetrics(metrics []string) {
 	}
 }
 
-func printData(action string, class string, currentHeader string, model string, pretty bool, tableData [][]string) {
+func printData(action string, class string, currentHeader string, flags *Flags, model string, tableData [][]string) {
 	// If the table has data, process it
 	if len(tableData) > 0 {
 		// Process and print table data
-		printTableData(action, class, currentHeader, model, pretty, tableData)
+		printTableData(action, class, flags, currentHeader, model, tableData)
 	}
 }
 
-func printTableData(action string, class string, header string, model string, pretty bool, tableData [][]string) {
+func printTableData(action string, class string, flags *Flags, header string, model string, tableData [][]string) {
 	// Output the section header if it's available
 	if header != "" {
 		fmt.Printf("\n%s\n", header)
@@ -55,125 +53,22 @@ func printTableData(action string, class string, header string, model string, pr
 	}
 
 	if action == "device-list" {
-		for _, row := range tableData {
-			count := len(row)
-
-			// ipv4 address / name
-			if row[0] == "IPv4 Address / Name" {
-				row[0] = "IPv4 Address"
-			}
-
-			substring := " / "
-
-			if count > 1 {
-				if strings.Contains(row[1], substring) {
-					row[1] = strings.Replace(row[1], substring, "Name: ", 1)
-				}
-			}
-
-			line := strings.Join(row, ": ")
-
-			// connection-type
-			if row[0] == "Connection Type" {
-				line = strings.Join(row, ": \n  ")
-			}
-
-			fmt.Println(line)
-		}
+		processDeviceList(tableData)
 	} else if action == "home-network-status" {
-		for _, row := range tableData {
-			count := len(row)
-			if row[0] != "" && count > 1 {
-				row[0] = row[0] + ":"
-			}
-		}
-
-		prettyPrint(tableData)
+		processHomeNetworkStatus(tableData)
 	} else if action == "ip-allocation" {
-		for _, row := range tableData {
-			row[4] = ""
-		}
-
-		prettyPrint(tableData)
+		processIPAllocation(tableData)
 	} else if action == "nat-check" || action == "nat-totals" {
-		if class == "table60" {
-			for _, row := range tableData {
-				if len(row) > 0 && row[0] == "Total sessions in use" {
-					if action == "nat-check" {
-						fmt.Printf("%s.0\n", row[1])
-
-						maxConnections := 8192
-						connections, err := strconv.Atoi(row[1])
-
-						if err != nil {
-							panic(err)
-						}
-
-						if connections >= maxConnections {
-							fmt.Printf("\nError: Too many connections\n")
-							os.Exit(1)
-						}
-					}
-
-					if action == "nat-totals" {
-						fmt.Printf("%s: %s\n", "Total number of connections", row[1])
-					}
-				}
-			}
-		}
-
-		if action == "nat-totals" && class == "grid table100" {
-			// Initialize counters
-			var tcpCount, udpCount int
-
-			for _, row := range tableData {
-				if row[1] == "tcp" {
-					tcpCount++
-				}
-				if row[1] == "udp" {
-					udpCount++
-				}
-			}
-
-			fmt.Printf("Total number of tcp connections: %d\n", tcpCount)
-			fmt.Printf("Total number of udp connections: %d\n", udpCount)
-		}
-	} else if action == "nat-connections" && !pretty {
-		if class == "grid table100" {
-			for _, row := range tableData {
-				line := strings.Join(row, ", ")
-				fmt.Println(line)
-			}
-		}
-	} else if action == "nat-connections" && pretty {
-		if class == "grid table100" {
-			prettyPrint(tableData)
-		}
+		processNatCheckTotals(action, class, tableData)
+	} else if action == "nat-connections" && !*flags.Pretty {
+		processNatConnectionsNonPretty(class, tableData)
+	} else if action == "nat-connections" && *flags.Pretty {
+		processNatConnectionsPretty(class, tableData)
 	} else if action == "nat-destinations" {
-		if class == "grid table100" {
-			sortedDestinationsIPs := CountIPsByColumn(tableData, 7)
-			fmt.Println("Destinations IP addresses:")
-
-			for _, row := range sortedDestinationsIPs {
-				fmt.Printf("%d %s\n", row.Count, row.IP)
-			}
-		}
+		processNatDestinations(class, tableData)
 	} else if action == "nat-sources" {
-		if class == "grid table100" {
-			sortedSourcesIPs := CountIPsByColumn(tableData, 5)
-			fmt.Println("Source IP addresses:")
-
-			for _, row := range sortedSourcesIPs {
-				fmt.Printf("%d %s\n", row.Count, row.IP)
-			}
-		}
+		processNatSources(class, tableData)
 	} else {
-		for _, row := range tableData {
-			line := strings.Join(row, ": ")
-
-			if !strings.Contains(line, "Legal Disclaimer") {
-				fmt.Println(line)
-			}
-		}
+		processGeneric(tableData)
 	}
 }

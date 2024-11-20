@@ -1,6 +1,7 @@
 package main
 
 import (
+	//"fmt"
 	"strconv"
 	"strings"
 )
@@ -21,12 +22,30 @@ func generateFiberMetric(dotZero string, header string, modelActionMetric string
 	return metrics
 }
 
-func generateNonFiberMetric(dotZero string, modelActionMetric string, summary string, tableData [][]string) []string {
+func generateNonFiberMetric(action string, dotZero string, flags *Flags, modelActionMetric string, summary string, tableData [][]string) []string {
 	metrics := []string{}
 	metric := ""
 
 	port := 1
+	tcpCount := 0
+	udpCount := 0
+
 	for _, row := range tableData {
+		if action == "nat-totals" {
+			if strings.Contains(row[0], "IP Family") {
+				tcpCount, udpCount = processNatTotals(tableData)
+				metric = modelActionMetric + "." + "tcp.connections" + "=" + strconv.Itoa(tcpCount) + dotZero
+				metrics = append(metrics, metric)
+				metric = modelActionMetric + "." + "udp.connections" + "=" + strconv.Itoa(udpCount) + dotZero
+				metrics = append(metrics, metric)
+				break
+			}
+
+			if row[0] == "Total sessions available" || row[0] == "Select display option" {
+				continue
+			}
+		}
+
 		if row[0] == "" {
 			continue
 		}
@@ -36,6 +55,12 @@ func generateNonFiberMetric(dotZero string, modelActionMetric string, summary st
 		stat := ""
 		for i := range length {
 			stat = row[0]
+			if action == "nat-totals" {
+				if strings.Contains(stat, "sessions in use") {
+					stat = strings.Replace(stat, "Total sessions in use", "connetions", 1)
+				}
+			}
+
 			stat = strings.Replace(stat, " ", ".", 1)
 			stat = strings.Replace(stat, " (Mbps)", "", 1)
 
@@ -46,7 +71,11 @@ func generateNonFiberMetric(dotZero string, modelActionMetric string, summary st
 					summary = strings.Replace(summary, " ", ".", 1)
 					metric = modelActionMetric + "." + summary + "." + "port" + portNumber + "." + stat + "="
 				} else {
-					metric = modelActionMetric + "." + summary + "." + stat + "="
+					if action == "nat-totals" {
+						metric = modelActionMetric + "." + stat + "="
+					} else {
+						metric = modelActionMetric + "." + summary + "." + stat + "="
+					}
 				}
 
 				value := row[i]
@@ -54,6 +83,7 @@ func generateNonFiberMetric(dotZero string, modelActionMetric string, summary st
 				if _, err := strconv.Atoi(value); err == nil {
 					value = value + dotZero
 				}
+
 				metric = metric + value
 				metrics = append(metrics, metric)
 
@@ -66,5 +96,6 @@ func generateNonFiberMetric(dotZero string, modelActionMetric string, summary st
 			}
 		}
 	}
+
 	return metrics
 }

@@ -5,10 +5,16 @@ import (
 	"strings"
 )
 
-func returnFilters() []string {
-	filters := []string{"icmp", "ipv4", "ipv6", "tcp", "udp"}
+// actionsHelp returns the actions available for actions
+func actionsHelp() string {
+	actions := returnActions()
+	actionsHelp := []string{}
 
-	return filters
+	for _, action := range actions {
+		actionsHelp = append(actionsHelp, action)
+	}
+
+	return fmt.Sprintf("Action to perform (%s)", strings.Join(actionsHelp, ", "))
 }
 
 // filtersHelp returns the filters available for actions

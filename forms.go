@@ -32,13 +32,13 @@ func (rc *GatewayClient) postForm(path string, formData url.Values) error {
 	return nil
 }
 
-func (rc *GatewayClient) submitForm(action string, answerNo bool, answerYes bool, page string, path string, resetAction [4]string) error {
+func (rc *GatewayClient) submitForm(action string, flags *Flags, page string, path string, resetAction [4]string) error {
 	buttonName := resetAction[0]
 	buttonValue := resetAction[1]
 	question := resetAction[2]
 	warning := resetAction[3]
 
-	if askYesNo(answerNo, answerYes, rc.colorMode, question, warning) {
+	if askYesNo(rc.colorMode, flags, question, warning) {
 		nonce, err := rc.getNonce(page)
 		if err != nil {
 			return fmt.Errorf("failed to get nonce: %v", err)

@@ -10,14 +10,14 @@ import (
 	"strings"
 )
 
-func calculateHash(password, nonce string) string {
+func calculateHash(configs Configs, nonce string) string {
 	// Replicate JavaScript hex_md5(password + nonce)
 	hasher := md5.New()
-	io.WriteString(hasher, password+nonce)
+	io.WriteString(hasher, configs.Password+nonce)
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-func (rc *GatewayClient) login(password string) error {
+func (rc *GatewayClient) login(configs Configs) error {
 	page := "login"
 
 	// Get nonce from page
@@ -28,12 +28,12 @@ func (rc *GatewayClient) login(password string) error {
 	}
 
 	// Calculate hash
-	hash := calculateHash(password, nonce)
+	hash := calculateHash(configs, nonce)
 
 	// Prepare form data
 	formData := url.Values{
 		"nonce":        {nonce},
-		"password":     {strings.Repeat("*", len(password))}, // Replicate JS behavior
+		"password":     {strings.Repeat("*", len(configs.Password))}, // Replicate JS behavior
 		"hashpassword": {hash},
 		"Continue":     {"Continue"}, // submit button
 	}
@@ -46,8 +46,8 @@ func (rc *GatewayClient) login(password string) error {
 }
 
 // performLogin performs the login action for the client
-func performLogin(client *GatewayClient, password string) {
-	if err := client.login(password); err != nil {
+func performLogin(client *GatewayClient, configs Configs) {
+	if err := client.login(configs); err != nil {
 		log.Fatalf("Login failed: %v", err)
 	}
 }
