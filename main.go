@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 )
@@ -29,7 +30,13 @@ func main() {
 	cookiePath := determineCookiePath()
 
 	// Flags
-	action, flags := returnFlags(actionsDescription, colorMode, cookiePath, filtersDescription)
+	action, flags, version := returnFlags(actionsDescription, colorMode, cookiePath, filtersDescription)
+
+	if *version {
+		appVersion := returnApplicationNameVersion()
+		fmt.Println(appVersion)
+		os.Exit(0)
+	}
 
 	// Validate flags
 	configs, flags := validateFlags(*action, actionPages, config, flags)

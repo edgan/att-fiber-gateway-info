@@ -1,9 +1,34 @@
 package main
 
 import (
+	"embed"
 	"log"
 	"strings"
 )
+
+func returnApplicationName() string {
+	applicationName := "att-fiber-gateway-info"
+
+	return applicationName
+}
+
+func returnApplicationNameVersion() string {
+	version := returnVersion()
+	applicationName := returnApplicationName()
+	applicationNameVersion := applicationName + " " + version
+
+	return applicationNameVersion
+}
+
+//go:embed .version
+var versionFile embed.FS
+
+func returnVersion() string {
+	versionBytes, _ := versionFile.ReadFile(".version")
+	version := strings.TrimSpace(string(versionBytes))
+
+	return version
+}
 
 func returnActionMetric(action string, flags *Flags) string {
 	actionMetric := strings.Replace(action, "-", ".", 2)

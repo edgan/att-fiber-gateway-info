@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"os"
 	"reflect"
 	"strings"
 
@@ -33,7 +32,7 @@ type Flags struct {
 	StatsdIPPort *string
 }
 
-func returnFlags(actionDescription string, colorMode bool, cookiePath string, filterDescription string) (*string, *Flags) {
+func returnFlags(actionDescription string, colorMode bool, cookiePath string, filterDescription string) (*string, *Flags, *bool) {
 	// action is a special case where there can be more than one action per run, and hence it doesn't work as part of
 	// the flags struct.
 	action := flag.String("action", "", actionDescription)
@@ -59,14 +58,15 @@ func returnFlags(actionDescription string, colorMode bool, cookiePath string, fi
 		StatsdIPPort: flag.String("statsdipport", "", "Statsd ip:port"),
 	}
 
-	if colorMode {
-		// Replace the default Usage with our colored version
-		flag.Usage = ColoredUsage
+	version := flag.Bool("version", false, "Show version")
+
+	flag.Usage = func() {
+		Usage(colorMode)
 	}
 
 	flag.Parse()
 
-	return action, flags
+	return action, flags, version
 }
 
 func validateFlags(action string, actionPages map[string]string, config *Config, flags *Flags) (Configs, *Flags) {
@@ -157,36 +157,67 @@ func validateFlags(action string, actionPages map[string]string, config *Config,
 	return configs, flags
 }
 
-func ColoredUsage() {
+func Usage(colorMode bool) {
 	// Create color functions
 	blue := color.New(color.FgBlue)
 	boldGreen := color.New(color.FgGreen, color.Bold)
 	cyan := color.New(color.FgCyan)
 	green := color.New(color.FgGreen)
 
-	// Print usage header
-	fmt.Printf("Usage of %s:\n", green.Sprintf(os.Args[0]))
+	applicationNameVersion := returnApplicationNameVersion()
+
+	if colorMode {
+		applicationNameVersion = green.Sprintf(applicationNameVersion)
+	}
+
+	fmt.Println(applicationNameVersion)
+
+	usage := "Usage:\n"
+
+	if colorMode {
+		usage = green.Sprintf(usage)
+	}
+
+	fmt.Printf(usage)
 
 	flag.VisitAll(func(f *flag.Flag) {
 		// Format flag name with color
 		s := fmt.Sprintf("  ")
-		s += boldGreen.Sprintf("-%s", f.Name)
+
+		if colorMode {
+			s += boldGreen.Sprintf("-%s", f.Name)
+		} else {
+			s += fmt.Sprintf("-%s", f.Name)
+		}
 
 		// Use reflection to get the type of the flag's value and clean it
 		flagType := reflect.TypeOf(f.Value).Elem().Name()
 		if strings.HasSuffix(flagType, "Value") {
 			flagType = strings.TrimSuffix(flagType, "Value")
 		}
-		s += blue.Sprintf(" %s", flagType)
+
+		if colorMode {
+			s += blue.Sprintf(" %s", flagType)
+		} else {
+			s += fmt.Sprintf(" %s", flagType)
+		}
 
 		// Add default value if it exists and isn't empty
 		if f.DefValue != "" {
-			s += blue.Sprintf(" (default: %v)", f.DefValue)
+			if colorMode {
+				s += blue.Sprintf(" (default: %v)", f.DefValue)
+			} else {
+				s += fmt.Sprintf(" (default: %v)", f.DefValue)
+			}
 		}
 
 		// Add the usage description in cyan
 		if f.Usage != "" {
-			s += "\n    \t" + cyan.Sprintf(f.Usage)
+			if colorMode {
+				s += "\n    \t" + cyan.Sprintf(f.Usage)
+			} else {
+				s += "\n    \t" + fmt.Sprintf(f.Usage)
+			}
 		}
 
 		fmt.Println(s)
