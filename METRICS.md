@@ -129,7 +129,7 @@ bgw320505.nat.totals.udp.connections=112.0
 
 ## Flags
 
-There is the `-metrics` flag that returns the metrics for the action specified. It looks for tables with summaries that include `Statistics' or `statistics`. The exception is the action `fiber-status` temperature, vcc, tx bias, tx power, and rx power.
+There is the `-metrics` flag that returns the metrics for the action specified. It looks for tables with summaries that include `Statistics` or `statistics`. The exception is the action `fiber-status` temperature, vcc, tx bias, tx power, and rx power.
 
 There is also the `-allmetrics` flag that returns mertics for all actions known to have metrics.
 
