@@ -10,9 +10,9 @@ tool to pull values from the pages of an
 * BGW320-700 gateway, will likely work, but untested
 
 ## Supported firmware
-I currently have version 6.30.5 on my
+I currently have version `6.30.5` on my
 [BGW320-505 gateway](https://help.sonic.com/hc/en-us/articles/1500000066642-BGW320).
-I have tested with previous versions back to 4.27.7, and expect them to work.
+I have tested with previous versions back to `4.27.7`, and expect them to work.
 
 ## Usage
 ```
