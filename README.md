@@ -73,6 +73,9 @@ See the `.go_builds` file for the list of supported combinations of operating
 systems and architectures.
 
 ## Tests
+These tests require access to a gateway with the exception of the reset tests.
+The reset tests just print the question to allow checking the output.
+
 ```
 # Run all tests
 scripts/tests.sh
