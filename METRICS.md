@@ -6,6 +6,9 @@ The general idea is to be able to pull metrics out of various gateway pages.
 ![First screenshot](/screenshots/datadog-metrics1.png)
 ![Second screenshot](/screenshots/datadog-metrics2.png)
 
+## Datadog
+[Datadog](https://www.datadoghq.com/) is just one way to use this. It is free for up to five hosts.
+
 ## Dashboards
 In the [datadog/dashboards](datadog/dashboards/) folder you will find dashboard
 json files for the different models of the gateway.
