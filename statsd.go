@@ -40,7 +40,7 @@ func giveMetricsToDatadogStatsd(configs Configs, metrics []string, model string)
 	for key, value := range retrievedFloatMetrics {
 		err = client.Gauge(key, value, []string{"gateway:" + model}, 1)
 		if err != nil {
-			log.Printf("Error sending %s to datadog: %v", key, err)
+			log.Printf("Error sending %s to statsd: %v", key, err)
 		}
 	}
 }

@@ -1,8 +1,10 @@
 # att-fiber-gateway-info
 ## Description
 A cross platform [golang](https://en.wikipedia.org/wiki/Go_(programming_language)) command line
-tool to pull values from the pages of an
-[AT&T Fiber](https://www.att.com/internet/fiber/) gateways.
+tool to pull values from the pages of an [AT&T Fiber](https://www.att.com/internet/fiber/)
+gateways. A key feature now is the ability to report metrics to
+[statsd](https://github.com/statsd/statsd). This enables uses in different ways, one being
+[Datadog](https://www.datadoghq.com/).
 
 ## Supported hardware
 * [BGW320-505 gateway](https://help.sonic.com/hc/en-us/articles/1500000066642-BGW320)
