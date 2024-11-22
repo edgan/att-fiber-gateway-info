@@ -7,11 +7,13 @@ The general idea is to be able to pull metrics out of various gateway pages.
 ![Second screenshot](/screenshots/datadog-metrics2.png)
 
 ## Datadog
-[Datadog](https://www.datadoghq.com/) is just one way to use this. It is free for up to five hosts.
+[Datadog](https://www.datadoghq.com/) is just one way to use this. It is free
+for up to five hosts.
 
 ## Dashboards
 In the [datadog/dashboards](datadog/dashboards/) folder you will find dashboard
-json files for the different models of the gateway.
+json files for the different models of the gateway. These should be used with
+`-allmetrics`.
 
 These have the most interesting things listed first, have the time set to
 global to allow you to change the amount of time, and the correct metrics
@@ -34,24 +36,39 @@ att-fiber-gateway-info -allmetrics -datadog -interval 20
 
 ## Flags
 
-There is the `-metrics` flag that returns the metrics for the action specified. It looks for tables with certain summaries. The exception is the action `fiber-status`.
+There is the `-metrics` flag that returns the metrics for the action specified.
+It looks for tables with certain summaries. The exception is the action
+`fiber-status`.
 
-There is also the `-allmetrics` flag that returns mertics for all actions known to have metrics.
+There is also the `-allmetrics` flag that returns mertics for all actions known
+to have metrics.
 
-Finally there is the `-interval` flag to allow you to automatically return metrics every X number of seconds. There is a minimum of 10 seconds when using `-metrics` for individual actions, and a minimum of 20 seconds when using `-allmetrics` to return all metrics.
+Finally there is the `-interval` flag to allow you to automatically return
+metrics every X number of seconds. There is a minimum of 10 seconds when using
+`-metrics` for individual actions, and a minimum of 20 seconds when using
+`-allmetrics` to return all metrics.
 
 ## Statsd
 ### What is statsd?
-StatsD is an industry-standard technology stack for monitoring applications and instrumenting any piece of software to deliver custom metrics.
+StatsD is an industry-standard technology stack for monitoring applications and
+instrumenting any piece of software to deliver custom metrics.
 
 ### Flags
-There is finally the `-datadog` flag that instead of printing the metrics sends them to statsd as configured by either `-statsdipport` or `statdIPPort` in the configuration file. It defaults to `127.0.0.1:8125`. It only sends the `float` metrics, because that is what `datadog` accepts for metrics. A way to deal with `string` metrics is planned.
+There is finally the `-datadog` flag that instead of printing the metrics sends
+them to statsd as configured by either `-statsdipport` or `statdIPPort` in the
+configuration file. It defaults to `127.0.0.1:8125`. It only sends the `float`
+metrics, because that is what `datadog` accepts for metrics. A way to deal with
+`string` metrics is planned.
 
 ### Installation
-Statd can be installed via statsd(Node.JS), datadog-agent(Python), or datadog-dogstatsd(Golang).
+Statd can be installed via statsd(Node.JS), datadog-agent(Python), or
+datadog-dogstatsd(Golang).
 
 ## Naming and formatting
-It pulls the `model` from the `System Information` page returned by the `system-information` action. It converts dashes and spaces to dots. All strings are lower cases.  It adds `.0` the end to make it a `float` for reporting to [Datadog](https://www.datadoghq.com/) as a metric.
+It pulls the `model` from the `System Information` page returned by the
+`system-information` action. It converts dashes and spaces to dots. All strings
+are lower cases.  It adds `.0` the end to make it a `float` for reporting to
+[Datadog](https://www.datadoghq.com/) as a metric.
 
 
 ```
