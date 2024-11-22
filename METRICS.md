@@ -35,7 +35,7 @@ There is the `-metrics` flag that returns the metrics for the action specified. 
 
 There is also the `-allmetrics` flag that returns mertics for all actions known to have metrics.
 
-Finally there is the `-interval` flag to allow you to automatically return metrics every X number of seconds. There is a minimum of 10 seconds for individual actions, and a minimum of 20 seconds for all metrics.
+Finally there is the `-interval` flag to allow you to automatically return metrics every X number of seconds. There is a minimum of 10 seconds when using `-metrics` for individual actions, and a minimum of 20 seconds when using `-allmetrics` to return all metrics.
 
 ## Statsd
 ### What is statsd?
