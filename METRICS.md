@@ -6,6 +6,14 @@ The general idea is to be able to pull metrics out of various gateway pages.
 ![First screenshot](/screenshots/datadog-metrics1.png)
 ![Second screenshot](/screenshots/datadog-metrics2.png)
 
+## Dashboards
+In the datadog/dashboards folder you will find dashboards for the different
+models of the gateway.
+
+These have the most interesting things listed first, have the time set to
+global to allow you to change the amount of time, and the correct metrics
+names per model.
+
 ## Usage
 ```
 att-fiber-gateway-info -action broadband-status -metrics

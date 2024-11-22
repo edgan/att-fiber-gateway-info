@@ -7,7 +7,7 @@ tool to pull values from the pages of an
 ## Supported hardware
 * [BGW320-505 gateway](https://help.sonic.com/hc/en-us/articles/1500000066642-BGW320)
 * BGW320-500 gateway, it has been reported to work
-* BGW320-700 gateway, will likely work, but untested
+* BGW210-700 gateway, will likely work, but untested
 
 ## Supported firmware
 I currently have version `6.30.5` on my
