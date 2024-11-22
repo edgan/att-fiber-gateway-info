@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
+	"time"
 )
 
 func main() {
@@ -43,7 +43,7 @@ func main() {
 
 	client, err := createGatewayClient(configs, colorMode, flags)
 	if err != nil {
-		log.Fatalf("Failed to create router client: %v", err)
+		logFatalf("Failed to create router client: %v", err)
 	}
 
 	returnFact := "model"
@@ -52,31 +52,49 @@ func main() {
 	model, err := client.retrieveAction("system-information", actionPages, configs, flags, "", actionPrefixes["nat"], returnFact)
 
 	if err != nil {
-		log.Fatalf("Failed to get %s: %v", action, err)
+		logFatalf("Failed to get %s: %v", action, err)
 	}
 
 	if *flags.AllMetrics {
-		metricActions := returnMeticsActions()
-
-		returnFact = ""
-
-		for _, action := range metricActions {
-			_, err = client.retrieveAction(action, actionPages, configs, flags, model, actionPrefixes["nat"], returnFact)
-
-			if err != nil {
-				log.Fatalf("Failed to get %s: %v", action, err)
+		if *flags.Interval > 0 {
+			i := 0
+			for i == 0 {
+				allMetrics(actionPages, client, configs, flags, model, actionPrefixes["nat"], returnFact)
 			}
+		} else {
+			allMetrics(actionPages, client, configs, flags, model, actionPrefixes["nat"], returnFact)
+			os.Exit(0)
 		}
-
-		os.Exit(0)
 	}
 
 	returnFact = ""
 
+	if *flags.Metrics {
+		if *flags.Interval > 0 {
+			for {
+				start := time.Now() // Track the start time of the iteration
+
+				_, err = client.retrieveAction(*action, actionPages, configs, flags, model, actionPrefixes["nat"], returnFact)
+
+				if err != nil {
+					logFatalf("Failed to get %s: %v", action, err)
+				}
+
+				// Adjust sleep duration to ensure consistent intervals
+				elapsed := time.Since(start)
+				sleepDuration := time.Duration(*flags.Interval)*time.Second - elapsed
+				if sleepDuration > 0 {
+					time.Sleep(sleepDuration)
+				}
+			}
+			os.Exit(0)
+		}
+	}
+
 	_, err = client.retrieveAction(*action, actionPages, configs, flags, model, actionPrefixes["nat"], returnFact)
 
 	if err != nil {
-		log.Fatalf("Failed to get %s: %v", action, err)
+		logFatalf("Failed to get %s: %v", action, err)
 	}
 
 	os.Exit(0)

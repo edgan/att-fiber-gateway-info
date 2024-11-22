@@ -2,7 +2,6 @@ package main
 
 import (
 	"embed"
-	"log"
 	"strings"
 )
 
@@ -53,7 +52,7 @@ func returnActions() []string {
 func returnActionPage(action string, actionPages map[string]string) string {
 	page, exists := actionPages[action]
 	if !exists {
-		log.Fatalf("Unknown action: %s", action)
+		logFatalf("Unknown action: %s", action)
 	}
 	return page
 }

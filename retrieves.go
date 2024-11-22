@@ -1,9 +1,5 @@
 package main
 
-import (
-	"log"
-)
-
 func (rc *GatewayClient) retrieveAction(action string, actionPages map[string]string, configs Configs, flags *Flags, model string, natActionPrefix string, returnFact string) (string, error) {
 	fact := ""
 
@@ -19,7 +15,7 @@ func (rc *GatewayClient) retrieveAction(action string, actionPages map[string]st
 	for _, loginPage := range loginPages {
 		if page == loginPage {
 			if configs.Password == "" {
-				log.Fatal("Password is required")
+				logFatal("Password is required")
 			}
 			loginRequired = true
 		}

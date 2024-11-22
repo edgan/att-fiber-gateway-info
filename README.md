@@ -16,7 +16,7 @@ I have tested with previous versions back to `4.27.7`, and expect them to work.
 
 ## Usage
 ```
-att-fiber-gateway-info 1.0.11
+att-fiber-gateway-info 1.0.12
 
 Usage:
   -action string
@@ -38,8 +38,10 @@ Usage:
   -fresh bool (default: false)
         Do not use existing cookies (Warning: If always used the gateway will
         run out of sessions.)
+  -interval int (default: 0)
+        How often to repeat metrics
   -metrics bool (default: false)
-        Return metrics instead of table data
+        Return metrics based on the data instead the data
   -no bool (default: false)
         Answer no to any questions
   -password string

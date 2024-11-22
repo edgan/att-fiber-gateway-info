@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/fatih/color"
@@ -26,6 +26,7 @@ type Flags struct {
 	Debug        *bool
 	Filter       *string
 	FreshCookies *bool
+	Interval     *int
 	Metrics      *bool
 	Password     *string
 	Pretty       *bool
@@ -52,7 +53,8 @@ func returnFlags(actionDescription string, colorMode bool, cookiePath string, fi
 			"Do not use existing cookies (Warning: If always used the gateway will run out of sessions.)",
 		),
 
-		Metrics:      flag.Bool("metrics", false, "Return metrics instead from table data"),
+		Interval:     flag.Int("interval", 0, "How often to repeat metrics"),
+		Metrics:      flag.Bool("metrics", false, "Return metrics based on the data instead the data"),
 		Password:     flag.String("password", "", "Gateway password"),
 		Pretty:       flag.Bool("pretty", false, "Enable pretty mode for nat-connections"),
 		StatsdIPPort: flag.String("statsdipport", "", "Statsd ip port, like 127.0.0.1:8125"),
@@ -84,6 +86,29 @@ func validateFlags(action string, actionPages map[string]string, config *Config,
 		configs.Password = *flags.Password
 	}
 
+	if *flags.Interval > 0 && (!*flags.AllMetrics && !*flags.Metrics) {
+		intervalError := fmt.Sprintf("-interval must not be set without -allmetrics or -metrics.")
+		logFatal(intervalError)
+	}
+
+	if *flags.AllMetrics {
+		intervalMin := 20
+
+		if *flags.Interval > 0 && *flags.Interval < intervalMin {
+			intervalError := fmt.Sprintf("The interval must be %s or greater for -allmetrics.", strconv.Itoa(intervalMin))
+			logFatal(intervalError)
+		}
+	}
+
+	if *flags.Metrics {
+		intervalMin := 10
+
+		if *flags.Interval > 0 && *flags.Interval < intervalMin {
+			intervalError := fmt.Sprintf("The interval must be %s or greater for -metrics.", strconv.Itoa(intervalMin))
+			logFatal(intervalError)
+		}
+	}
+
 	if *flags.StatsdIPPort == "" {
 		configs.StatsdIPPort = config.StatsdIPPort
 	} else {
@@ -107,13 +132,13 @@ func validateFlags(action string, actionPages map[string]string, config *Config,
 
 		if !inSlice {
 			metricActionError := fmt.Sprintf("Action must be one of these (%s) when -metrics is enabled.", strings.Join(metricActions, ", "))
-			log.Fatal(metricActionError)
+			logFatal(metricActionError)
 		}
 	}
 
 	if *flags.Datadog && !*flags.Metrics {
 		datadogError := fmt.Sprintf("Metrics must be enabled when enabling datadog")
-		log.Fatal(datadogError)
+		logFatal(datadogError)
 	}
 
 	// Action validation
@@ -132,7 +157,7 @@ func validateFlags(action string, actionPages map[string]string, config *Config,
 
 	if !isValidAction && !*flags.AllMetrics {
 		actionError := fmt.Sprintf("Action must be one of these (%s)", strings.Join(actionsHelp, ", "))
-		log.Fatal(actionError)
+		logFatal(actionError)
 	}
 
 	// Filter validation
@@ -151,7 +176,7 @@ func validateFlags(action string, actionPages map[string]string, config *Config,
 
 	if !isValidFilter {
 		filterError := fmt.Sprintf("Filter must be one of these (%s)", strings.Join(filters, ", "))
-		log.Fatal(filterError)
+		logFatal(filterError)
 	}
 
 	return configs, flags

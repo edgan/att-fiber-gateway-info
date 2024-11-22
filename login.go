@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
-	"log"
 	"net/url"
 	"strings"
 )
@@ -39,7 +38,7 @@ func (rc *GatewayClient) login(configs Configs) error {
 	}
 
 	if err := rc.postForm(rc.loginPath, formData); err != nil {
-		log.Fatalf("Submission to %s failed: %v", rc.loginPath, err)
+		logFatalf("Submission to %s failed: %v", rc.loginPath, err)
 	}
 
 	return nil
@@ -48,6 +47,6 @@ func (rc *GatewayClient) login(configs Configs) error {
 // performLogin performs the login action for the client
 func performLogin(client *GatewayClient, configs Configs) {
 	if err := client.login(configs); err != nil {
-		log.Fatalf("Login failed: %v", err)
+		logFatalf("Login failed: %v", err)
 	}
 }

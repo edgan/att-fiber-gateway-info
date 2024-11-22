@@ -92,7 +92,7 @@ func determineConfigFile() string {
 func loadAppConfig(configFile string) *Config {
 	config, err := loadConfig(configFile)
 	if err != nil {
-		log.Fatalf("Error loading configuration: %v", err)
+		logFatalf("Error loading configuration: %v", err)
 	}
 	return config
 }

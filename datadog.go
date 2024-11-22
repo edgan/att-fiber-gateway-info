@@ -13,7 +13,7 @@ func giveMetricsToDatadogStatsd(configs Configs, metrics []string, model string)
 	client, err := statsd.New(configs.StatsdIPPort) // udp
 
 	if err != nil {
-		log.Fatalf("Error creating StatsD client: %v", err)
+		logFatalf("Error creating StatsD client: %v", err)
 	}
 
 	defer client.Close()

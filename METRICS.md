@@ -20,12 +20,45 @@ att-fiber-gateway-info -action broadband-status -metrics
 att-fiber-gateway-info -action fiber-status -metrics
 att-fiber-gateway-info -action home-network-status -metrics
 att-fiber-gateway-info -action nat-totals -metrics
-att-fiber-gateway-info -action broadband-status -metrics -datadog
-att-fiber-gateway-info -action fiber-status -metrics -datadog
-att-fiber-gateway-info -action home-network-status -metrics -datadog
+att-fiber-gateway-info -action nat-totals -metrics -interval 10
+att-fiber-gateway-info -action broadband-status -metrics -datadog -interval 10
+att-fiber-gateway-info -action fiber-status -metrics -datadog -interval 10
+att-fiber-gateway-info -action home-network-status -metrics -datadog -interval 10
 att-fiber-gateway-info -action nat-totals -metrics -datadog
 att-fiber-gateway-info -allmetrics
-att-fiber-gateway-info -allmetrics -datadog
+att-fiber-gateway-info -allmetrics -datadog -interval 20
+```
+
+## Flags
+
+There is the `-metrics` flag that returns the metrics for the action specified. It looks for tables with certain summaries. The exception is the action `fiber-status`.
+
+There is also the `-allmetrics` flag that returns mertics for all actions known to have metrics.
+
+Finally there is the `-interval` flag to allow you to automatically return metrics every X number of seconds. There is a minimum of 10 seconds for individual actions, and a minimum of 20 seconds for all metrics.
+
+## Statsd
+### What is statsd?
+StatsD is an industry-standard technology stack for monitoring applications and instrumenting any piece of software to deliver custom metrics.
+
+### Flags
+There is finally the `-datadog` flag that instead of printing the metrics sends them to statsd as configured by either `-statsdipport` or `statdIPPort` in the configuration file. It defaults to `127.0.0.1:8125`. It only sends the `float` metrics, because that is what `datadog` accepts for metrics. A way to deal with `string` metrics is planned.
+
+### Installation
+Statd can be installed via statsd(Node.JS), datadog-agent(Python), or datadog-dogstatsd(Golang).
+
+## Naming and formatting
+It pulls the `model` from the `System Information` page returned by the `system-information` action. It converts dashes and spaces to dots. All strings are lower cases.  It adds `.0` the end to make it a `float` for reporting to [Datadog](https://www.datadoghq.com/) as a metric.
+
+
+```
+model.action.summary.metric=value
+            |
+            V
+bgw320-505.broadband-status.IPv4.Receive Packets=46538166
+            |
+            V
+bgw320505.broadband.status.ipv4.receive.packets=46538166.0
 ```
 
 ## Examples
@@ -133,35 +166,4 @@ bgw320505.home.network.status.lan.ethernet.port4.receive.errors=0.0
 bgw320505.nat.totals.connetions=235.0
 bgw320505.nat.totals.tcp.connections=122.0
 bgw320505.nat.totals.udp.connections=112.0
-```
-
-## Flags
-
-There is the `-metrics` flag that returns the metrics for the action specified. It looks for tables with certain summaries. The exception is the action `fiber-status`.
-
-There is also the `-allmetrics` flag that returns mertics for all actions known to have metrics.
-
-
-## Statsd
-### What is statsd?
-StatsD is an industry-standard technology stack for monitoring applications and instrumenting any piece of software to deliver custom metrics.
-
-### Flags
-There is finally the `-datadog` flag that instead of printing the metrics sends them to statsd as configured by either `-statsdipport` or `statdIPPort` in the configuration file. It defaults to `127.0.0.1:8125`. It only sends the `float` metrics, because that is what `datadog` accepts for metrics. A way to deal with `string` metrics is planned.
-
-### Installation
-Statd can be installed via statsd(Node.JS), datadog-agent(Python), or datadog-dogstatsd(Golang).
-
-## Naming and formatting
-It pulls the `model` from the `System Information` page returned by the `system-information` action. It converts dashes and spaces to dots. All strings are lower cases.  It adds `.0` the end to make it a `float` for reporting to [Datadog](https://www.datadoghq.com/) as a metric.
-
-
-```
-model.action.summary.metric=value
-            |
-            V
-bgw320-505.broadband-status.IPv4.Receive Packets=46538166
-            |
-            V
-bgw320505.broadband.status.ipv4.receive.packets=46538166.0
 ```

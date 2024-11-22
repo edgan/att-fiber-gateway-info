@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"log"
 	"strings"
 )
 
@@ -61,7 +60,7 @@ func (rc *GatewayClient) getPage(action string, configs Configs, flags *Flags, m
 
 		err := rc.submitForm(action, flags, page, path, resetActions[action])
 		if err != nil {
-			log.Fatalf("Submission failed: %v", err)
+			logFatalf("Submission failed: %v", err)
 		}
 	} else {
 		// Get body using the new getPath function
@@ -69,7 +68,7 @@ func (rc *GatewayClient) getPage(action string, configs Configs, flags *Flags, m
 
 		if err != nil {
 			debugLog(*flags.Debug, "Failed to getPath")
-			log.Fatal(err)
+			logFatal(err)
 		}
 
 		// Extract content-sub div
@@ -77,12 +76,12 @@ func (rc *GatewayClient) getPage(action string, configs Configs, flags *Flags, m
 
 		if err != nil {
 			debugLog(*flags.Debug, "Failed to extractContentSub")
-			log.Fatal(err)
+			logFatal(err)
 		}
 
 		fact, err = extractData(action, configs, content, flags, model, natActionPrefix, returnFact)
 		if err != nil {
-			log.Fatalf("Error extracting %s", action)
+			logFatalf("Error extracting %s", action)
 		}
 
 	}
