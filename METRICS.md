@@ -7,8 +7,8 @@ The general idea is to be able to pull metrics out of various gateway pages.
 ![Second screenshot](/screenshots/datadog-metrics2.png)
 
 ## Dashboards
-In the datadog/dashboards folder you will find dashboards for the different
-models of the gateway.
+In the [datadog/dashboards](datadog/dashboards/) folder you will find dashboard
+json files for the different models of the gateway.
 
 These have the most interesting things listed first, have the time set to
 global to allow you to change the amount of time, and the correct metrics
