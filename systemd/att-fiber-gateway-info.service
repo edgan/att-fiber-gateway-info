@@ -1,0 +1,16 @@
+[Unit]
+Description=A service to pull values from the pages of a AT&T Fiber gateways. 
+Documentation=https://github.com/edgan/att-fiber-gateway-info/blob/main/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+Environment="HOME=/root"
+ExecStart=/usr/local/bin/att-fiber-gateway-info -allmetrics -datadog -interval 20
+
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
