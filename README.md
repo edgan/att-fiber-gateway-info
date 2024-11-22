@@ -142,7 +142,8 @@ The [BGW320-505 gateway](https://help.sonic.com/hc/en-us/articles/1500000066642-
 hardware is from [Nokia](https://www.nokia.com/), but at least the base of the software
 is from [Arris](https://www.surfboard.com/). Here is an example of a
 [manual](https://fccid.io/GZ5NVG595/User-Manual/User-Manual-pdf-2138224.pdf) for
-the software. Note this isn't the manual for the common AT&T Fiber residential gateway models.
+the software. Note this isn't the manual for any of the common AT&T Fiber residential
+gateway models.
 
 ## Story
   I just had [AT&T Fiber](https://www.att.com/internet/fiber/) installed. As
