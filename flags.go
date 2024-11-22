@@ -87,7 +87,7 @@ func validateFlags(action string, actionPages map[string]string, config *Config,
 	}
 
 	if *flags.Interval > 0 && (!*flags.AllMetrics && !*flags.Metrics) {
-		intervalError := fmt.Sprintf("-interval must not be set without -allmetrics or -metrics.")
+		intervalError := "-interval must not be set without -allmetrics or -metrics."
 		logFatal(intervalError)
 	}
 
@@ -137,7 +137,7 @@ func validateFlags(action string, actionPages map[string]string, config *Config,
 	}
 
 	if *flags.Datadog && !*flags.Metrics {
-		datadogError := fmt.Sprintf("Metrics must be enabled when enabling datadog")
+		datadogError := "Metrics must be enabled when enabling datadog"
 		logFatal(datadogError)
 	}
 
@@ -203,11 +203,11 @@ func Usage(colorMode bool) {
 		usage = green.Sprintf(usage)
 	}
 
-	fmt.Printf(usage)
+	fmt.Print(usage)
 
 	flag.VisitAll(func(f *flag.Flag) {
 		// Format flag name with color
-		s := fmt.Sprintf("  ")
+		s := "  "
 
 		if colorMode {
 			s += boldGreen.Sprintf("-%s", f.Name)
@@ -217,9 +217,7 @@ func Usage(colorMode bool) {
 
 		// Use reflection to get the type of the flag's value and clean it
 		flagType := reflect.TypeOf(f.Value).Elem().Name()
-		if strings.HasSuffix(flagType, "Value") {
-			flagType = strings.TrimSuffix(flagType, "Value")
-		}
+		flagType = strings.TrimSuffix(flagType, "Value")
 
 		if colorMode {
 			s += blue.Sprintf(" %s", flagType)

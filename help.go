@@ -10,9 +10,7 @@ func actionsHelp() string {
 	actions := returnActions()
 	actionsHelp := []string{}
 
-	for _, action := range actions {
-		actionsHelp = append(actionsHelp, action)
-	}
+	actionsHelp = append(actionsHelp, actions...)
 
 	return fmt.Sprintf("Action to perform (%s)", strings.Join(actionsHelp, ", "))
 }
@@ -22,9 +20,7 @@ func filtersHelp() string {
 	filters := returnFilters()
 	filtersHelp := []string{}
 
-	for _, filter := range filters {
-		filtersHelp = append(filtersHelp, filter)
-	}
+	filtersHelp = append(filtersHelp, filters...)
 
 	return fmt.Sprintf("Filter to perform (%s)", strings.Join(filtersHelp, ", "))
 }

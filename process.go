@@ -19,9 +19,7 @@ func processDeviceList(tableData [][]string) {
 		substring := " / "
 
 		if count > 1 {
-			if strings.Contains(row[1], substring) {
-				row[1] = strings.Replace(row[1], substring, "Name: ", 1)
-			}
+			row[1] = strings.Replace(row[1], substring, "Name: ", 1)
 		}
 
 		line := strings.Join(row, ": ")

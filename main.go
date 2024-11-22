@@ -59,10 +59,10 @@ func main() {
 		if *flags.Interval > 0 {
 			i := 0
 			for i == 0 {
-				allMetrics(actionPages, client, configs, flags, model, actionPrefixes["nat"], returnFact)
+				allMetrics(actionPages, client, configs, flags, model, actionPrefixes["nat"])
 			}
 		} else {
-			allMetrics(actionPages, client, configs, flags, model, actionPrefixes["nat"], returnFact)
+			allMetrics(actionPages, client, configs, flags, model, actionPrefixes["nat"])
 			os.Exit(0)
 		}
 	}
@@ -87,7 +87,6 @@ func main() {
 					time.Sleep(sleepDuration)
 				}
 			}
-			os.Exit(0)
 		}
 	}
 

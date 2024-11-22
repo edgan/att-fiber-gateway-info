@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	_ "embed"
 	"fmt"
 	"log"
@@ -25,15 +24,6 @@ type Config struct {
 //go:embed default_config.yml
 var defaultConfig []byte
 
-func loadDefaultConfig() (*Config, error) {
-	config := &Config{}
-	decoder := yaml.NewDecoder(bytes.NewReader(defaultConfig))
-	if err := decoder.Decode(config); err != nil {
-		return nil, fmt.Errorf("failed to parse embedded default config: %w", err)
-	}
-	return config, nil
-}
-
 func loadConfig(configFile string) (*Config, error) {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -42,9 +32,8 @@ func loadConfig(configFile string) (*Config, error) {
 
 	configPath := filepath.Join(homeDir, configFile)
 
-	var permissions os.FileMode
 	// This applies to Linux/MacOS only, not Windows.
-	permissions = 0600
+	permissions := os.FileMode(0600)
 
 	// Check if the config file exists
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
