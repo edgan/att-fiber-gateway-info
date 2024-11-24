@@ -9,9 +9,9 @@ command line tool interact with
 ## Features
 1. Pull metrics from the gateway and send them to
 [statsd](https://github.com/statsd/statsd)([Datadog](https://www.datadoghq.com/))
-2. Pull metrics from the gateway and display them
-3. Do various resets including restarting the gateway
-4. Pull data from the gateways like model, serial number, uptime, and firmware version
+2. Pull data from the gateways like network connections, uptime, firmware version, model, and serial number.
+3. Pull metrics from the gateway and display them
+4. Do various resets including restarting the gateway
 
 ## Supported hardware
 * [BGW320-505 gateway](https://help.sonic.com/hc/en-us/articles/1500000066642-BGW320)
