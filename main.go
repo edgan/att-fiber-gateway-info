@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"time"
 )
 
 func main() {
@@ -56,9 +55,8 @@ func main() {
 	}
 
 	if *flags.AllMetrics {
-		if *flags.Interval > 0 {
-			i := 0
-			for i == 0 {
+		if *flags.Continuous {
+			for {
 				allMetrics(actionPages, client, configs, flags, model, actionPrefixes["nat"])
 			}
 		} else {
@@ -70,21 +68,12 @@ func main() {
 	returnFact = ""
 
 	if *flags.Metrics {
-		if *flags.Interval > 0 {
+		if *flags.Continuous {
 			for {
-				start := time.Now() // Track the start time of the iteration
-
 				_, err = client.retrieveAction(*action, actionPages, configs, flags, model, actionPrefixes["nat"], returnFact)
 
 				if err != nil {
 					logFatalf("Failed to get %s: %v", action, err)
-				}
-
-				// Adjust sleep duration to ensure consistent intervals
-				elapsed := time.Since(start)
-				sleepDuration := time.Duration(*flags.Interval)*time.Second - elapsed
-				if sleepDuration > 0 {
-					time.Sleep(sleepDuration)
 				}
 			}
 		}

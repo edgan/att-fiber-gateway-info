@@ -12,6 +12,8 @@ Usage:
                            system-information)
   -allmetrics bool (default: false)
         Return all metrics
+  -continuous bool (default: false)
+        Continuously repeat metrics
   -cookiefile string (default: /var/tmp/att-fiber-gateway-info_cookies.gob)
         File to save session cookies
   -datadog bool (default: false)
@@ -23,8 +25,6 @@ Usage:
   -fresh bool (default: false) 
         Do not use existing cookies (Warning: If always used the gateway will
         run out of sessions.)
-  -interval int (default: 0)
-        How often to repeat metrics
   -metrics bool (default: false)
         Return metrics based on the data instead the data
   -no bool (default: false)

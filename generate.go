@@ -1,7 +1,7 @@
 package main
 
 import (
-	//"fmt"
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -23,21 +23,24 @@ func generateFiberMetric(dotZero string, header string, modelActionMetric string
 }
 
 func generateNonFiberMetric(action string, dotZero string, flags *Flags, modelActionMetric string, summary string, tableData [][]string) []string {
-	metrics := []string{}
-	metric := ""
-
+	metrics := make([]string, 0, len(tableData)*2) // Preallocate for efficiency
 	port := 1
-	tcpCount := 0
-	udpCount := 0
+	tcpCount, udpCount := 0, 0
+
+	lowerSummary := strings.ToLower(strings.Replace(summary, " ", ".", 1)) // Precompute summary once
 
 	for _, row := range tableData {
+		if len(row) == 0 || row[0] == "" {
+			continue
+		}
+
 		if action == "nat-totals" {
 			if strings.Contains(row[0], "IP Family") {
 				tcpCount, udpCount = processNatTotals(tableData)
-				metric = modelActionMetric + "." + "tcp.connections" + "=" + strconv.Itoa(tcpCount) + dotZero
-				metrics = append(metrics, metric)
-				metric = modelActionMetric + "." + "udp.connections" + "=" + strconv.Itoa(udpCount) + dotZero
-				metrics = append(metrics, metric)
+				metrics = append(metrics,
+					fmt.Sprintf("%s.tcp.connections=%d%s", modelActionMetric, tcpCount, dotZero),
+					fmt.Sprintf("%s.udp.connections=%d%s", modelActionMetric, udpCount, dotZero),
+				)
 				break
 			}
 
@@ -46,54 +49,33 @@ func generateNonFiberMetric(action string, dotZero string, flags *Flags, modelAc
 			}
 		}
 
-		if row[0] == "" {
-			continue
+		stat := strings.Replace(row[0], " ", ".", 1)
+		stat = strings.Replace(stat, " (Mbps)", "", 1)
+
+		if action == "nat-totals" && strings.Contains(stat, "sessions in use") {
+			stat = strings.Replace(stat, "Total sessions in use", "connections", 1)
 		}
 
-		length := len(row)
-
-		stat := ""
-		for i := range length {
-			stat = row[0]
-			if action == "nat-totals" {
-				if strings.Contains(stat, "sessions in use") {
-					stat = strings.Replace(stat, "Total sessions in use", "connetions", 1)
-				}
+		for i := 1; i < len(row); i++ { // Start at 1 since stat is from row[0]
+			value := row[i]
+			if _, err := strconv.Atoi(value); err == nil {
+				value += dotZero
 			}
 
-			stat = strings.Replace(stat, " ", ".", 1)
-			stat = strings.Replace(stat, " (Mbps)", "", 1)
-
-			if i != 0 {
-				if length > 2 {
-					portNumber := strconv.Itoa(port)
-					summary = strings.ToLower(summary)
-					summary = strings.Replace(summary, " ", ".", 1)
-					metric = modelActionMetric + "." + summary + "." + "port" + portNumber + "." + stat + "="
-				} else {
-					if action == "nat-totals" {
-						metric = modelActionMetric + "." + stat + "="
-					} else {
-						metric = modelActionMetric + "." + summary + "." + stat + "="
-					}
+			var metric string
+			if len(row) > 2 { // Handle port-specific metrics
+				metric = fmt.Sprintf("%s.%s.port%d.%s=%s", modelActionMetric, lowerSummary, port, stat, value)
+				port++
+				if port == len(row) {
+					port = 1
 				}
-
-				value := row[i]
-
-				if _, err := strconv.Atoi(value); err == nil {
-					value = value + dotZero
-				}
-
-				metric = metric + value
-				metrics = append(metrics, metric)
-
-				if length > 2 {
-					port = port + 1
-					if port == length {
-						port = 1
-					}
-				}
+			} else if action == "nat-totals" {
+				metric = fmt.Sprintf("%s.%s=%s", modelActionMetric, stat, value)
+			} else {
+				metric = fmt.Sprintf("%s.%s.%s=%s", modelActionMetric, lowerSummary, stat, value)
 			}
+
+			metrics = append(metrics, metric)
 		}
 	}
 

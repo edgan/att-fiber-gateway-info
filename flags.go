@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"reflect"
-	"strconv"
 	"strings"
 
 	"github.com/fatih/color"
@@ -21,12 +20,12 @@ type Flags struct {
 	AnswerNo     *bool
 	AnswerYes    *bool
 	BaseURL      *string
+	Continuous   *bool
 	CookieFile   *string
 	Datadog      *bool
 	Debug        *bool
 	Filter       *string
 	FreshCookies *bool
-	Interval     *int
 	Metrics      *bool
 	Password     *string
 	Pretty       *bool
@@ -43,6 +42,7 @@ func returnFlags(actionDescription string, colorMode bool, cookiePath string, fi
 		AnswerNo:   flag.Bool("no", false, "Answer no to any questions"),
 		AnswerYes:  flag.Bool("yes", false, "Answer yes to any questions"),
 		BaseURL:    flag.String("url", "", "Gateway base URL"),
+		Continuous: flag.Bool("continuous", false, "Continuously repeat metrics"),
 		CookieFile: flag.String("cookiefile", cookiePath, "File to save session cookies"),
 		Datadog:    flag.Bool("datadog", false, "Send metrics to datadog"),
 		Debug:      flag.Bool("debug", false, "Enable debug mode"),
@@ -53,7 +53,6 @@ func returnFlags(actionDescription string, colorMode bool, cookiePath string, fi
 			"Do not use existing cookies (Warning: If always used the gateway will run out of sessions.)",
 		),
 
-		Interval:     flag.Int("interval", 0, "How often to repeat metrics"),
 		Metrics:      flag.Bool("metrics", false, "Return metrics based on the data instead the data"),
 		Password:     flag.String("password", "", "Gateway password"),
 		Pretty:       flag.Bool("pretty", false, "Enable pretty mode for nat-connections"),
@@ -86,27 +85,8 @@ func validateFlags(action string, actionPages map[string]string, config *Config,
 		configs.Password = *flags.Password
 	}
 
-	if *flags.Interval > 0 && (!*flags.AllMetrics && !*flags.Metrics) {
-		intervalError := "-interval must not be set without -allmetrics or -metrics."
-		logFatal(intervalError)
-	}
-
-	if *flags.AllMetrics {
-		intervalMin := 20
-
-		if *flags.Interval > 0 && *flags.Interval < intervalMin {
-			intervalError := fmt.Sprintf("The interval must be %s or greater for -allmetrics.", strconv.Itoa(intervalMin))
-			logFatal(intervalError)
-		}
-	}
-
-	if *flags.Metrics {
-		intervalMin := 10
-
-		if *flags.Interval > 0 && *flags.Interval < intervalMin {
-			intervalError := fmt.Sprintf("The interval must be %s or greater for -metrics.", strconv.Itoa(intervalMin))
-			logFatal(intervalError)
-		}
+	if *flags.Continuous && (!*flags.AllMetrics && !*flags.Metrics) {
+		logFatal("-continuous must not be set without -allmetrics or -metrics.")
 	}
 
 	if *flags.StatsdIPPort == "" {
