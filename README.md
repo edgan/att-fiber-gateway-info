@@ -97,6 +97,9 @@ See [COLORS.md](COLORS.md) in this git repository.
 ## Metrics
 See [METRICS.md](METRICS.md) in this git repository.
 
+## Thanks
+See [THANKS.md](THANKS.md) in this git repository.
+
 ## Gateway software
 The [BGW320-505 gateway](https://help.sonic.com/hc/en-us/articles/1500000066642-BGW320)'s
 hardware is from [Nokia](https://www.nokia.com/), but at least the base of the software
