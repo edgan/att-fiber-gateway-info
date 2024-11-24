@@ -1,9 +1,9 @@
 {
-  "title": "BGW210-700 dashboard",
+  "title": "BGW320-700 dashboard",
   "description": "",
   "widgets": [
     {
-      "id": 7149677808091153,
+      "id": 150000000000001,
       "definition": {
         "title": "",
         "title_size": "16",
@@ -25,14 +25,14 @@
               {
                 "name": "query1",
                 "data_source": "metrics",
-                "query": "avg:bgw210700.fiber.status.temperature{*}"
+                "query": "avg:bgw320700.fiber.status.rx.power{*}"
               }
             ],
             "formulas": [
               {
                 "formula": "query1",
                 "style": {
-                  "palette": "warm",
+                  "palette": "dd20",
                   "palette_index": 0
                 }
               }
@@ -54,7 +54,7 @@
       }
     },
     {
-      "id": 3222296780750109,
+      "id": 150000000000002,
       "definition": {
         "title": "",
         "title_size": "16",
@@ -76,14 +76,14 @@
               {
                 "name": "query2",
                 "data_source": "metrics",
-                "query": "avg:bgw210700.fiber.status.tx.power{*}"
+                "query": "avg:bgw320700.fiber.status.tx.power{*}"
               }
             ],
             "formulas": [
               {
                 "formula": "query2",
                 "style": {
-                  "palette": "warm",
+                  "palette": "dd20",
                   "palette_index": 1
                 }
               }
@@ -105,7 +105,7 @@
       }
     },
     {
-      "id": 153725955875268,
+      "id": 150000000000003,
       "definition": {
         "title": "",
         "title_size": "16",
@@ -127,14 +127,14 @@
               {
                 "name": "query3",
                 "data_source": "metrics",
-                "query": "avg:bgw210700.fiber.status.rx.power{*}"
+                "query": "avg:bgw320700.fiber.status.tx.bias{*}"
               }
             ],
             "formulas": [
               {
                 "formula": "query3",
                 "style": {
-                  "palette": "warm",
+                  "palette": "dd20",
                   "palette_index": 2
                 }
               }
@@ -156,7 +156,7 @@
       }
     },
     {
-      "id": 6485680186641524,
+      "id": 150000000000004,
       "definition": {
         "title": "",
         "title_size": "16",
@@ -178,14 +178,14 @@
               {
                 "name": "query4",
                 "data_source": "metrics",
-                "query": "avg:bgw210700.fiber.status.vcc{*}"
+                "query": "avg:bgw320700.fiber.status.temperature{*}"
               }
             ],
             "formulas": [
               {
                 "formula": "query4",
                 "style": {
-                  "palette": "warm",
+                  "palette": "dd20",
                   "palette_index": 3
                 }
               }
@@ -207,7 +207,7 @@
       }
     },
     {
-      "id": 3510339037614082,
+      "id": 150000000000005,
       "definition": {
         "title": "",
         "title_size": "16",
@@ -229,14 +229,14 @@
               {
                 "name": "query5",
                 "data_source": "metrics",
-                "query": "avg:bgw210700.fiber.status.tx.bias{*}"
+                "query": "avg:bgw320700.fiber.status.vcc{*}"
               }
             ],
             "formulas": [
               {
                 "formula": "query5",
                 "style": {
-                  "palette": "warm",
+                  "palette": "dd20",
                   "palette_index": 4
                 }
               }
@@ -258,7 +258,74 @@
       }
     },
     {
-      "id": 5240814902870056,
+      "id": 150000000000006,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query6",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.nat.totals.connetions{*}"
+              },
+              {
+                "name": "query7",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.nat.totals.tcp.connections{*}"
+              },
+              {
+                "name": "query8",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.nat.totals.udp.connections{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query6",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 5
+                }
+              },
+              {
+                "formula": "query7",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 6
+                }
+              },
+              {
+                "formula": "query8",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 7
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "dotted",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 8,
+        "y": 2,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000007,
       "definition": {
         "title": "",
         "title_size": "16",
@@ -278,17 +345,17 @@
             "response_format": "timeseries",
             "queries": [
               {
-                "name": "query7",
+                "name": "query9",
                 "data_source": "metrics",
-                "query": "avg:bgw210700.broadband.status.ipv4.receive.bytes{*}"
+                "query": "avg:bgw320700.broadband.status.ipv6.transmit.packets{*}"
               }
             ],
             "formulas": [
               {
-                "formula": "query7",
+                "formula": "query9",
                 "style": {
                   "palette": "dd20",
-                  "palette_index": 1
+                  "palette_index": 8
                 }
               }
             ],
@@ -302,14 +369,65 @@
         ]
       },
       "layout": {
-        "x": 8,
-        "y": 2,
+        "x": 0,
+        "y": 4,
         "width": 4,
         "height": 2
       }
     },
     {
-      "id": 5696704667416829,
+      "id": 150000000000008,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query10",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.broadband.status.ipv6.transmit.errors{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query10",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 9
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 4,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000009,
       "definition": {
         "title": "",
         "title_size": "16",
@@ -331,165 +449,12 @@
               {
                 "name": "query11",
                 "data_source": "metrics",
-                "query": "avg:bgw210700.home.network.status.lan.ethernet.port1.receive.packets{*}"
+                "query": "avg:bgw320700.broadband.status.ipv6.transmit.discards{*}"
               }
             ],
             "formulas": [
               {
                 "formula": "query11",
-                "style": {
-                  "palette": "dd20",
-                  "palette_index": 5
-                }
-              }
-            ],
-            "style": {
-              "palette": "semantic",
-              "line_type": "solid",
-              "line_width": "normal"
-            },
-            "display_type": "area"
-          }
-        ]
-      },
-      "layout": {
-        "x": 0,
-        "y": 4,
-        "width": 4,
-        "height": 2
-      }
-    },
-    {
-      "id": 2095852322446705,
-      "definition": {
-        "title": "",
-        "title_size": "16",
-        "title_align": "left",
-        "show_legend": false,
-        "legend_layout": "auto",
-        "legend_columns": [
-          "avg",
-          "min",
-          "max",
-          "value",
-          "sum"
-        ],
-        "type": "timeseries",
-        "requests": [
-          {
-            "response_format": "timeseries",
-            "queries": [
-              {
-                "name": "query12",
-                "data_source": "metrics",
-                "query": "avg:bgw210700.home.network.status.lan.ethernet.port1.transmit.bytes{*}"
-              }
-            ],
-            "formulas": [
-              {
-                "formula": "query12",
-                "style": {
-                  "palette": "dd20",
-                  "palette_index": 6
-                }
-              }
-            ],
-            "style": {
-              "palette": "semantic",
-              "line_type": "solid",
-              "line_width": "normal"
-            },
-            "display_type": "area"
-          }
-        ]
-      },
-      "layout": {
-        "x": 4,
-        "y": 4,
-        "width": 4,
-        "height": 2
-      }
-    },
-    {
-      "id": 2319266480337307,
-      "definition": {
-        "title": "",
-        "title_size": "16",
-        "title_align": "left",
-        "show_legend": false,
-        "legend_layout": "auto",
-        "legend_columns": [
-          "avg",
-          "min",
-          "max",
-          "value",
-          "sum"
-        ],
-        "type": "timeseries",
-        "requests": [
-          {
-            "response_format": "timeseries",
-            "queries": [
-              {
-                "name": "query15",
-                "data_source": "metrics",
-                "query": "avg:bgw210700.home.network.status.lan.ethernet.port1.transmit.multicast{*}"
-              }
-            ],
-            "formulas": [
-              {
-                "formula": "query15",
-                "style": {
-                  "palette": "dd20",
-                  "palette_index": 9
-                }
-              }
-            ],
-            "style": {
-              "palette": "semantic",
-              "line_type": "solid",
-              "line_width": "normal"
-            },
-            "display_type": "area"
-          }
-        ]
-      },
-      "layout": {
-        "x": 8,
-        "y": 4,
-        "width": 4,
-        "height": 2
-      }
-    },
-    {
-      "id": 7049372489967827,
-      "definition": {
-        "title": "",
-        "title_size": "16",
-        "title_align": "left",
-        "show_legend": false,
-        "legend_layout": "auto",
-        "legend_columns": [
-          "avg",
-          "min",
-          "max",
-          "value",
-          "sum"
-        ],
-        "type": "timeseries",
-        "requests": [
-          {
-            "response_format": "timeseries",
-            "queries": [
-              {
-                "name": "query16",
-                "data_source": "metrics",
-                "query": "avg:bgw210700.home.network.status.lan.ethernet.port1.transmit.packets{*}"
-              }
-            ],
-            "formulas": [
-              {
-                "formula": "query16",
                 "style": {
                   "palette": "dd20",
                   "palette_index": 10
@@ -506,14 +471,14 @@
         ]
       },
       "layout": {
-        "x": 0,
-        "y": 6,
+        "x": 8,
+        "y": 4,
         "width": 4,
         "height": 2
       }
     },
     {
-      "id": 1588668269391512,
+      "id": 150000000000010,
       "definition": {
         "title": "",
         "title_size": "16",
@@ -525,35 +490,23 @@
             "response_format": "timeseries",
             "queries": [
               {
-                "name": "query1",
+                "name": "query12",
                 "data_source": "metrics",
-                "query": "avg:bgw210700.nat.totals.connetions{*}"
-              },
-              {
-                "name": "query2",
-                "data_source": "metrics",
-                "query": "avg:bgw210700.nat.totals.tcp.connections{*}"
-              },
-              {
-                "name": "query3",
-                "data_source": "metrics",
-                "query": "avg:bgw210700.nat.totals.udp.connections{*}"
+                "query": "avg:bgw320700.home.network.status.ipv4.receive.packets{*}"
               }
             ],
             "formulas": [
               {
-                "formula": "query1"
-              },
-              {
-                "formula": "query2"
-              },
-              {
-                "formula": "query3"
+                "formula": "query12",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 11
+                }
               }
             ],
             "style": {
-              "palette": "dog_classic",
-              "line_type": "dotted",
+              "palette": "semantic",
+              "line_type": "solid",
               "line_width": "normal"
             },
             "display_type": "area"
@@ -561,14 +514,14 @@
         ]
       },
       "layout": {
-        "x": 4,
+        "x": 0,
         "y": 6,
         "width": 4,
         "height": 2
       }
     },
     {
-      "id": 8846556527680531,
+      "id": 150000000000011,
       "definition": {
         "title": "",
         "title_size": "16",
@@ -588,14 +541,14 @@
             "response_format": "timeseries",
             "queries": [
               {
-                "name": "query18",
+                "name": "query13",
                 "data_source": "metrics",
-                "query": "avg:bgw210700.home.network.status.lan.ethernet.port1.transmit.unicast{*}"
+                "query": "avg:bgw320700.home.network.status.ipv4.transmit.packets{*}"
               }
             ],
             "formulas": [
               {
-                "formula": "query18",
+                "formula": "query13",
                 "style": {
                   "palette": "dd20",
                   "palette_index": 12
@@ -612,14 +565,14 @@
         ]
       },
       "layout": {
-        "x": 8,
+        "x": 4,
         "y": 6,
         "width": 4,
         "height": 2
       }
     },
     {
-      "id": 1338927942262670,
+      "id": 150000000000012,
       "definition": {
         "title": "",
         "title_size": "16",
@@ -639,14 +592,14 @@
             "response_format": "timeseries",
             "queries": [
               {
-                "name": "query19",
+                "name": "query14",
                 "data_source": "metrics",
-                "query": "avg:bgw210700.home.network.status.lan.ethernet.port1.transmit.unicast{*}"
+                "query": "avg:bgw320700.home.network.status.ipv4.receive.errors{*}"
               }
             ],
             "formulas": [
               {
-                "formula": "query19",
+                "formula": "query14",
                 "style": {
                   "palette": "dd20",
                   "palette_index": 13
@@ -670,7 +623,109 @@
       }
     },
     {
-      "id": 6316157295401804,
+      "id": 150000000000013,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query15",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.ipv4.transmit.errors{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query15",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 14
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 8,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000014,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query16",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.ipv4.receive.discards{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query16",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 15
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 10,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000015,
       "definition": {
         "title": "",
         "title_size": "16",
@@ -692,7 +747,7 @@
               {
                 "name": "query17",
                 "data_source": "metrics",
-                "query": "avg:bgw210700.home.network.status.lan.ethernet.port1.transmit.speed{*}"
+                "query": "avg:bgw320700.home.network.status.ipv4.transmit.discards{*}"
               }
             ],
             "formulas": [
@@ -700,7 +755,7 @@
                 "formula": "query17",
                 "style": {
                   "palette": "dd20",
-                  "palette_index": 11
+                  "palette_index": 16
                 }
               }
             ],
@@ -715,13 +770,13 @@
       },
       "layout": {
         "x": 4,
-        "y": 8,
+        "y": 10,
         "width": 4,
         "height": 2
       }
     },
     {
-      "id": 2414693567794301,
+      "id": 150000000000016,
       "definition": {
         "title": "",
         "title_size": "16",
@@ -741,68 +796,17 @@
             "response_format": "timeseries",
             "queries": [
               {
-                "name": "query26",
+                "name": "query18",
                 "data_source": "metrics",
-                "query": "avg:bgw210700.home.network.status.ipv4.transmit.packets{*}"
+                "query": "avg:bgw320700.broadband.status.ipv4.receive.packets{*}"
               }
             ],
             "formulas": [
               {
-                "formula": "query26",
+                "formula": "query18",
                 "style": {
                   "palette": "dd20",
-                  "palette_index": 15
-                }
-              }
-            ],
-            "style": {
-              "palette": "semantic",
-              "line_type": "solid",
-              "line_width": "normal"
-            },
-            "display_type": "area"
-          }
-        ]
-      },
-      "layout": {
-        "x": 8,
-        "y": 8,
-        "width": 4,
-        "height": 2
-      }
-    },
-    {
-      "id": 7559647528712941,
-      "definition": {
-        "title": "",
-        "title_size": "16",
-        "title_align": "left",
-        "show_legend": false,
-        "legend_layout": "auto",
-        "legend_columns": [
-          "avg",
-          "min",
-          "max",
-          "value",
-          "sum"
-        ],
-        "type": "timeseries",
-        "requests": [
-          {
-            "response_format": "timeseries",
-            "queries": [
-              {
-                "name": "query27",
-                "data_source": "metrics",
-                "query": "avg:bgw210700.home.network.status.lan.ethernet.port1.receive.unicast{*}"
-              }
-            ],
-            "formulas": [
-              {
-                "formula": "query27",
-                "style": {
-                  "palette": "dd20",
-                  "palette_index": 14
+                  "palette_index": 17
                 }
               }
             ],
@@ -817,13 +821,115 @@
       },
       "layout": {
         "x": 0,
-        "y": 10,
+        "y": 12,
         "width": 4,
         "height": 2
       }
     },
     {
-      "id": 383194724527087,
+      "id": 150000000000017,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query19",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.broadband.status.ipv4.transmit.packets{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query19",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 18
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 12,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000018,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query20",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.broadband.status.ipv4.receive.bytes{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query20",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 19
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 14,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000019,
       "definition": {
         "title": "",
         "title_size": "16",
@@ -845,7 +951,7 @@
               {
                 "name": "query21",
                 "data_source": "metrics",
-                "query": "avg:bgw210700.home.network.status.ipv4.receive.packets{*}"
+                "query": "avg:bgw320700.broadband.status.ipv4.transmit.bytes{*}"
               }
             ],
             "formulas": [
@@ -853,7 +959,7 @@
                 "formula": "query21",
                 "style": {
                   "palette": "dd20",
-                  "palette_index": 14
+                  "palette_index": 0
                 }
               }
             ],
@@ -868,13 +974,13 @@
       },
       "layout": {
         "x": 4,
-        "y": 10,
+        "y": 14,
         "width": 4,
         "height": 2
       }
     },
     {
-      "id": 1741731067055771,
+      "id": 150000000000020,
       "definition": {
         "title": "",
         "title_size": "16",
@@ -894,68 +1000,17 @@
             "response_format": "timeseries",
             "queries": [
               {
-                "name": "query29",
+                "name": "query22",
                 "data_source": "metrics",
-                "query": "avg:bgw210700.broadband.status.ipv4.receive.unicast{*}"
+                "query": "avg:bgw320700.broadband.status.ipv4.receive.unicast{*}"
               }
             ],
             "formulas": [
               {
-                "formula": "query29",
+                "formula": "query22",
                 "style": {
                   "palette": "dd20",
-                  "palette_index": 17
-                }
-              }
-            ],
-            "style": {
-              "palette": "semantic",
-              "line_type": "solid",
-              "line_width": "normal"
-            },
-            "display_type": "area"
-          }
-        ]
-      },
-      "layout": {
-        "x": 8,
-        "y": 10,
-        "width": 4,
-        "height": 2
-      }
-    },
-    {
-      "id": 1515936878449445,
-      "definition": {
-        "title": "",
-        "title_size": "16",
-        "title_align": "left",
-        "show_legend": false,
-        "legend_layout": "auto",
-        "legend_columns": [
-          "avg",
-          "min",
-          "max",
-          "value",
-          "sum"
-        ],
-        "type": "timeseries",
-        "requests": [
-          {
-            "response_format": "timeseries",
-            "queries": [
-              {
-                "name": "query30",
-                "data_source": "metrics",
-                "query": "avg:bgw210700.broadband.status.ipv4.transmit.unicast{*}"
-              }
-            ],
-            "formulas": [
-              {
-                "formula": "query30",
-                "style": {
-                  "palette": "dd20",
-                  "palette_index": 18
+                  "palette_index": 1
                 }
               }
             ],
@@ -970,13 +1025,268 @@
       },
       "layout": {
         "x": 0,
-        "y": 12,
+        "y": 16,
         "width": 4,
         "height": 2
       }
     },
     {
-      "id": 7791161510279415,
+      "id": 150000000000021,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query23",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.broadband.status.ipv4.transmit.unicast{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query23",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 2
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 16,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000022,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query24",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.broadband.status.ipv4.receive.multicast{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query24",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 3
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 18,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000023,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query25",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.broadband.status.ipv4.transmit.multicast{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query25",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 4
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 18,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000024,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query26",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.broadband.status.ipv4.receive.drops{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query26",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 5
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 20,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000025,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query27",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.broadband.status.ipv4.transmit.drops{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query27",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 6
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 20,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000026,
       "definition": {
         "title": "",
         "title_size": "16",
@@ -998,7 +1308,7 @@
               {
                 "name": "query28",
                 "data_source": "metrics",
-                "query": "avg:bgw210700.broadband.status.ipv4.transmit.bytes{*}"
+                "query": "avg:bgw320700.broadband.status.ipv4.receive.errors{*}"
               }
             ],
             "formulas": [
@@ -1006,109 +1316,7 @@
                 "formula": "query28",
                 "style": {
                   "palette": "dd20",
-                  "palette_index": 16
-                }
-              }
-            ],
-            "style": {
-              "palette": "semantic",
-              "line_type": "solid",
-              "line_width": "normal"
-            },
-            "display_type": "area"
-          }
-        ]
-      },
-      "layout": {
-        "x": 4,
-        "y": 12,
-        "width": 4,
-        "height": 2
-      }
-    },
-    {
-      "id": 1968696288453883,
-      "definition": {
-        "title": "",
-        "title_size": "16",
-        "title_align": "left",
-        "show_legend": false,
-        "legend_layout": "auto",
-        "legend_columns": [
-          "avg",
-          "min",
-          "max",
-          "value",
-          "sum"
-        ],
-        "type": "timeseries",
-        "requests": [
-          {
-            "response_format": "timeseries",
-            "queries": [
-              {
-                "name": "query32",
-                "data_source": "metrics",
-                "query": "avg:bgw210700.broadband.status.ipv4.transmit.multicast{*}"
-              }
-            ],
-            "formulas": [
-              {
-                "formula": "query32",
-                "style": {
-                  "palette": "purple",
-                  "palette_index": 0
-                }
-              }
-            ],
-            "style": {
-              "palette": "semantic",
-              "line_type": "solid",
-              "line_width": "normal"
-            },
-            "display_type": "area"
-          }
-        ]
-      },
-      "layout": {
-        "x": 8,
-        "y": 12,
-        "width": 4,
-        "height": 2
-      }
-    },
-    {
-      "id": 3036766200397574,
-      "definition": {
-        "title": "",
-        "title_size": "16",
-        "title_align": "left",
-        "show_legend": false,
-        "legend_layout": "auto",
-        "legend_columns": [
-          "avg",
-          "min",
-          "max",
-          "value",
-          "sum"
-        ],
-        "type": "timeseries",
-        "requests": [
-          {
-            "response_format": "timeseries",
-            "queries": [
-              {
-                "name": "query33",
-                "data_source": "metrics",
-                "query": "avg:bgw210700.broadband.status.ipv6.transmit.packets{*}"
-              }
-            ],
-            "formulas": [
-              {
-                "formula": "query33",
-                "style": {
-                  "palette": "purple",
-                  "palette_index": 5
+                  "palette_index": 7
                 }
               }
             ],
@@ -1123,13 +1331,115 @@
       },
       "layout": {
         "x": 0,
-        "y": 14,
+        "y": 22,
         "width": 4,
         "height": 2
       }
     },
     {
-      "id": 6526097603975344,
+      "id": 150000000000027,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query29",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.broadband.status.ipv4.transmit.errors{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query29",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 8
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 22,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000028,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query30",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.broadband.status.ipv4.collisions{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query30",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 9
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 24,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000029,
       "definition": {
         "title": "",
         "title_size": "16",
@@ -1151,12 +1461,471 @@
               {
                 "name": "query31",
                 "data_source": "metrics",
-                "query": "avg:bgw210700.broadband.status.ipv4.receive.multicast{*}"
+                "query": "avg:bgw320700.broadband.status.ethernet.current.speed{*}"
               }
             ],
             "formulas": [
               {
                 "formula": "query31",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 10
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 24,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000030,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query32",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port1.receive.packets{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query32",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 11
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 26,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000031,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query33",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port1.transmit.packets{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query33",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 12
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 26,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000032,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query34",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port1.receive.bytes{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query34",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 13
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 28,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000033,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query35",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port1.transmit.bytes{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query35",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 14
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 28,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000034,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query36",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port1.receive.unicast{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query36",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 15
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 30,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000035,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query37",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port1.transmit.unicast{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query37",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 16
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 30,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000036,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query38",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port1.receive.multicast{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query38",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 17
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 32,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000037,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query39",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port1.transmit.multicast{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query39",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 18
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 32,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000038,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query40",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port1.receive.dropped{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query40",
                 "style": {
                   "palette": "dd20",
                   "palette_index": 19
@@ -1173,14 +1942,14 @@
         ]
       },
       "layout": {
-        "x": 4,
-        "y": 14,
+        "x": 0,
+        "y": 34,
         "width": 4,
         "height": 2
       }
     },
     {
-      "id": 1494516662475546,
+      "id": 150000000000039,
       "definition": {
         "title": "",
         "title_size": "16",
@@ -1200,34 +1969,38 @@
             "response_format": "timeseries",
             "queries": [
               {
-                "name": "query2",
+                "name": "query41",
                 "data_source": "metrics",
-                "query": "avg:bgw210700.home.network.status.lan.ethernet.port1.transmit.errors{*}"
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port1.transmit.dropped{*}"
               }
             ],
             "formulas": [
               {
-                "formula": "query2"
+                "formula": "query41",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 0
+                }
               }
             ],
             "style": {
-              "palette": "dog_classic",
+              "palette": "semantic",
               "line_type": "solid",
               "line_width": "normal"
             },
-            "display_type": "line"
+            "display_type": "area"
           }
         ]
       },
       "layout": {
-        "x": 8,
-        "y": 14,
+        "x": 4,
+        "y": 34,
         "width": 4,
         "height": 2
       }
     },
     {
-      "id": 2022062584581360,
+      "id": 150000000000040,
       "definition": {
         "title": "",
         "title_size": "16",
@@ -1247,34 +2020,38 @@
             "response_format": "timeseries",
             "queries": [
               {
-                "name": "query3",
+                "name": "query42",
                 "data_source": "metrics",
-                "query": "avg:bgw210700.home.network.status.ipv4.transmit.errors{*}"
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port1.receive.errors{*}"
               }
             ],
             "formulas": [
               {
-                "formula": "query3"
+                "formula": "query42",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 1
+                }
               }
             ],
             "style": {
-              "palette": "dog_classic",
+              "palette": "semantic",
               "line_type": "solid",
               "line_width": "normal"
             },
-            "display_type": "line"
+            "display_type": "area"
           }
         ]
       },
       "layout": {
         "x": 0,
-        "y": 16,
+        "y": 36,
         "width": 4,
         "height": 2
       }
     },
     {
-      "id": 1198256723711532,
+      "id": 150000000000041,
       "definition": {
         "title": "",
         "title_size": "16",
@@ -1294,34 +2071,38 @@
             "response_format": "timeseries",
             "queries": [
               {
-                "name": "query1",
+                "name": "query43",
                 "data_source": "metrics",
-                "query": "avg:bgw210700.home.network.status.lan.ethernet.port1.receive.errors{*}"
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port1.transmit.errors{*}"
               }
             ],
             "formulas": [
               {
-                "formula": "query1"
+                "formula": "query43",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 2
+                }
               }
             ],
             "style": {
-              "palette": "dog_classic",
+              "palette": "semantic",
               "line_type": "solid",
               "line_width": "normal"
             },
-            "display_type": "line"
+            "display_type": "area"
           }
         ]
       },
       "layout": {
         "x": 4,
-        "y": 16,
+        "y": 36,
         "width": 4,
         "height": 2
       }
     },
     {
-      "id": 8475226429751677,
+      "id": 150000000000042,
       "definition": {
         "title": "",
         "title_size": "16",
@@ -1341,81 +2122,38 @@
             "response_format": "timeseries",
             "queries": [
               {
-                "name": "query5",
+                "name": "query44",
                 "data_source": "metrics",
-                "query": "avg:bgw210700.home.network.status.lan.ethernet.port1.receive.dropped{*}"
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port1.transmit.speed{*}"
               }
             ],
             "formulas": [
               {
-                "formula": "query5"
+                "formula": "query44",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 3
+                }
               }
             ],
             "style": {
-              "palette": "dog_classic",
+              "palette": "semantic",
               "line_type": "solid",
               "line_width": "normal"
             },
-            "display_type": "line"
-          }
-        ]
-      },
-      "layout": {
-        "x": 8,
-        "y": 16,
-        "width": 4,
-        "height": 2
-      }
-    },
-    {
-      "id": 7163678025054469,
-      "definition": {
-        "title": "",
-        "title_size": "16",
-        "title_align": "left",
-        "show_legend": false,
-        "legend_layout": "auto",
-        "legend_columns": [
-          "avg",
-          "min",
-          "max",
-          "value",
-          "sum"
-        ],
-        "type": "timeseries",
-        "requests": [
-          {
-            "response_format": "timeseries",
-            "queries": [
-              {
-                "name": "query6",
-                "data_source": "metrics",
-                "query": "avg:bgw210700.home.network.status.lan.ethernet.port1.transmit.dropped{*}"
-              }
-            ],
-            "formulas": [
-              {
-                "formula": "query6"
-              }
-            ],
-            "style": {
-              "palette": "dog_classic",
-              "line_type": "solid",
-              "line_width": "normal"
-            },
-            "display_type": "line"
+            "display_type": "area"
           }
         ]
       },
       "layout": {
         "x": 0,
-        "y": 18,
+        "y": 38,
         "width": 4,
         "height": 2
       }
     },
     {
-      "id": 3761329260066418,
+      "id": 150000000000043,
       "definition": {
         "title": "",
         "title_size": "16",
@@ -1435,28 +2173,1970 @@
             "response_format": "timeseries",
             "queries": [
               {
-                "name": "query4",
+                "name": "query45",
                 "data_source": "metrics",
-                "query": "avg:bgw210700.home.network.status.ipv4.receive.errors{*}"
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port2.transmit.speed{*}"
               }
             ],
             "formulas": [
               {
-                "formula": "query4"
+                "formula": "query45",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 4
+                }
               }
             ],
             "style": {
-              "palette": "dog_classic",
+              "palette": "semantic",
               "line_type": "solid",
               "line_width": "normal"
             },
-            "display_type": "line"
+            "display_type": "area"
           }
         ]
       },
       "layout": {
         "x": 4,
-        "y": 18,
+        "y": 38,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000044,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query46",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port2.receive.packets{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query46",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 5
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 40,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000045,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query47",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port2.transmit.packets{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query47",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 6
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 40,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000046,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query48",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port2.receive.bytes{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query48",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 7
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 42,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000047,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query49",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port2.transmit.bytes{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query49",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 8
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 42,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000048,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query50",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port2.receive.unicast{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query50",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 9
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 44,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000049,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query51",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port2.transmit.unicast{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query51",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 10
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 44,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000050,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query52",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port2.receive.multicast{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query52",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 11
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 46,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000051,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query53",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port2.transmit.multicast{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query53",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 12
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 46,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000052,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query54",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port2.receive.dropped{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query54",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 13
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 48,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000053,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query55",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port2.transmit.dropped{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query55",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 14
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 48,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000054,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query56",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port2.receive.errors{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query56",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 15
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 50,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000055,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query57",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port2.transmit.errors{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query57",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 16
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 50,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000056,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query58",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port3.receive.packets{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query58",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 17
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 52,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000057,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query59",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port3.transmit.packets{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query59",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 18
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 52,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000058,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query60",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port3.receive.bytes{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query60",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 19
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 54,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000059,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query61",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port3.transmit.bytes{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query61",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 0
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 54,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000060,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query62",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port3.receive.unicast{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query62",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 1
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 56,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000061,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query63",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port3.transmit.unicast{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query63",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 2
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 56,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000062,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query64",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port3.receive.multicast{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query64",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 3
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 58,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000063,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query65",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port3.transmit.multicast{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query65",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 4
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 58,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000064,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query66",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port3.receive.dropped{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query66",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 5
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 60,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000065,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query67",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port3.transmit.dropped{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query67",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 6
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 60,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000066,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query68",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port3.receive.errors{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query68",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 7
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 62,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000067,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query69",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port3.transmit.errors{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query69",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 8
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 62,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000068,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query70",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port3.transmit.speed{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query70",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 9
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 64,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000069,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query71",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port4.transmit.speed{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query71",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 10
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 64,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000070,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query72",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port4.receive.packets{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query72",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 11
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 66,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000071,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query73",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port4.transmit.packets{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query73",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 12
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 66,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000072,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query74",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port4.receive.bytes{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query74",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 13
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 68,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000073,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query75",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port4.transmit.bytes{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query75",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 14
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 68,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000074,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query76",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port4.receive.unicast{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query76",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 15
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 70,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000075,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query77",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port4.transmit.unicast{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query77",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 16
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 70,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000076,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query78",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port4.receive.multicast{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query78",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 17
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 72,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000077,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query79",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port4.transmit.multicast{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query79",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 18
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 72,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000078,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query80",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port4.receive.dropped{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query80",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 19
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 74,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000079,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query81",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port4.transmit.dropped{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query81",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 0
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 74,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000080,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query82",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port4.receive.errors{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query82",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 1
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 76,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 150000000000081,
+      "definition": {
+        "title": "",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": false,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "name": "query83",
+                "data_source": "metrics",
+                "query": "avg:bgw320700.home.network.status.lan.ethernet.port4.transmit.errors{*}"
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query83",
+                "style": {
+                  "palette": "dd20",
+                  "palette_index": 2
+                }
+              }
+            ],
+            "style": {
+              "palette": "semantic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "area"
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 76,
         "width": 4,
         "height": 2
       }
