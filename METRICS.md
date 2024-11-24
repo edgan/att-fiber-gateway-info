@@ -2,7 +2,7 @@
 
 The general idea is to be able to pull metrics out of various gateway pages.
 
-## Screenshot
+## Screenshots
 ![Sreenshot1](/screenshots/datadog-metrics1.png)
 ![Sreenshot2](/screenshots/datadog-metrics2.png)
 ![Sreenshot3](/screenshots/datadog-metrics3.png)
