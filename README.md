@@ -88,25 +88,14 @@ configuration file.
 ## Actions
 See [ACTIONS.md](ACTIONS.md) in this git repository.
 
-## Metrics
-See [METRICS.md](METRICS.md) in this git repository.
-
 ## Building
 See [BUILDING.md](BUILDING.md) in this git repository.
 
-## Color
-Colors for some of the output has been added, if the terminal supports it.
+## Colors
+See [COLORS.md](COLORS.md) in this git repository.
 
-It can be disabled with `TERM=` or `NO_COLOR=`. `NO_COLOR` can be set to any
-value other than empty to disable colors. This `NO_COLOR` any value behavior
-seems to come from the shell, and isn't written into this code.
-
-Examples:
-```
-TERM= ./att-fiber-gateway-info --help
-NO_COLOR=1 ./att-fiber-gateway-info --help
-NO_COLOR=false ./att-fiber-gateway-info --help # When set to anything, no color
-```
+## Metrics
+See [METRICS.md](METRICS.md) in this git repository.
 
 ## Gateway software
 The [BGW320-505 gateway](https://help.sonic.com/hc/en-us/articles/1500000066642-BGW320)'s
