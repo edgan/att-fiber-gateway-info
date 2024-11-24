@@ -3,7 +3,9 @@
 The general idea is to be able to pull metrics out of various gateway pages.
 
 ## Screenshot
-![Sreenshot](/screenshots/datadog-metrics.png)
+![Sreenshot1](/screenshots/datadog-metrics1.png)
+![Sreenshot2](/screenshots/datadog-metrics2.png)
+![Sreenshot3](/screenshots/datadog-metrics3.png)
 
 ## Datadog
 [Datadog](https://www.datadoghq.com/) is just one way to use this. It is free
