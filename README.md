@@ -86,19 +86,19 @@ configuration file for security. The command line argument overrides the
 configuration file.
 
 ## Actions
-See [ACTIONS.md](ACTIONS.md).
+See [ACTIONS.md](ACTIONS.md)
 
 ## Building
-See [BUILDING.md](BUILDING.md).
+See [BUILDING.md](BUILDING.md)
 
 ## Colors
-See [COLORS.md](COLORS.md).
+See [COLORS.md](COLORS.md)
 
 ## Metrics
-See [METRICS.md](METRICS.md).
+See [METRICS.md](METRICS.md)
 
 ## Thanks
-See [THANKS.md](THANKS.md).
+See [THANKS.md](THANKS.md)
 
 ## Gateway software
 The [BGW320-505 gateway](https://help.sonic.com/hc/en-us/articles/1500000066642-BGW320)'s
