@@ -27,26 +27,11 @@ I currently have version `6.30.5` on my
 [BGW320-505 gateway](https://help.sonic.com/hc/en-us/articles/1500000066642-BGW320).
 I have tested with previous versions back to `4.27.7`, and expect them to work.
 
-## Actions
-See [ACTIONS.md](ACTIONS.md)
-
-## Building
-See [BUILDING.md](BUILDING.md)
-
-## Colors
-See [COLORS.md](COLORS.md)
-
-## Config
-See [CONFIG.md](CONFIG.md)
-
-## Metrics
-See [METRICS.md](METRICS.md)
+## Documentation
+[Here](docs/) is the documention.
 
 ## Thanks
 See [THANKS.md](THANKS.md)
-
-## Usage 
-See [USAGE.md](USAGE.md)
 
 ## Gateway software
 The [BGW320-505 gateway](https://help.sonic.com/hc/en-us/articles/1500000066642-BGW320)'s
