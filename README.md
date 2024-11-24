@@ -9,7 +9,7 @@ command line tool interact with
 ## Features
 1. Pull metrics from the gateway and send them to
 [statsd](https://github.com/statsd/statsd)([Datadog](https://www.datadoghq.com/))
-2. Pull data from the gateways like network connections, uptime, firmware version, model, and serial number.
+2. Pull data from the gateways like network connections, uptime, firmware version, model, and serial number
 3. Pull metrics from the gateway and display them
 4. Do various resets including restarting the gateway
 
