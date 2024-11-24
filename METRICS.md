@@ -36,7 +36,7 @@ att-fiber-gateway-info -allmetrics -datadog -interval 20
 ```
 
 ## Systemd
-[Here](systemd) is a tested systemd service file for running this as a daemon
+[Here](systemd/att-fiber-gateway-info.service) is a tested systemd service file for running this as a daemon
 on a Linux system as root. You should make sure there is a
 `/root/.att-fiber-gateway-info.yml` configuration file, and that it is
 configured properly before starting the service.
