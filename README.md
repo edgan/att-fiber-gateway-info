@@ -11,7 +11,7 @@ command line tool interact with
 [statsd](https://github.com/statsd/statsd)([Datadog](https://www.datadoghq.com/))
 2. Pull data from the gateways like network connections, uptime, firmware
 version, model, and serial number
-3. Pull metrics from the gateway and display them
+3. Pull metrics from the gateway and display them as text
 4. Do various resets including restarting the gateway
 5. Custom [Datadog](https://www.datadoghq.com/) dashboards per gateway model
 
