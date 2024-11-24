@@ -28,7 +28,7 @@ I currently have version `6.30.5` on my
 I have tested with previous versions back to `4.27.7`, and expect them to work.
 
 ## Documentation
-[Here](docs/) is the documention.
+[Here](docs/) is the documentation. 
 
 ## Thanks
 See [THANKS.md](THANKS.md)
