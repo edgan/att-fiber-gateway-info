@@ -27,68 +27,6 @@ I currently have version `6.30.5` on my
 [BGW320-505 gateway](https://help.sonic.com/hc/en-us/articles/1500000066642-BGW320).
 I have tested with previous versions back to `4.27.7`, and expect them to work.
 
-## Usage
-```
-att-fiber-gateway-info 1.0.12
-
-Usage:
-  -action string
-        Action to perform (broadband-status, device-list, fiber-status, home-network-status,
-                           ip-allocation, nat-check, nat-connections, nat-destinations,
-                           nat-sources, nat-totals, reset-connection, reset-device,
-                           reset-firewall, reset-ip, reset-wifi, restart-gateway,
-                           system-information)
-  -allmetrics bool (default: false)
-        Return all metrics
-  -cookiefile string (default: /var/tmp/att-fiber-gateway-info_cookies.gob)
-        File to save session cookies
-  -datadog bool (default: false)
-        Send metrics to datadog
-  -debug bool (default: false)
-        Enable debug mode
-  -filter string
-        Filter to perform (icmp, ipv4, ipv6, tcp, udp)
-  -fresh bool (default: false)
-        Do not use existing cookies (Warning: If always used the gateway will
-        run out of sessions.)
-  -interval int (default: 0)
-        How often to repeat metrics
-  -metrics bool (default: false)
-        Return metrics based on the data instead the data
-  -no bool (default: false)
-        Answer no to any questions
-  -password string
-        Gateway password
-  -pretty bool (default: false)
-        Enable pretty mode for nat-connections
-  -statsdipport string
-        Statsd ip port, like 127.0.0.1:8125
-  -url string
-        Gateway base URL
-  -version bool (default: false)
-        Show version
-  -yes bool (default: false)
-        Answer yes to any questions
-
-```
-
-## Configuration file
-There is now a configuration file stored in the user's home directory as
-`.att-fiber-gateway-info.yml` for Linux and MacOS. For Windows it is
-`att-fiber-gateway-info.yml`. The file is automatically created if it does not
-exist.
-
-The default file permissions are read-write for the user only on Linux and MacOS.
-
-The baseURL, with a default of `https://192.168.1.254`, is in the configuration
-file. The command line argument overrides the configuration file. This value in
-the configuration file is not optional.
-
-The password is also in the configuration file. It is optional, and it is
-commented out by default. It is recommended to set the password in the
-configuration file for security. The command line argument overrides the
-configuration file.
-
 ## Actions
 See [ACTIONS.md](ACTIONS.md)
 
@@ -98,11 +36,17 @@ See [BUILDING.md](BUILDING.md)
 ## Colors
 See [COLORS.md](COLORS.md)
 
+## Config
+See [CONFIG.md](CONFIG.md)
+
 ## Metrics
 See [METRICS.md](METRICS.md)
 
 ## Thanks
 See [THANKS.md](THANKS.md)
+
+## Usage 
+See [USAGE.md](USAGE.md)
 
 ## Gateway software
 The [BGW320-505 gateway](https://help.sonic.com/hc/en-us/articles/1500000066642-BGW320)'s

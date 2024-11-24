@@ -1,5 +1,4 @@
 # Building
-
 ## Compiling
 To build for only system's platform:
 ```
