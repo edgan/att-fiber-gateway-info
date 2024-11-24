@@ -14,7 +14,7 @@ version, model, and serial number
 3. Pull metrics from the gateway and display them
 4. Do various resets including restarting the gateway
 5. Custom [Datadog](https://www.datadoghq.com/) dashboards per gateway model
-that in most cases can be used <span style="color:green">**free**</span>
+that in most cases can be used $${\color{green}free}$$
 
 ## Supported hardware
 * [BGW320-505 gateway](https://help.sonic.com/hc/en-us/articles/1500000066642-BGW320)
