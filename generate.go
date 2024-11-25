@@ -25,7 +25,7 @@ func generateFiberMetric(dotZero string, header string, modelActionMetric string
 func generateNonFiberMetric(action string, dotZero string, flags *Flags, modelActionMetric string, summary string, tableData [][]string) []string {
 	metrics := make([]string, 0, len(tableData)*2) // Preallocate for efficiency
 	port := 1
-	tcpCount, udpCount := 0, 0
+	icmpCount, tcpCount, udpCount := 0, 0, 0
 
 	lowerSummary := strings.ToLower(strings.Replace(summary, " ", ".", 1)) // Precompute summary once
 
@@ -36,8 +36,9 @@ func generateNonFiberMetric(action string, dotZero string, flags *Flags, modelAc
 
 		if action == "nat-totals" {
 			if strings.Contains(row[0], "IP Family") {
-				tcpCount, udpCount = processNatTotals(tableData)
+				icmpCount, tcpCount, udpCount = processNatTotals(tableData)
 				metrics = append(metrics,
+					fmt.Sprintf("%s.icmp.connections=%d%s", modelActionMetric, icmpCount, dotZero),
 					fmt.Sprintf("%s.tcp.connections=%d%s", modelActionMetric, tcpCount, dotZero),
 					fmt.Sprintf("%s.udp.connections=%d%s", modelActionMetric, udpCount, dotZero),
 				)
@@ -53,7 +54,7 @@ func generateNonFiberMetric(action string, dotZero string, flags *Flags, modelAc
 		stat = strings.Replace(stat, " (Mbps)", "", 1)
 
 		if action == "nat-totals" && strings.Contains(stat, "sessions in use") {
-			stat = strings.Replace(stat, "Total sessions in use", "connections", 1)
+			stat = strings.Replace(stat, "Total.sessions in use", "connections", 1)
 		}
 
 		for i := 1; i < len(row); i++ { // Start at 1 since stat is from row[0]

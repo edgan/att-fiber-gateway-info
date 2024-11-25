@@ -34,7 +34,7 @@ func (rc *GatewayClient) getPath(flags *Flags, path string) (string, error) {
 	return bodyStr, nil
 }
 
-func (rc *GatewayClient) getPage(action string, configs Configs, flags *Flags, model string, natActionPrefix string, page string, returnFact string) (string, error) {
+func (rc *GatewayClient) getPage(action string, configs Configs, flags *Flags, model string, page string, returnFact string) (string, error) {
 	fact := ""
 	path := returnPath(page)
 
@@ -79,7 +79,7 @@ func (rc *GatewayClient) getPage(action string, configs Configs, flags *Flags, m
 			logFatal(err)
 		}
 
-		fact, err = extractData(action, configs, content, flags, model, natActionPrefix, returnFact)
+		fact, err = extractData(action, configs, content, flags, model, returnFact)
 		if err != nil {
 			logFatalf("Error extracting %s", action)
 		}

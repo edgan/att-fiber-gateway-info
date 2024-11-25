@@ -1,6 +1,6 @@
 package main
 
-func (rc *GatewayClient) retrieveAction(action string, actionPages map[string]string, configs Configs, flags *Flags, model string, natActionPrefix string, returnFact string) (string, error) {
+func (rc *GatewayClient) retrieveAction(action string, actionPages map[string]string, configs Configs, flags *Flags, model string, returnFact string) (string, error) {
 	fact := ""
 
 	// Get the specified page based on action
@@ -26,7 +26,7 @@ func (rc *GatewayClient) retrieveAction(action string, actionPages map[string]st
 		performLogin(rc, configs)
 	}
 
-	fact, err := rc.getPage(action, configs, flags, model, natActionPrefix, page, returnFact)
+	fact, err := rc.getPage(action, configs, flags, model, page, returnFact)
 
 	return fact, err
 }

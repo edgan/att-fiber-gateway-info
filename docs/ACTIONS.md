@@ -365,16 +365,16 @@ Source IP addresses:
 
 ## nat-totals
 This reports the total number of connections,
+[icmp](https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol) connections,
 [tcp](https://en.wikipedia.org/wiki/Transmission_Control_Protocol) connections,
-and [udp](https://en.wikipedia.org/wiki/User_Datagram_Protocol) connections.
-The [icmp](https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol)
-connections are not listed, but are part of the total.
+[udp](https://en.wikipedia.org/wiki/User_Datagram_Protocol) connections.
 
 Example:
 ```
-Total number of connections: 143
-Total number of tcp connections: 95
-Total number of udp connections: 43
+Total number of connections: 380
+Total number of icmp connections: 0
+Total number of tcp connections: 192
+Total number of udp connections: 188
 ```
 
 ## reset-connection

@@ -62,11 +62,14 @@ func processIPAllocation(tableData [][]string) {
 	prettyPrint(tableData)
 }
 
-func processNatTotals(tableData [][]string) (int, int) {
+func processNatTotals(tableData [][]string) (int, int, int) {
 	// Initialize counters
-	var tcpCount, udpCount int
+	var icmpCount, tcpCount, udpCount int
 
 	for _, row := range tableData {
+		if row[1] == "icmp" {
+			icmpCount++
+		}
 		if row[1] == "tcp" {
 			tcpCount++
 		}
@@ -75,7 +78,7 @@ func processNatTotals(tableData [][]string) (int, int) {
 		}
 	}
 
-	return tcpCount, udpCount
+	return icmpCount, tcpCount, udpCount
 }
 
 func processNatCheckTotals(action string, class string, tableData [][]string) {
@@ -106,7 +109,8 @@ func processNatCheckTotals(action string, class string, tableData [][]string) {
 	}
 
 	if action == "nat-totals" && class == "grid table100" {
-		tcpCount, udpCount := processNatTotals(tableData)
+		icmpCount, tcpCount, udpCount := processNatTotals(tableData)
+		fmt.Printf("Total number of icmp connections: %d\n", icmpCount)
 		fmt.Printf("Total number of tcp connections: %d\n", tcpCount)
 		fmt.Printf("Total number of udp connections: %d\n", udpCount)
 	}

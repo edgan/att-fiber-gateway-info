@@ -9,14 +9,17 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-func extractHeadersAndTableData(action string, configs Configs, doc *goquery.Document, flags *Flags, model string, natActionPrefix string, returnFact string) string {
+func extractHeadersAndTableData(action string, configs Configs, doc *goquery.Document, flags *Flags, model string, returnFact string) string {
 	fact := ""
 	// Track current section header
-	var currentHeader string
+	currentHeader := ""
+
+	// Return action prefixes
+	actionPrefixes := returnActionPrefixes()
 
 	// Process h1, h2, and tables
 	doc.Find("h1, h2, table").Each(func(i int, s *goquery.Selection) {
-		if !strings.Contains(action, natActionPrefix) {
+		if !strings.Contains(action, actionPrefixes["nat"]) {
 			// Check if this is an h1 or h2 element
 			if s.Is("h1") || s.Is("h2") {
 				headerText := strings.TrimSpace(s.Text())
@@ -129,7 +132,7 @@ func extractHeadersAndTableData(action string, configs Configs, doc *goquery.Doc
 	return fact
 }
 
-func extractData(action string, configs Configs, content string, flags *Flags, model string, natActionPrefix string, returnFact string) (string, error) {
+func extractData(action string, configs Configs, content string, flags *Flags, model string, returnFact string) (string, error) {
 	fact := ""
 
 	// Load the HTML content into goquery
@@ -140,7 +143,7 @@ func extractData(action string, configs Configs, content string, flags *Flags, m
 		return fact, fmt.Errorf("failed to parse content: %v", err)
 	}
 
-	fact = extractHeadersAndTableData(action, configs, doc, flags, model, natActionPrefix, returnFact)
+	fact = extractHeadersAndTableData(action, configs, doc, flags, model, returnFact)
 
 	return fact, err
 }

@@ -6,7 +6,7 @@ import (
 	"sync"
 )
 
-func allMetrics(actionPages map[string]string, client *GatewayClient, configs Configs, flags *Flags, model string, natActionPrefix string) {
+func allMetrics(actionPages map[string]string, client *GatewayClient, configs Configs, flags *Flags, model string) {
 	returnFact := ""
 
 	metricActions := returnMeticsActions()
@@ -25,7 +25,7 @@ func allMetrics(actionPages map[string]string, client *GatewayClient, configs Co
 		go func(action string) {
 			defer wg.Done() // Decrement the counter when the goroutine finishes
 
-			_, err := client.retrieveAction(action, actionPages, configs, flags, model, natActionPrefix, returnFact)
+			_, err := client.retrieveAction(action, actionPages, configs, flags, model, returnFact)
 			if err != nil {
 				// Send the error to the error channel
 				errChan <- fmt.Errorf("failed to get %s: %v", action, err)

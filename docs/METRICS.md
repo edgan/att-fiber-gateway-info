@@ -191,7 +191,8 @@ bgw320505.home.network.status.lan.ethernet.port4.receive.errors=0.0
 
 ### nat-totals
 ```
-bgw320505.nat.totals.connetions=235.0
-bgw320505.nat.totals.tcp.connections=122.0
-bgw320505.nat.totals.udp.connections=112.0
+bgw320505.nat.totals.connections=370.0
+bgw320505.nat.totals.icmp.connections=0.0
+bgw320505.nat.totals.tcp.connections=178.0
+bgw320505.nat.totals.udp.connections=192.0
 ```

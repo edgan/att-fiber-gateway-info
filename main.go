@@ -48,7 +48,7 @@ func main() {
 	returnFact := "model"
 
 	// "" is the model variable
-	model, err := client.retrieveAction("system-information", actionPages, configs, flags, "", actionPrefixes["nat"], returnFact)
+	model, err := client.retrieveAction("system-information", actionPages, configs, flags, "", returnFact)
 
 	if err != nil {
 		logFatalf("Failed to get %s: %v", action, err)
@@ -57,10 +57,10 @@ func main() {
 	if *flags.AllMetrics {
 		if *flags.Continuous {
 			for {
-				allMetrics(actionPages, client, configs, flags, model, actionPrefixes["nat"])
+				allMetrics(actionPages, client, configs, flags, model)
 			}
 		} else {
-			allMetrics(actionPages, client, configs, flags, model, actionPrefixes["nat"])
+			allMetrics(actionPages, client, configs, flags, model)
 			os.Exit(0)
 		}
 	}
@@ -70,7 +70,7 @@ func main() {
 	if *flags.Metrics {
 		if *flags.Continuous {
 			for {
-				_, err = client.retrieveAction(*action, actionPages, configs, flags, model, actionPrefixes["nat"], returnFact)
+				_, err = client.retrieveAction(*action, actionPages, configs, flags, model, returnFact)
 
 				if err != nil {
 					logFatalf("Failed to get %s: %v", action, err)
@@ -79,7 +79,7 @@ func main() {
 		}
 	}
 
-	_, err = client.retrieveAction(*action, actionPages, configs, flags, model, actionPrefixes["nat"], returnFact)
+	_, err = client.retrieveAction(*action, actionPages, configs, flags, model, returnFact)
 
 	if err != nil {
 		logFatalf("Failed to get %s: %v", action, err)
