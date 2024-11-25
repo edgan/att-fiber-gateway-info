@@ -30,13 +30,13 @@ att-fiber-gateway-info -action broadband-status -metrics
 att-fiber-gateway-info -action fiber-status -metrics
 att-fiber-gateway-info -action home-network-status -metrics
 att-fiber-gateway-info -action nat-totals -metrics
-att-fiber-gateway-info -action nat-totals -metrics -interval 10
-att-fiber-gateway-info -action broadband-status -metrics -datadog -interval 10
-att-fiber-gateway-info -action fiber-status -metrics -datadog -interval 10
-att-fiber-gateway-info -action home-network-status -metrics -datadog -interval 10
+att-fiber-gateway-info -action nat-totals -metrics -continuous
+att-fiber-gateway-info -action broadband-status -metrics -datadog -continuous
+att-fiber-gateway-info -action fiber-status -metrics -datadog -continuous
+att-fiber-gateway-info -action home-network-status -metrics -datadog -continuous
 att-fiber-gateway-info -action nat-totals -metrics -datadog
 att-fiber-gateway-info -allmetrics
-att-fiber-gateway-info -allmetrics -datadog -interval 20
+att-fiber-gateway-info -allmetrics -datadog -continuous
 ```
 
 ## Systemd
@@ -55,10 +55,8 @@ It looks for tables with certain summaries. The exception is the action
 There is also the `-allmetrics` flag that returns mertics for all actions known
 to have metrics.
 
-Finally there is the `-interval` flag to allow you to automatically return
-metrics every X number of seconds. There is a minimum of 10 seconds when using
-`-metrics` for individual actions, and a minimum of 20 seconds when using
-`-allmetrics` to return all metrics.
+Finally there is the `-continous` flag to allow you to automatically return
+metrics continously.
 
 ## Statsd
 ### What is statsd?
