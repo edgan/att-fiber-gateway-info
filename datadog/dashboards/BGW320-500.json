@@ -255,7 +255,7 @@
               {
                 "name": "query0",
                 "data_source": "metrics",
-                "query": "avg:bgw320500.nat.totals.connetions{*}"
+                "query": "avg:bgw320500.nat.totals.connections{*}"
               },
               {
                 "name": "query1",

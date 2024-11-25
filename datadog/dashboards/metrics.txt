@@ -8,7 +8,7 @@ bgw320505.fiber.status.temperature
 
 bgw320505.fiber.status.vcc
 
-bgw320505.nat.totals.connetions
+bgw320505.nat.totals.connections
 bgw320505.nat.totals.icmp.connections
 bgw320505.nat.totals.tcp.connections
 bgw320505.nat.totals.udp.connections
