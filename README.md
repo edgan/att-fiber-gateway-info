@@ -19,7 +19,7 @@ In most cases [Datadog](https://www.datadoghq.com/) can be
 [used](https://www.datadoghq.com/pricing/) for $${\color{green}free}$$.
 
 The dashboards can be viewed both in browsers, and in
-[Datadog](https://www.datadoghq.com/) mobile apps in the
+[Datadog](https://www.datadoghq.com/) mobile apps from the
 [Apple App Store](https://apps.apple.com/us/app/datadog/id1391380318) and
 [Google Play Store](https://play.google.com/store/apps/details?id=com.datadog.app&hl=en_US).
 
