@@ -7,12 +7,12 @@ command line tool interact with
 [AT&T Fiber](https://www.att.com/internet/fiber/) gateways.
 
 ## Features
-1. Pull metrics from the gateway and send them to
+1. Pull metrics from a gateway and send them to
 [statsd](https://github.com/statsd/statsd)([Datadog](https://www.datadoghq.com/))
-2. Pull data from the gateways like network connections, uptime, firmware
-version, model, and serial number
+2. Pull data like network connections, uptime, firmware version, model, and
+serial number from a gateway
 3. Pull metrics from the gateway and display them as text
-4. Do various resets including restarting the gateway
+4. Do various resets including restarting a gateway
 5. Custom [Datadog](https://www.datadoghq.com/) dashboards per gateway model
 
 In most cases [Datadog](https://www.datadoghq.com/) can be
