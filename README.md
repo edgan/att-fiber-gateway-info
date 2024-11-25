@@ -1,5 +1,5 @@
 # att-fiber-gateway-info
-![Screenshot1](/screenshots/datadog-metrics1.png)
+![Screenshot1](/screenshots/datadog-metrics-desktop1.png)
 
 ## Description
 A cross platform [golang](https://en.wikipedia.org/wiki/Go_(programming_language))
