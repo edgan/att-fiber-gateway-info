@@ -15,7 +15,13 @@ version, model, and serial number
 4. Do various resets including restarting the gateway
 5. Custom [Datadog](https://www.datadoghq.com/) dashboards per gateway model
 
-In most cases [Datadog](https://www.datadoghq.com/) can be [used](https://www.datadoghq.com/pricing/) for $${\color{green}free}$$.
+In most cases [Datadog](https://www.datadoghq.com/) can be
+[used](https://www.datadoghq.com/pricing/) for $${\color{green}free}$$.
+
+The dashboards can be viewed both in browsers, and in
+[Datadog](https://www.datadoghq.com/) mobile apps in the
+[Apple App Store](https://apps.apple.com/us/app/datadog/id1391380318) and
+[Google Play Store](https://play.google.com/store/apps/details?id=com.datadog.app&hl=en_US).
 
 ## Supported hardware
 * [BGW320-505 gateway](https://help.sonic.com/hc/en-us/articles/1500000066642-BGW320)
