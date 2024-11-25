@@ -11,15 +11,15 @@ import (
 )
 
 type Dashboard struct {
-	Models            []string
-	Filenames         []string
-	Titles            []string
 	Description       string
-	Widgets           []Widget
-	TemplateVariables []string
+	Filename          string
 	LayoutType        string
+	Model             string
 	NotifyList        []string
 	ReflowType        string
+	TemplateVariables []string
+	Title             string
+	Widgets           []Widget
 }
 
 type Widget struct {
@@ -169,19 +169,27 @@ func main() {
 		}
 	}
 
-	dashboard := Dashboard{
-		Models:            []string{"bgw210700", "bgw320500", "bgw320505"},
-		Filenames:         []string{"BGW210-700.json", "BGW320-500.json", "BGW320-505.json"},
-		Titles:            []string{"BGW210-700 dashboard", "BGW320-500 dashboard", "BGW320-505 dashboard"},
-		Description:       "",
-		Widgets:           widgets,
-		TemplateVariables: []string{},
-		LayoutType:        "ordered",
-		NotifyList:        []string{},
-		ReflowType:        "fixed",
-	}
+	models := []string{"BGW210-700", "BGW320-500", "BGW320-505"}
 
-	tmpl := template.Must(template.New("dashboard").Parse(`{
+	for _, model := range models {
+		metricModel := strings.ToLower(model)
+		metricModel = strings.Replace(metricModel, "-", "", 1)
+		filename := model + ".json"
+		title := model + " dashboard"
+
+		dashboard := Dashboard{
+			Description:       "",
+			Filename:          filename,
+			LayoutType:        "ordered",
+			Model:             metricModel,
+			NotifyList:        []string{},
+			ReflowType:        "fixed",
+			TemplateVariables: []string{},
+			Title:             title,
+			Widgets:           widgets,
+		}
+
+		tmpl := template.Must(template.New("dashboard").Parse(`{
   "title": "{{.Title}}",
   "description": "{{.Description}}",
   "widgets": [
@@ -246,16 +254,15 @@ func main() {
   "reflow_type": "{{.ReflowType}}"
 }`))
 
-	re := regexp.MustCompile(`bgw\w{6}`)
+		re := regexp.MustCompile(`bgw\w{6}`)
 
-	for i, filename := range dashboard.Filenames {
 		for wIndex, widget := range dashboard.Widgets {
 			for qIndex, query := range widget.Definition.Request.Queries {
-				// Modify the query.Query value
-				query.Query = re.ReplaceAllString(query.Query, dashboard.Models[i])
+				query.Query = re.ReplaceAllString(query.Query, metricModel)
 				// Write back the modified query into the original Queries slice
 				dashboard.Widgets[wIndex].Definition.Request.Queries[qIndex] = query
 			}
+
 		}
 
 		outputDashboard := struct {
@@ -267,7 +274,7 @@ func main() {
 			NotifyList        []string
 			ReflowType        string
 		}{
-			Title:             dashboard.Titles[i],
+			Title:             dashboard.Title,
 			Description:       dashboard.Description,
 			Widgets:           dashboard.Widgets,
 			TemplateVariables: dashboard.TemplateVariables,
@@ -291,6 +298,6 @@ func main() {
 
 		file.Write(output.Bytes())
 		fmt.Printf("Dashboard JSON written to %s\n", filename)
-	}
 
+	}
 }
