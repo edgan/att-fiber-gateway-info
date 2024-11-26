@@ -1,7 +1,7 @@
 # Usage
 
 ```
-att-fiber-gateway-info 1.0.12
+att-fiber-gateway-info 1.0.15
 
 Usage:
   -action string
@@ -29,6 +29,8 @@ Usage:
         Return metrics based on the data instead the data
   -no bool (default: false)
         Answer no to any questions
+  -noconvert bool (default: false)
+        Do not convert text metrics to float values
   -password string 
         Gateway password
   -pretty bool (default: false)

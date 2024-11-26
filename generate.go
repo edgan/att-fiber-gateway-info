@@ -58,7 +58,22 @@ func generateNonFiberMetric(action string, dotZero string, flags *Flags, modelAc
 		}
 
 		for i := 1; i < len(row); i++ { // Start at 1 since stat is from row[0]
-			value := row[i]
+			value := strings.ToLower(row[i])
+
+			if !*flags.Noconvert {
+				if value == "down" {
+					value = "0"
+				}
+
+				if value == "half" || value == "up" {
+					value = "1"
+				}
+
+                                if value == "full" {
+                                        value = "2"
+                                }
+			}
+
 			if _, err := strconv.Atoi(value); err == nil {
 				value += dotZero
 			}

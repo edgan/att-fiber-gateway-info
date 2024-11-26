@@ -27,6 +27,7 @@ type Flags struct {
 	Filter       *string
 	FreshCookies *bool
 	Metrics      *bool
+	Noconvert    *bool
 	Password     *string
 	Pretty       *bool
 	StatsdIPPort *string
@@ -54,6 +55,7 @@ func returnFlags(actionDescription string, colorMode bool, cookiePath string, fi
 		),
 
 		Metrics:      flag.Bool("metrics", false, "Return metrics based on the data instead the data"),
+		Noconvert:    flag.Bool("noconvert", false, "Do not convert text metrics to float values"),
 		Password:     flag.String("password", "", "Gateway password"),
 		Pretty:       flag.Bool("pretty", false, "Enable pretty mode for nat-connections"),
 		StatsdIPPort: flag.String("statsdipport", "", "Statsd ip port, like 127.0.0.1:8125"),

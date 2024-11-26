@@ -48,7 +48,16 @@ bgw320505.broadband.status.ipv4.transmit.errors
 
 bgw320505.broadband.status.ipv4.collisions
 
+bgw320505.broadband.status.ethernet.line.state
+
 bgw320505.broadband.status.ethernet.current.speed
+
+bgw320505.broadband.status.ethernet.current.duplex
+
+bgw320505.home.network.status.lan.ethernet.port1.state
+bgw320505.home.network.status.lan.ethernet.port2.state
+bgw320505.home.network.status.lan.ethernet.port3.state
+bgw320505.home.network.status.lan.ethernet.port4.state
 
 bgw320505.home.network.status.lan.ethernet.port1.transmit.speed
 bgw320505.home.network.status.lan.ethernet.port2.transmit.speed

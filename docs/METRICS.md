@@ -69,9 +69,9 @@ instrumenting any piece of software to deliver custom metrics.
 ### Flags
 There is finally the `-datadog` flag that instead of printing the metrics sends
 them to statsd as configured by either `-statsdipport` or `statdIPPort` in the
-configuration file. It defaults to `127.0.0.1:8125`. It only sends the `float`
-metrics, because that is what `datadog` accepts for metrics. A way to deal with
-`string` metrics is planned.
+configuration file. It defaults to `127.0.0.1:8125`. It sends the both `string`
+and `float` metrics by converting `string` metrics to `float`. The `-noconvert`
+flag exists to not convert the `string` metrics.
 
 ### Installation
 Statd can be installed via statsd(Node.JS), datadog-agent(Python), or
@@ -94,13 +94,54 @@ bgw320-505.broadband-status.IPv4.Receive Packets=46538166
 bgw320505.broadband.status.ipv4.receive.packets=46538166.0
 ```
 
+## Conversion
+Metrics that are `string` are now converted to `float`. Datadog doesn't support
+`string` metrics.
+
+The conversion of `duplex` is `1.0` for `half` and `2.0` for `full`. This was
+picked to make the graph not look like it is empty when the duplex is `half`.
+
+state:
+```
+up = 1.0
+down = 0.0
+```
+
+duplex:
+```
+half = 1.0
+full = 2.0
+```
+
+Before conversion:
+```
+bgw320505.broadband.status.ethernet.line.state=up
+bgw320505.broadband.status.ethernet.current.duplex=full
+
+bgw320505.home.network.status.lan.ethernet.port1.state=up
+bgw320505.home.network.status.lan.ethernet.port2.state=down
+bgw320505.home.network.status.lan.ethernet.port3.state=down
+bgw320505.home.network.status.lan.ethernet.port4.state=down
+```
+
+After conversion:
+```
+bgw320505.broadband.status.ethernet.line.state=1.0
+bgw320505.broadband.status.ethernet.current.duplex=2.0
+
+bgw320505.home.network.status.lan.ethernet.port1.state=1.0
+bgw320505.home.network.status.lan.ethernet.port2.state=0.0
+bgw320505.home.network.status.lan.ethernet.port3.state=0.0
+bgw320505.home.network.status.lan.ethernet.port4.state=0.0
+```
+
 ## Examples
 
 ### broadband-status
 ```
-bgw320505.broadband.status.ethernet.line.state=up
+bgw320505.broadband.status.ethernet.line.state=1.0
 bgw320505.broadband.status.ethernet.current.speed=10000.0
-bgw320505.broadband.status.ethernet.current.duplex=full
+bgw320505.broadband.status.ethernet.current.duplex=2.0
 bgw320505.broadband.status.ipv4.receive.packets=100033343.0
 bgw320505.broadband.status.ipv4.transmit.packets=18178781.0
 bgw320505.broadband.status.ipv4.receive.bytes=670337417.0
@@ -136,10 +177,10 @@ bgw320505.home.network.status.ipv4.transmit.discards=0.0
 bgw320505.home.network.status.ipv4.receive.packets=15976962.0
 bgw320505.home.network.status.ipv4.receive.errors=0.0
 bgw320505.home.network.status.ipv4.receive.discards=0.0
-bgw320505.home.network.status.lan.ethernet.port1.state=up
-bgw320505.home.network.status.lan.ethernet.port2.state=down
-bgw320505.home.network.status.lan.ethernet.port3.state=down
-bgw320505.home.network.status.lan.ethernet.port4.state=down
+bgw320505.home.network.status.lan.ethernet.port1.state=1.0
+bgw320505.home.network.status.lan.ethernet.port2.state=0.0
+bgw320505.home.network.status.lan.ethernet.port3.state=0.0
+bgw320505.home.network.status.lan.ethernet.port4.state=0.0
 bgw320505.home.network.status.lan.ethernet.port1.transmit.speed=2500000000.0
 bgw320505.home.network.status.lan.ethernet.port2.transmit.speed=0.0
 bgw320505.home.network.status.lan.ethernet.port3.transmit.speed=0.0
