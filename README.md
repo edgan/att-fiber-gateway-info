@@ -155,3 +155,6 @@ As far as I can tell there is no way to replace the gateway's
 I first ran across the first flaw over 15 years ago. I had gone to a
 [Defcon](https://en.wikipedia.org/wiki/DEF_CON) talk about it,
 and then discovered the same flaw in the real world.
+
+## Related project
+[att-fiber-gateway-outage-detection](https://github.com/edgan/att-fiber-gateway-outage-detection/)
