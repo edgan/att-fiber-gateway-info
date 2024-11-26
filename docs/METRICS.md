@@ -11,6 +11,9 @@ The general idea is to be able to pull metrics out of various gateway pages.
 ### Android
 [Android screenshot](/screenshots/datadog-metrics-android.png)
 
+### iOS
+[iOS screenshot](/screenshots/datadog-metrics-ios.png)
+
 ## Datadog
 [Datadog](https://www.datadoghq.com/) is just one way to use this. It is free
 for up to five hosts.
