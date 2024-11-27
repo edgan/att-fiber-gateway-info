@@ -16,7 +16,7 @@ also assumes you want `-allmetrics -continuous -datadog` as default flags.
 
 Command line lets you just directly specify all the flags directly.
 
-## Daemon environment variables for flag values
+### Daemon environment variables for flag values
 ```
 PASSWORD
 STATSDIPPORT
@@ -37,14 +37,14 @@ docker run -it -e PASSWORD='1234567890' -e STATSDIPPORT='192.168.10.10:8125' att
 docker run -it -e PASSWORD='1234567890' -e URL='https://192.168.10.1' att-fiber-gateway-info
 ```
 
-## Command line usage
+### Command line usage
 ```
 docker run -it att-fiber-gateway-info att-fiber-gateway-info -action fiber-status -password "<password>"
 docker run -it att-fiber-gateway-info att-fiber-gateway-info -action fiber-status -metrics -password "<password>"
 docker run -it att-fiber-gateway-info att-fiber-gateway-info -action nat-connections -pretty  -password "<password>"
 ```
 
-## Command line examples
+### Command line examples
 ```
 docker run -it att-fiber-gateway-info att-fiber-gateway-info -action fiber-status -password "1234567890"
 docker run -it att-fiber-gateway-info att-fiber-gateway-info -action fiber-status -metrics -password "1234567890"
