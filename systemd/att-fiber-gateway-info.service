@@ -7,7 +7,7 @@ Wants=network-online.target
 [Service]
 Type=simple
 Environment="HOME=/root"
-ExecStart=/usr/local/bin/att-fiber-gateway-info -allmetrics -datadog -continuous
+ExecStart=/usr/local/bin/att-fiber-gateway-info -allmetrics -continuous -datadog
 
 Restart=on-failure
 RestartSec=5
