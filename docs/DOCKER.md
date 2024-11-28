@@ -1,4 +1,5 @@
 # Docker
+[Here](/Dockerfile) is a Dockerfile for running this in a Linux container.
 
 ## Building the image
 ```
