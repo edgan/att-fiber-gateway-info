@@ -6,84 +6,42 @@ import (
 )
 
 func main() {
-	// Color mode detection
+	// Initial setup
 	colorMode := checkColorTerminal()
-
-	// Load config file
-	configFile := determineConfigFile()
-	config := loadAppConfig(configFile)
-
-	// Return action prefixes
+	config := loadAppConfig(determineConfigFile())
 	actionPrefixes := returnActionPrefixes()
-
-	// Return action pages
 	actionPages := returnActionPages(actionPrefixes)
-
-	// Return a actions description
 	actionsDescription := actionsHelp()
-
-	// Return a filters description
 	filtersDescription := filtersHelp()
-
-	// Return a cookie path
 	cookiePath := determineCookiePath()
-
-	// Flags
 	action, flags, version := returnFlags(actionsDescription, colorMode, cookiePath, filtersDescription)
 
 	if *version {
-		appVersion := returnApplicationNameVersion()
-		fmt.Println(appVersion)
+		fmt.Println(returnApplicationNameVersion())
 		os.Exit(0)
 	}
 
 	// Validate flags
 	configs, flags := validateFlags(*action, actionPages, config, flags)
 
+	// Create client
 	client, err := createGatewayClient(configs, colorMode, flags)
 	if err != nil {
 		logFatalf("Failed to create router client: %v", err)
 	}
 
-	returnFact := "model"
-
-	// "" is the model variable
-	model, err := client.retrieveAction("system-information", actionPages, configs, flags, "", returnFact)
-
+	// Retrieve model information
+	model, err := client.retrieveAction("system-information", actionPages, configs, flags, "", "model")
 	if err != nil {
-		logFatalf("Failed to get %s: %v", action, err)
+		logFatalf("Failed to get system-information: %v", err)
 	}
 
+	// Handle actions based on flags
 	if *flags.AllMetrics {
-		if *flags.Continuous {
-			for {
-				allMetrics(actionPages, client, configs, flags, model)
-			}
-		} else {
-			allMetrics(actionPages, client, configs, flags, model)
-			os.Exit(0)
-		}
+		executeAllMetrics(actionPages, client, configs, flags, model, *flags.Continuous)
+	} else if *flags.Metrics {
+		executeRetrieveAction(client, *action, actionPages, configs, flags, model, *flags.Continuous)
+	} else {
+		executeRetrieveAction(client, *action, actionPages, configs, flags, model, *flags.Continuous)
 	}
-
-	returnFact = ""
-
-	if *flags.Metrics {
-		if *flags.Continuous {
-			for {
-				_, err = client.retrieveAction(*action, actionPages, configs, flags, model, returnFact)
-
-				if err != nil {
-					logFatalf("Failed to get %s: %v", action, err)
-				}
-			}
-		}
-	}
-
-	_, err = client.retrieveAction(*action, actionPages, configs, flags, model, returnFact)
-
-	if err != nil {
-		logFatalf("Failed to get %s: %v", action, err)
-	}
-
-	os.Exit(0)
 }

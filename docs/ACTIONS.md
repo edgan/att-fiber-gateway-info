@@ -8,62 +8,62 @@ Example:
 
 Primary Broadband
 -----------------
-Broadband Connection Source: FIBER
+Broadband Connection Source:  FIBER
 
-Broadband Connection: Up
-Broadband Network Type: Lightspeed
-Broadband IPv4 Address: 110.112.23.57
-Gateway IPv4 Address: 110.112.23.1
-MAC Address: 0c:7c:28:10:2c:e9
-Primary DNS: 68.94.156.1
-Secondary DNS: 68.94.157.1
+Broadband Connection:         Up
+Broadband Network Type:       Lightspeed
+Broadband IPv4 Address:       108.214.94.160
+Gateway IPv4 Address:         108.214.94.1
+MAC Address:                  0c:7c:28:b5:ac:cb
+Primary DNS:                  68.94.156.1
+Secondary DNS:                68.94.157.1
 Primary DNS Name:
 Secondary DNS Name:
-MTU: 1500
+MTU:                          1500
 
 Ethernet Status
 ---------------
-Line State: Up
-Current Speed (Mbps): 10000
-Current Duplex: full
+Line State:            Up
+Current Speed (Mbps):  10000
+Current Duplex:        full
 
 IPv6
 ----
-Status: Available
-Service Type: native IPv6
-Global Unicast IPv6 Address: 2001:506:6041:a283::
-Link Local Address: fe80::e7c:28ff:feb5:bddc
-Default IPv6 Gateway Address: fe80::45:28:69:0
+Status:                        Available
+Service Type:                  native IPv6
+Global Unicast IPv6 Address:   2001:506:6041:c394::
+Link Local Address:            fe80::e7c:28ff:feb5:accb
+Default IPv6 Gateway Address:  fe80::45:28:58:0
 Primary DNS:
 Secondary DNS:
-MTU: 1500
+MTU:                           1500
 
 IPv4 Statistics
 ---------------
-Receive Packets: 14637948
-Transmit Packets: 4145746
-Receive Bytes: 2746141312
-Transmit Bytes: 2487308156
-Receive Unicast: 14637630
-Transmit Unicast: 4145750
-Receive Multicast: 319
-Transmit Multicast: 319
-Receive Drops: 0
-Transmit Drops: 7
-Receive Errors: 0
-Transmit Errors: 0
-Collisions: 0
+Receive Packets:     31223985
+Transmit Packets:    9518583
+Receive Bytes:       2508374836
+Transmit Bytes:      3626733502
+Receive Unicast:     31223982
+Transmit Unicast:    9518584
+Receive Multicast:   3
+Transmit Multicast:  3
+Receive Drops:       0
+Transmit Drops:      7
+Receive Errors:      0
+Transmit Errors:     0
+Collisions:          0
 
 IPv6 Statistics
 ---------------
-Transmit Packets: 4145750
-Transmit Errors: 0
-Transmit Discards: 7
+Transmit Packets:   9518585
+Transmit Errors:    0
+Transmit Discards:  7
 
 GPON Status
 -----------
-PON Link Status: OPERATION (O5)
-UNI Status: up
+PON Link Status:  OPERATION (O5)
+UNI Status:       up
 ```
 
 ## device-list
@@ -109,92 +109,92 @@ Example:
 
 Fiber Status
 ------------
-Optical WAN Operational Status: Up
-Fiber Module: Unavailable
-Last Change: 1731827510
-Link State: Up
-Name: SFP
-Connector: 1
-Transceiver: 200000000000000000
-Encoding: 3
-BR Nominal: 100
-Br Min: 0
-Br Max: 0
-Rate ID: 100
-Wave Length: 0
-Tx Disable State: 0
-RS1 State: 0
-Rate Select State: 0
-Tx Fault State: 0
-Rx LOS State: 1
-Data Ready Bar State: 0
+Optical WAN Operational Status:  Up
+Fiber Module:                    Unavailable
+Last Change:                     1732831548
+Link State:                      Up
+Name:                            SFP
+Connector:                       1
+Transceiver:                     200000000000000000
+Encoding:                        3
+BR Nominal:                      100
+Br Min:                          0
+Br Max:                          0
+Rate ID:                         100
+Wave Length:                     0
+Tx Disable State:                0
+RS1 State:                       0
+Rate Select State:               0
+Tx Fault State:                  0
+Rx LOS State:                    1
+Data Ready Bar State:            0
 
-Length SMF-km: 40
-Length SMF: 0
-Length 50uM: 0
-Length 62dot5uM: 0
-Length OM3: 0
+Length SMF-km:                   40
+Length SMF:                      0
+Length 50uM:                     0
+Length 62dot5uM:                 0
+Length OM3:                      0
 
-Vendor Name: NOKIA
-Vendor OUI: 000000
-Vendor PN: 3FE46901-STCC
-Vendor Rev: 1B
-Vendor SN: DBT31020200199
-Vendor Date Code: 240401
+Vendor Name:                     NOKIA
+Vendor OUI:                      000000
+Vendor PN:                       3FE46901-STCC
+Vendor Rev:                      1B
+Vendor SN:                       DBT24040100292
+Vendor Date Code:                240401
 
-OPT Cooled Trans: uncooled transceiver
-OPT Powerlvl: 2
-OPT Linear Rcvr: conventional receiver
-OPT Rate Select: 0
-OPT Tx Disable: 1
-OPT Tx Fault: 1
-OPT Inverted-LOS: 0
-OPT LOS: 1
+OPT Cooled Trans:                uncooled transceiver
+OPT Powerlvl:                    2
+OPT Linear Rcvr:                 conventional receiver
+OPT Rate Select:                 0
+OPT Tx Disable:                  1
+OPT Tx Fault:                    1
+OPT Inverted-LOS:                0
+OPT LOS:                         1
 
-DMC Type Implemented: 1
-DMC Type Internal Cal: 1
-DMC Type External Cal: 0
-DMC Type Rx Avg Pwr: Average power method
+DMC Type Implemented:            1
+DMC Type Internal Cal:           1
+DMC Type External Cal:           0
+DMC Type Rx Avg Pwr:             Average power method
 
-EOC Alarm Implemented: 1
-EOC Soft Tx Disable: 1
-EOC Soft Tx fault: 1
-EOC Soft Rx LOS: 1
-EOC Soft Rate Select: 0
+EOC Alarm Implemented:           1
+EOC Soft Tx Disable:             1
+EOC Soft Tx fault:               1
+EOC Soft Rx LOS:                 1
+EOC Soft Rate Select:            0
 
-SFF 8079 App Select: 0
-SFF 8431 Soft Rate Select: 0
-SFF Ver Compliance: rev 11.0
+SFF 8079 App Select:             0
+SFF 8431 Soft Rate Select:       0
+SFF Ver Compliance:              rev 11.0
 
-Temperature  Currently 41
+Temperature  Currently 44
 ---------------------------
-: Low: High
-Alarm: 0                 (Threshold -50): 0                 (Threshold 95)
-Warning: 0                 (Threshold -40): 0                 (Threshold 85)
+         Low                                High
+Alarm    0                 (Threshold -50)  0                 (Threshold 95)
+Warning  0                 (Threshold -40)  0                 (Threshold 85)
 
 Vcc  Currently 3
 ------------------
-: Low: High
-Alarm: 0                 (Threshold 2): 0                 (Threshold 3)
-Warning: 0                 (Threshold 3): 0                 (Threshold 3)
+         Low                              High
+Alarm    0                 (Threshold 2)  0                 (Threshold 3)
+Warning  0                 (Threshold 3)  0                 (Threshold 3)
 
 Tx Bias  Currently 11
 -----------------------
-: Low: High
-Alarm: 0                 (Threshold 20): 0                 (Threshold 900)
-Warning: 0                 (Threshold 40): 0                 (Threshold 800)
+         Low                               High
+Alarm    0                 (Threshold 20)  0                 (Threshold 900)
+Warning  0                 (Threshold 40)  0                 (Threshold 800)
 
-Tx Power  Currently 59
+Tx Power  Currently 56
 ------------------------
-: Low: High
-Alarm: 0                 (Threshold 33): 0                 (Threshold 81)
-Warning: 0                 (Threshold 37): 0                 (Threshold 80)
+         Low                               High
+Alarm    0                 (Threshold 33)  0                 (Threshold 81)
+Warning  0                 (Threshold 37)  0                 (Threshold 80)
 
-Rx Power  Currently -223
+Rx Power  Currently -168
 --------------------------
-: Low: High
-Alarm: 0                 (Threshold -322): 0                 (Threshold -70)
-Warning: 0                 (Threshold -292): 0                 (Threshold -75)
+         Low                                 High
+Alarm    0                 (Threshold -322)  0                 (Threshold -70)
+Warning  0                 (Threshold -292)  0                 (Threshold -75)
 ```
 
 ## home-network-status
@@ -206,24 +206,25 @@ Example:
 
 Home Network Status
 -------------------
-Device IPv4 Address:    192.168.1.254
-DHCPv4 Netmask:         255.255.255.0
-DHCP Server:            On
-DHCPv4 Start Address:   192.168.1.100
-DHCPv4 End Address:     192.168.1.199
-DHCP Leases Available:   78
-DHCP Leases Allocated:   22
+Device IPv4 Address:     192.168.1.254
+DHCPv4 Netmask:          255.255.255.0
+DHCP Server:             On
+DHCPv4 Start Address:    192.168.1.100
+DHCPv4 End Address:      192.168.1.199
+DHCP Leases Available:   98
+DHCP Leases Allocated:   2
 DHCP Primary Pool:       Private
 Secondary Subnet:        Disabled
 Public Subnet:
 Cascaded Router Status:  Disabled
-IP Passthrough Status:   Off (private IP address)
+IP Passthrough Status:   On (public IP address)
+IP Passthrough Address:  108.214.94.160
 
 Interfaces
 ----------
 Interface:      Status    Active Devices  Inactive Devices
-Ethernet:       Enabled   0               6
-5G Ethernet:    Enabled   20              8
+Ethernet:       Enabled   1               5
+5G Ethernet:    Enabled   1               27
 Wi-Fi 2.4 GHz:  Disabled  0               1
 Wi-Fi 5 GHz:    Disabled  0               1
 Mesh Clients:   Disabled  0               0
@@ -234,12 +235,12 @@ Status:  Unavailable
 
 IPv4 Statistics
 ---------------
-Transmit Packets:   14003557
+Transmit Packets:   37575373
 Transmit Errors:    0
 Transmit Discards:  0
-Receive Packets:    3481569
+Receive Packets:    10576700
 Receive Errors:     0
-Receive Discards:   0
+Receive Discards:   1
 
 Wi-Fi Status
 ------------
@@ -249,21 +250,21 @@ Wi-Fi is not enabled. Click here to configure Wi-Fi on.
 
 LAN Ethernet Statistics
 -----------------------
-                     Port 1      Port 2  Port 3  Port 4
-State:               up          down    down    down
-Transmit Speed:      2500000000  0       0       0
-Transmit Packets:    11957436    0       0       0
-Transmit Bytes:      3128473698  0       0       0
-Transmit Unicast:    11827126    0       0       0
-Transmit Multicast:  59934       0       0       0
-Transmit Dropped:    0           0       0       0
-Transmit Errors:     0           0       0       0
-Receive Packets:     2970634     0       0       0
-Receive Bytes:       1311962688  0       0       0
-Receive Unicast:     2818745     0       0       0
-Receive Multicast:   81743       0       0       0
-Receive Dropped:     117         0       0       0
-Receive Errors:      0           0       0       0
+                     Port 1      Port 2  Port 3      Port 4
+State:               up          down    up          down
+Transmit Speed:      2500000000  0       1000000000  0
+Transmit Packets:    37518373    0       3722175     0
+Transmit Bytes:      2362140368  0       275926400   0
+Transmit Unicast:    33876198    0       94442       0
+Transmit Multicast:  772377      0       757868      0
+Transmit Dropped:    0           0       0           0
+Transmit Errors:     0           0       0           0
+Receive Packets:     10400375    0       178775      0
+Receive Bytes:       3691673605  0       93498289    0
+Receive Unicast:     10398554    0       161912      0
+Receive Multicast:   1682        0       16850       0
+Receive Dropped:     0           0       0           0
+Receive Errors:      0           0       0           0
 ```
 
 ## ip-allocation
@@ -431,13 +432,15 @@ This returns the values from the
 
 Example:
 ```
-Manufacturer: NOKIA
-Model Number: BGW320-505
-Serial Number: N94VA0JP111713
-Software Version: 6.30.5
-MAC Address: 0c:7c:28:10:2c:e9
-First Use Date: 2020/11/16 17:19:53
-Time Since Last Reboot: 00:09:51:01
-Current Date/Time: 2024-11-13T13:13:31
-Hardware Version: 02001E0046004F
+System Information
+------------------
+Manufacturer:            NOKIA
+Model Number:            BGW320-505
+Serial Number:           N93VA0JP001958
+Software Version:        6.30.5
+MAC Address:             0c:7c:28:b5:ac:cb
+First Use Date:          2020/11/16 17:19:53
+Time Since Last Reboot:  01:00:25:33
+Current Date/Time:       2024-11-28T15:18:49
+Hardware Version:        02001E0046004F
 ```

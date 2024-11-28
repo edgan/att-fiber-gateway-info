@@ -34,12 +34,71 @@ func processDeviceList(tableData [][]string) {
 }
 
 func processGeneric(tableData [][]string) {
-	for _, row := range tableData {
-		line := strings.Join(row, ": ")
+	if len(tableData) == 0 {
+		return
+	}
 
-		if !strings.Contains(line, "Legal Disclaimer") {
-			fmt.Println(line)
+	// Determine the maximum number of columns
+	numCols := 0
+	for _, row := range tableData {
+		if len(row) > numCols {
+			numCols = len(row)
 		}
+	}
+
+	// Initialize slice to hold max width of each column
+	colWidths := make([]int, numCols)
+
+	// Calculate maximum width for each column
+	for _, row := range tableData {
+		for i, cell := range row {
+			cellLen := len(stripAnsi(cell))
+			if i == 0 && numCols == 2 {
+				cellLen += 1 // Account for the ":" after the key
+			}
+			if cellLen > colWidths[i] {
+				colWidths[i] = cellLen
+			}
+		}
+	}
+
+	// Print each row with proper alignment
+	for _, row := range tableData {
+		// For tables with two columns, add ":" after the first column
+		if numCols == 2 && len(row) >= 1 {
+			if strings.Contains(row[0], "Legal Disclaimer") {
+				continue
+			}
+
+			key := row[0] + ":"
+
+			if row[0] == "" {
+				key = row[0]
+			}
+
+			format0 := fmt.Sprintf("%%-%ds", colWidths[0]+2)
+			fmt.Printf(format0, key)
+
+			// Check if the second column exists
+			if len(row) >= 2 {
+				format1 := fmt.Sprintf("%%-%ds", colWidths[1]+2)
+				fmt.Printf(format1, row[1])
+			}
+		} else {
+			// For tables with more than two columns
+			for i := 0; i < numCols; i++ {
+				var cell string
+				if i < len(row) {
+					cell = row[i]
+				} else {
+					cell = ""
+				}
+				// Left-align the content within the column width
+				format := fmt.Sprintf("%%-%ds", colWidths[i]+2) // Add extra space for padding
+				fmt.Printf(format, cell)
+			}
+		}
+		fmt.Println()
 	}
 }
 
@@ -133,7 +192,7 @@ func processNatConnectionsPretty(class string, tableData [][]string) {
 
 func processNatDestinations(class string, tableData [][]string) {
 	if class == "grid table100" {
-		sortedDestinationsIPs := CountIPsByColumn(tableData, 7)
+		sortedDestinationsIPs := countIPsByColumn(tableData, 7)
 		fmt.Println("Destinations IP addresses:")
 
 		for _, row := range sortedDestinationsIPs {
@@ -144,7 +203,7 @@ func processNatDestinations(class string, tableData [][]string) {
 
 func processNatSources(class string, tableData [][]string) {
 	if class == "grid table100" {
-		sortedSourcesIPs := CountIPsByColumn(tableData, 5)
+		sortedSourcesIPs := countIPsByColumn(tableData, 5)
 		fmt.Println("Source IP addresses:")
 
 		for _, row := range sortedSourcesIPs {

@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"regexp"
-	"sort"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -53,7 +51,9 @@ func extractHeadersAndTableData(action string, configs Configs, doc *goquery.Doc
 
 			// Handle return facts or output data
 			if returnFact == "model" {
-				fact = strings.Replace(tableData[1][1], "-", "", 1)
+				if len(tableData) > 1 && len(tableData[1]) > 1 {
+					fact = strings.Replace(tableData[1][1], "-", "", 1)
+				}
 			} else if *flags.Metrics {
 				debugLog(*flags.Debug, "outputMetrics")
 				outputMetrics(action, configs, flags, currentHeader, model, shortSummary, tableData)
@@ -66,46 +66,19 @@ func extractHeadersAndTableData(action string, configs Configs, doc *goquery.Doc
 	return fact
 }
 
-// Helper function to validate table classes
-func isValidTableClass(class string, validClasses []string) bool {
-	for _, validClass := range validClasses {
-		if strings.Contains(class, validClass) {
-			return true
-		}
-	}
-	return false
-}
-
-// Helper function to validate and process table summaries
-func isValidSummary(summary string) (bool, string) {
-	if strings.Contains(strings.ToLower(summary), "statistics") ||
-		summary == "Summary of nattable connections" ||
-		summary == "This table displays a summary of session information." {
-
-		shortSummary := summary
-		patterns := []string{
-			` [Ss]tatistic.*`,
-			`Ethernet `,
-			`This table displays `,
-		}
-		for _, pattern := range patterns {
-			re := regexp.MustCompile(pattern)
-			shortSummary = re.ReplaceAllString(shortSummary, "")
-		}
-		return true, shortSummary
-	}
-	return false, ""
-}
-
-// Helper function to extract table data
+// Modify the extractTableData function to include table headers
 func extractTableData(s *goquery.Selection) [][]string {
 	var tableData [][]string
 	s.Find("tr").Each(func(j int, row *goquery.Selection) {
 		var rowData []string
+
+		// Extract "th" and "td" content
 		row.Find("th, td").Each(func(k int, cell *goquery.Selection) {
-			cellText := extractCellText(cell)
+			cellText := strings.TrimSpace(cell.Text())
 			rowData = append(rowData, cellText)
 		})
+
+		// Add row data if not empty
 		if len(rowData) > 0 {
 			tableData = append(tableData, rowData)
 		}
@@ -170,38 +143,4 @@ func extractContentSub(htmlStr string) (string, error) {
 	}
 
 	return htmlContent, nil
-}
-
-// Define a function that takes a column index as a parameter and returns sorted IP counts
-func CountIPsByColumn(tableData [][]string, column int) []struct {
-	IP    string
-	Count int
-} {
-	// Variable to count occurrences of each IP address in the specified column
-	ipCount := make(map[string]int)
-
-	for i, row := range tableData {
-		if i != 0 {
-			ipCount[row[column]]++
-		}
-	}
-
-	// Convert the map to a slice of structs for sorting
-	var sortedIPs []struct {
-		IP    string
-		Count int
-	}
-	for ip, count := range ipCount {
-		sortedIPs = append(sortedIPs, struct {
-			IP    string
-			Count int
-		}{IP: ip, Count: count})
-	}
-
-	// Sort the slice by count in descending order
-	sort.Slice(sortedIPs, func(i, j int) bool {
-		return sortedIPs[i].Count > sortedIPs[j].Count
-	})
-
-	return sortedIPs
 }
