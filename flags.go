@@ -127,12 +127,12 @@ func validateFlags(action string, actionPages map[string]string, config *Config,
 
 // Helper function to get map keys as a sorted slice
 func getMapKeys(m map[string]string) []string {
-    keys := make([]string, 0, len(m))
-    for key := range m {
-        keys = append(keys, key)
-    }
-    sort.Strings(keys) // Sort keys alphabetically
-    return keys
+	keys := make([]string, 0, len(m))
+	for key := range m {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys) // Sort keys alphabetically
+	return keys
 }
 
 // Helper function to check if a map contains a key
@@ -152,64 +152,43 @@ func contains(slice []string, item string) bool {
 }
 
 func Usage(colorMode bool) {
-	// Create color functions
-	blue := color.New(color.FgBlue)
-	boldGreen := color.New(color.FgGreen, color.Bold)
-	cyan := color.New(color.FgCyan)
-	green := color.New(color.FgGreen)
+	// Define Sprintf functions based on colorMode
+	var blueSprintf, boldGreenSprintf, cyanSprintf, greenSprintf func(format string, a ...interface{}) string
+
+	if colorMode {
+		blueSprintf = color.New(color.FgBlue).Sprintf
+		boldGreenSprintf = color.New(color.FgGreen, color.Bold).Sprintf
+		cyanSprintf = color.New(color.FgCyan).Sprintf
+		greenSprintf = color.New(color.FgGreen).Sprintf
+	} else {
+		blueSprintf = fmt.Sprintf
+		boldGreenSprintf = fmt.Sprintf
+		cyanSprintf = fmt.Sprintf
+		greenSprintf = fmt.Sprintf
+	}
 
 	applicationNameVersion := returnApplicationNameVersion()
+	fmt.Println(greenSprintf(applicationNameVersion))
 
-	if colorMode {
-		applicationNameVersion = green.Sprintf(applicationNameVersion)
-	}
-
-	fmt.Println(applicationNameVersion)
-
-	usage := "\nUsage:\n"
-
-	if colorMode {
-		usage = green.Sprintf(usage)
-	}
-
-	fmt.Print(usage)
+	fmt.Print(greenSprintf("\nUsage:\n"))
 
 	flag.VisitAll(func(f *flag.Flag) {
 		// Format flag name with color
-		s := "  "
+		s := "  " + boldGreenSprintf("-%s", f.Name)
 
-		if colorMode {
-			s += boldGreen.Sprintf("-%s", f.Name)
-		} else {
-			s += fmt.Sprintf("-%s", f.Name)
-		}
-
-		// Use reflection to get the type of the flag's value and clean it
+		// Get the type of the flag's value
 		flagType := reflect.TypeOf(f.Value).Elem().Name()
 		flagType = strings.TrimSuffix(flagType, "Value")
+		s += blueSprintf(" %s", flagType)
 
-		if colorMode {
-			s += blue.Sprintf(" %s", flagType)
-		} else {
-			s += fmt.Sprintf(" %s", flagType)
-		}
-
-		// Add default value if it exists and isn't empty
+		// Add default value if it exists
 		if f.DefValue != "" {
-			if colorMode {
-				s += blue.Sprintf(" (default: %v)", f.DefValue)
-			} else {
-				s += fmt.Sprintf(" (default: %v)", f.DefValue)
-			}
+			s += blueSprintf(" (default: %v)", f.DefValue)
 		}
 
-		// Add the usage description in cyan
+		// Add the usage description
 		if f.Usage != "" {
-			if colorMode {
-				s += "\n    \t" + cyan.Sprintf(f.Usage)
-			} else {
-				s += "\n    \t" + fmt.Sprintf(f.Usage)
-			}
+			s += "\n    \t" + cyanSprintf(f.Usage)
 		}
 
 		fmt.Println(s)

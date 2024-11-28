@@ -152,3 +152,88 @@ func processNatSources(class string, tableData [][]string) {
 		}
 	}
 }
+
+// Helper function to process "nat-totals" action
+func processNatTotalsAction(tableData [][]string, modelActionMetric, dotZero string, flags *Flags) []string {
+	var metrics []string
+	for _, row := range tableData {
+		if len(row) == 0 || row[0] == "" {
+			continue
+		}
+
+		switch {
+		case strings.Contains(row[0], "IP Family"):
+			icmpCount, tcpCount, udpCount := processNatTotals(tableData)
+			metrics = append(metrics,
+				fmt.Sprintf("%s.icmp.connections=%d%s", modelActionMetric, icmpCount, dotZero),
+				fmt.Sprintf("%s.tcp.connections=%d%s", modelActionMetric, tcpCount, dotZero),
+				fmt.Sprintf("%s.udp.connections=%d%s", modelActionMetric, udpCount, dotZero),
+			)
+			return metrics
+
+		case row[0] == "Total sessions available", row[0] == "Select display option":
+			continue
+
+		default:
+			stat := processStat(row[0])
+			if strings.Contains(stat, "sessions.in.use") {
+				stat = strings.Replace(stat, "Total.sessions.in.use", "connections", 1)
+			}
+			value := processValue(row[1], flags.Noconvert, dotZero)
+			metric := fmt.Sprintf("%s.%s=%s", modelActionMetric, stat, value)
+			metrics = append(metrics, metric)
+		}
+	}
+	return metrics
+}
+
+// Helper function to process general actions
+func processGeneralAction(tableData [][]string, modelActionMetric, lowerSummary, dotZero string, flags *Flags) []string {
+	var metrics []string
+	for _, row := range tableData {
+		if len(row) == 0 || row[0] == "" {
+			continue
+		}
+
+		stat := processStat(row[0])
+
+		for i, cell := range row[1:] {
+			value := processValue(cell, flags.Noconvert, dotZero)
+			var metric string
+			if len(row) > 2 {
+				// Port-specific metrics
+				metric = fmt.Sprintf("%s.%s.port%d.%s=%s", modelActionMetric, lowerSummary, i+1, stat, value)
+			} else {
+				metric = fmt.Sprintf("%s.%s.%s=%s", modelActionMetric, lowerSummary, stat, value)
+			}
+			metrics = append(metrics, metric)
+		}
+	}
+	return metrics
+}
+
+// Helper function to process stat strings
+func processStat(stat string) string {
+	stat = strings.Replace(stat, " ", ".", 1)
+	stat = strings.Replace(stat, " (Mbps)", "", 1)
+	return stat
+}
+
+// Helper function to process value strings
+func processValue(value string, noconvert *bool, dotZero string) string {
+	value = strings.ToLower(value)
+	if !*noconvert {
+		switch value {
+		case "down":
+			value = "0"
+		case "half", "up":
+			value = "1"
+		case "full":
+			value = "2"
+		}
+	}
+	if _, err := strconv.Atoi(value); err == nil {
+		value += dotZero
+	}
+	return value
+}
