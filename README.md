@@ -14,7 +14,7 @@ serial number from a gateway
 * Pull metrics from a gateway and display them as text
 * Do various resets including restarting a gateway
 * Custom [Datadog](https://www.datadoghq.com/) dashboards per gateway model
-* Can be run as a daemon via
+* Can be run as a daemon in 
 [kubernetes](https://en.wikipedia.org/wiki/Kubernetes) via
 [helm](https://helm.sh/),
 [docker](https://en.wikipedia.org/wiki/Docker_(software)), or
