@@ -13,7 +13,7 @@ https://hub.docker.com/repository/docker/edgan/att-fiber-gateway-info/general
 **The password is always required.**
 
 ## Styles
-There are two styles of usage, daemon, and  command line.
+There are two styles of usage, daemon and command line.
 
 Daemon uses `docker/att-fiber-gateway-info.sh` to pass in values for flags. It
 also assumes you want `-allmetrics -continuous -datadog` as default flags.
