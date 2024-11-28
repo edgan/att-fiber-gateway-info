@@ -1,0 +1,4 @@
+apiVersion: v2
+name: att-fiber-gateway-info
+description: A Helm chart for the att-fiber-gateway-info
+version: 0.1.0

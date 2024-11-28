@@ -1,0 +1,8 @@
+flags:
+  password: '' # Must be set, and use single quotes to avoid issues with special characters
+  statsdipport: ""
+  url: ""
+
+image:
+  repository: edgan/att-fiber-gateway-info
+  tag: 1.0.15
