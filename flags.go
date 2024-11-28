@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"reflect"
+	"sort"
 	"strings"
 
 	"github.com/fatih/color"
@@ -75,26 +76,21 @@ func returnFlags(actionDescription string, colorMode bool, cookiePath string, fi
 func validateFlags(action string, actionPages map[string]string, config *Config, flags *Flags) (Configs, *Flags) {
 	var configs Configs
 
-	if *flags.BaseURL == "" {
-		configs.BaseURL = config.BaseURL
-	} else {
-		configs.BaseURL = *flags.BaseURL
+	// Helper function to get the flag value or default to config value
+	getConfigValue := func(flagValue string, configValue string) string {
+		if flagValue != "" {
+			return flagValue
+		}
+		return configValue
 	}
 
-	if *flags.Password == "" {
-		configs.Password = config.Password
-	} else {
-		configs.Password = *flags.Password
-	}
+	// Assign config values using helper function
+	configs.BaseURL = getConfigValue(*flags.BaseURL, config.BaseURL)
+	configs.Password = getConfigValue(*flags.Password, config.Password)
+	configs.StatsdIPPort = getConfigValue(*flags.StatsdIPPort, config.StatsdIPPort)
 
-	if *flags.Continuous && (!*flags.AllMetrics && !*flags.Metrics) {
+	if *flags.Continuous && !(*flags.AllMetrics || *flags.Metrics) {
 		logFatal("-continuous must not be set without -allmetrics or -metrics.")
-	}
-
-	if *flags.StatsdIPPort == "" {
-		configs.StatsdIPPort = config.StatsdIPPort
-	} else {
-		configs.StatsdIPPort = *flags.StatsdIPPort
 	}
 
 	if *flags.AllMetrics {
@@ -103,65 +99,56 @@ func validateFlags(action string, actionPages map[string]string, config *Config,
 
 	if *flags.Metrics && !*flags.AllMetrics {
 		metricActions := returnMeticsActions()
-
-		inSlice := false
-
-		for _, metricAction := range metricActions {
-			if action == metricAction {
-				inSlice = true
-			}
-		}
-
-		if !inSlice {
-			metricActionError := fmt.Sprintf("Action must be one of these (%s) when -metrics is enabled.", strings.Join(metricActions, ", "))
-			logFatal(metricActionError)
+		if !contains(metricActions, action) {
+			logFatal(fmt.Sprintf("Action must be one of these (%s) when -metrics is enabled.", strings.Join(metricActions, ", ")))
 		}
 	}
 
 	if *flags.Datadog && !*flags.Metrics {
-		datadogError := "Metrics must be enabled when enabling datadog"
-		logFatal(datadogError)
+		logFatal("Metrics must be enabled when enabling datadog")
 	}
 
 	// Action validation
-	isValidAction := false
-	actionsHelp := []string{}
-	for action := range actionPages {
-		actionsHelp = append(actionsHelp, action)
-	}
-
-	for _, a := range actionsHelp {
-		if action == a {
-			isValidAction = true
-			break
-		}
-	}
-
-	if !isValidAction && !*flags.AllMetrics {
-		actionError := fmt.Sprintf("Action must be one of these (%s)", strings.Join(actionsHelp, ", "))
-		logFatal(actionError)
+	if !*flags.AllMetrics && !containsMapKey(actionPages, action) {
+		actionsHelp := getMapKeys(actionPages)
+		logFatal(fmt.Sprintf("Action must be one of these (%s)", strings.Join(actionsHelp, ", ")))
 	}
 
 	// Filter validation
-	isValidFilter := false
-	isValidFilter = *flags.Filter == "" // Default to valid if filter is empty (optional)
-	filters := returnFilters()
-
 	if *flags.Filter != "" {
-		for _, f := range filters {
-			if *flags.Filter == f {
-				isValidFilter = true
-				break
-			}
+		filters := returnFilters()
+		if !contains(filters, *flags.Filter) {
+			logFatal(fmt.Sprintf("Filter must be one of these (%s)", strings.Join(filters, ", ")))
 		}
 	}
 
-	if !isValidFilter {
-		filterError := fmt.Sprintf("Filter must be one of these (%s)", strings.Join(filters, ", "))
-		logFatal(filterError)
-	}
-
 	return configs, flags
+}
+
+// Helper function to get map keys as a sorted slice
+func getMapKeys(m map[string]string) []string {
+    keys := make([]string, 0, len(m))
+    for key := range m {
+        keys = append(keys, key)
+    }
+    sort.Strings(keys) // Sort keys alphabetically
+    return keys
+}
+
+// Helper function to check if a map contains a key
+func containsMapKey(m map[string]string, key string) bool {
+	_, exists := m[key]
+	return exists
+}
+
+// Helper function to check if a slice contains a string
+func contains(slice []string, item string) bool {
+	for _, s := range slice {
+		if s == item {
+			return true
+		}
+	}
+	return false
 }
 
 func Usage(colorMode bool) {

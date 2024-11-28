@@ -10,126 +10,129 @@ import (
 )
 
 func extractHeadersAndTableData(action string, configs Configs, doc *goquery.Document, flags *Flags, model string, returnFact string) string {
-	fact := ""
-	// Track current section header
-	currentHeader := ""
+    fact := ""
+    currentHeader := ""
+    actionPrefixes := returnActionPrefixes()
+    validClasses := []string{"table60", "table75", "table100"}
 
-	// Return action prefixes
-	actionPrefixes := returnActionPrefixes()
+    doc.Find("h1, h2, table").Each(func(i int, s *goquery.Selection) {
+        // Update current header if applicable
+        if !strings.Contains(action, actionPrefixes["nat"]) && (s.Is("h1") || s.Is("h2")) {
+            headerText := strings.TrimSpace(s.Text())
+            if headerText != "" {
+                currentHeader = headerText
+            }
+            return
+        }
 
-	// Process h1, h2, and tables
-	doc.Find("h1, h2, table").Each(func(i int, s *goquery.Selection) {
-		if !strings.Contains(action, actionPrefixes["nat"]) {
-			// Check if this is an h1 or h2 element
-			if s.Is("h1") || s.Is("h2") {
-				headerText := strings.TrimSpace(s.Text())
-				if headerText != "" {
-					currentHeader = headerText
-				}
-				return
-			}
-		}
+        if s.Is("table") {
+            // Validate table class
+            class, hasClass := s.Attr("class")
+            if !hasClass || !isValidTableClass(class, validClasses) {
+                return
+            }
 
-		// Process tables
-		if s.Is("table") {
-			// Check for valid "class" attribute
-			class, hasClass := s.Attr("class")
-			validClasses := []string{"table60", "table75", "table100"}
-			isValidTable := false
+            shortSummary := ""
+            // Validate table summary if metrics are to be returned
+            if action != "fiber-status" && returnFact == "" && *flags.Metrics {
+                summary, hasSummary := s.Attr("summary")
+                if !hasSummary {
+                    return
+                }
 
-			if hasClass {
-				for _, validClass := range validClasses {
-					if strings.Contains(class, validClass) {
-						isValidTable = true
-						break
-					}
-				}
-			}
+                debugLog(*flags.Debug, summary)
+                var isValid bool
+                isValid, shortSummary = isValidSummary(summary)
+                if !isValid {
+                    return
+                }
+            }
 
-			// Skip table if it doesn't match any valid class
-			if !isValidTable {
-				return
-			}
+            // Extract table data
+            tableData := extractTableData(s)
 
-			shortSummary := ""
+            // Handle return facts or output data
+            if returnFact == "model" {
+                fact = strings.Replace(tableData[1][1], "-", "", 1)
+            } else if *flags.Metrics {
+                debugLog(*flags.Debug, "outputMetrics")
+                outputMetrics(action, configs, flags, currentHeader, model, shortSummary, tableData)
+            } else {
+                printData(action, class, currentHeader, flags, model, tableData)
+            }
+        }
+    })
 
-			if action != "fiber-status" && returnFact == "" && *flags.Metrics {
-				// Check for a valid "summary" attribute
-				summary, hasSummary := s.Attr("summary")
-				isValidSummary := false
+    return fact
+}
 
-				if hasSummary {
-					debugLog(*flags.Debug, summary)
-					// broadband-status / home-network-status, nat-totals
-					if strings.Contains(strings.ToLower(summary), "statistics") || summary == "Summary of nattable connections" || summary == "This table displays a summary of session information." {
-						re := regexp.MustCompile(` [Ss]tatistic.*`)
-						shortSummary = re.ReplaceAllString(summary, "")
-						re = regexp.MustCompile(`Ethernet `)
-						shortSummary = re.ReplaceAllString(shortSummary, "")
-						re = regexp.MustCompile(`This table displays `)
-						shortSummary = re.ReplaceAllString(shortSummary, "")
+// Helper function to validate table classes
+func isValidTableClass(class string, validClasses []string) bool {
+    for _, validClass := range validClasses {
+        if strings.Contains(class, validClass) {
+            return true
+        }
+    }
+    return false
+}
 
-						isValidSummary = true
-					}
-				}
+// Helper function to validate and process table summaries
+func isValidSummary(summary string) (bool, string) {
+    if strings.Contains(strings.ToLower(summary), "statistics") ||
+        summary == "Summary of nattable connections" ||
+        summary == "This table displays a summary of session information." {
 
-				// Skip table if it doesn't match the summary filter
-				if !isValidSummary {
-					return
-				}
-			}
+        shortSummary := summary
+        patterns := []string{
+            ` [Ss]tatistic.*`,
+            `Ethernet `,
+            `This table displays `,
+        }
+        for _, pattern := range patterns {
+            re := regexp.MustCompile(pattern)
+            shortSummary = re.ReplaceAllString(shortSummary, "")
+        }
+        return true, shortSummary
+    }
+    return false, ""
+}
 
-			// Extract rows from the table
-			var tableData [][]string
-			s.Find("tr").Each(func(j int, row *goquery.Selection) {
-				var rowData []string
+// Helper function to extract table data
+func extractTableData(s *goquery.Selection) [][]string {
+    var tableData [][]string
+    s.Find("tr").Each(func(j int, row *goquery.Selection) {
+        var rowData []string
+        row.Find("th, td").Each(func(k int, cell *goquery.Selection) {
+            cellText := extractCellText(cell)
+            rowData = append(rowData, cellText)
+        })
+        if len(rowData) > 0 {
+            tableData = append(tableData, rowData)
+        }
+    })
+    return tableData
+}
 
-				// Extract "th" and "td" content
-				row.Find("th, td").Each(func(k int, cell *goquery.Selection) {
-					cellText := strings.TrimSpace(cell.Text())
-					// Check if there is a <pre> tag inside the <td>
-					pre := cell.Find("pre")
-
-					if pre.Length() > 0 {
-						// Process <pre> content with <br> tags replaced by newlines
-						htmlContent, err := pre.Html() // Get HTML inside <pre>, which returns (string, error)
-
-						if err != nil {
-							cellText = "" // or handle error appropriately
-						} else {
-							cellText = strings.ReplaceAll(htmlContent, "Wi-Fi<br/>", "Wi-Fi: ") // Special case for WiFi
-							cellText = strings.ReplaceAll(cellText, "<br/>", "\n  ")            // Replace <br /> with newline
-							cellText = strings.ReplaceAll(cellText, "<br>", "\n")               // Handle <br> tag as well
-						}
-					} else {
-						// No <pre> tag; get text normally
-						cellText = strings.TrimSpace(cell.Text())
-					}
-					rowData = append(rowData, cellText)
-				})
-
-				// Add row data if not empty
-				if len(rowData) > 0 {
-					tableData = append(tableData, rowData)
-				}
-			})
-
-			if returnFact != "" {
-				if returnFact == "model" {
-					fact = strings.Replace(tableData[1][1], "-", "", 1)
-				}
-			} else {
-				if *flags.Metrics {
-					debugLog(*flags.Debug, "outputMetrics")
-					outputMetrics(action, configs, flags, currentHeader, model, shortSummary, tableData)
-				} else {
-					printData(action, class, currentHeader, flags, model, tableData)
-				}
-			}
-		}
-	})
-
-	return fact
+// Helper function to extract and process cell text
+func extractCellText(cell *goquery.Selection) string {
+    pre := cell.Find("pre")
+    if pre.Length() > 0 {
+        htmlContent, err := pre.Html()
+        if err != nil {
+            return ""
+        }
+        cellText := htmlContent
+        replacements := map[string]string{
+            "Wi-Fi<br/>": "Wi-Fi: ",
+            "<br/>":      "\n  ",
+            "<br>":       "\n",
+        }
+        for old, new := range replacements {
+            cellText = strings.ReplaceAll(cellText, old, new)
+        }
+        return cellText
+    }
+    return strings.TrimSpace(cell.Text())
 }
 
 func extractData(action string, configs Configs, content string, flags *Flags, model string, returnFact string) (string, error) {
