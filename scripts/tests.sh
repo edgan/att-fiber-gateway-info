@@ -109,6 +109,11 @@ build_binary
 
 ACTION_COMMAND="${COMMAND} -action"
 
+if [[ "${TESTS}" == "login_failure" || "${TESTS}" == "all" ]]; then
+  LOGIN_FAILURE_ACTIONS=(ip-allocation restart-gateway)
+  run_commands "-password 1234567890 -fresh" "${LOGIN_FAILURE_ACTIONS[@]}"
+fi
+
 if [[ "${TESTS}" == "nologin" || "${TESTS}" == "all" ]]; then
   NO_LOGIN_ACTIONS=(broadband-status device-list fiber-status home-network-status system-information)
   run_commands "" "${NO_LOGIN_ACTIONS[@]}"

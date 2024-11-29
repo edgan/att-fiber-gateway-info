@@ -16,7 +16,7 @@ func calculateHash(configs Configs, nonce string) string {
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-func (rc *GatewayClient) login(configs Configs) error {
+func (rc *GatewayClient) login(configs Configs, flags *Flags) error {
 	page := "login"
 
 	// Get nonce from page
@@ -37,16 +37,16 @@ func (rc *GatewayClient) login(configs Configs) error {
 		"Continue":     {"Continue"}, // submit button
 	}
 
-	if err := rc.postForm(rc.loginPath, formData); err != nil {
-		logFatalf("Submission to %s failed: %v", rc.loginPath, err)
+	if err := rc.postForm(flags, formData, rc.loginPath); err != nil {
+		logFatalf("Submission to %s failed\n%v", rc.loginPath, err)
 	}
 
 	return nil
 }
 
 // performLogin performs the login action for the client
-func performLogin(client *GatewayClient, configs Configs) {
-	if err := client.login(configs); err != nil {
+func performLogin(client *GatewayClient, configs Configs, flags *Flags) {
+	if err := client.login(configs, flags); err != nil {
 		logFatalf("Login failed: %v", err)
 	}
 }
