@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
-	"net/http"
 	"net/url"
 )
 
-func (rc *gatewayClient) postForm(path string, formData url.Values) error {
+func (rc *gatewayClient) postForm(flags *flags, formData url.Values, path string) error {
 	// Submit form
 	resp, err := rc.client.PostForm(rc.baseURL+path, formData)
 
@@ -17,16 +17,26 @@ func (rc *gatewayClient) postForm(path string, formData url.Values) error {
 
 	defer resp.Body.Close()
 
-	// Check if submission was successful
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("submission to %s failed with status: %d", path, resp.StatusCode)
-	}
-
 	if path == rc.loginPath {
 		// Save session cookies
 		if err := rc.saveSessionCookies(); err != nil {
 			log.Printf("Failed to save cookies: %v", err)
 		}
+	}
+
+	body, err := io.ReadAll(resp.Body)
+
+	if err != nil {
+		debugLog(*flags.Debug, "Failed to ReadAll")
+		return fmt.Errorf("failed to read response for path %s: %v", path, err)
+	}
+
+	bodyStr := string(body)
+
+	error := checkForLoginFailure(bodyStr, flags, rc.loginPath)
+
+	if error != nil {
+		return error
 	}
 
 	return nil
@@ -49,8 +59,8 @@ func (rc *gatewayClient) submitForm(action string, flags *flags, page string, pa
 			buttonName: {buttonValue}, // Dynamically use the submit button
 		}
 
-		if err := rc.postForm(path, formData); err != nil {
-			return fmt.Errorf("submission to %s in %s failed: %v", action, path, err)
+		if err := rc.postForm(flags, formData, path); err != nil {
+			return fmt.Errorf("%s in %s failed\n%v", action, path, err)
 		}
 	}
 

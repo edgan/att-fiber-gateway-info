@@ -25,10 +25,10 @@ func (rc *gatewayClient) getPath(flags *flags, path string) (string, error) {
 
 	bodyStr := string(body)
 
-	// Check for login failure
-	if strings.Contains(bodyStr, rc.loginPath) {
-		debugLog(*flags.Debug, "LoginPath in body of page")
-		return "", fmt.Errorf("Login failed. Password likely wrong.")
+	error := checkForLoginFailure(bodyStr, flags, rc.loginPath)
+
+	if error != nil {
+		return "", error
 	}
 
 	return bodyStr, nil

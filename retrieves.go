@@ -23,7 +23,7 @@ func (rc *gatewayClient) retrieveAction(action string, actionPages map[string]st
 
 	if loginRequired {
 		debugLog(*flags.Debug, "LoginRequired true")
-		performLogin(rc, configs)
+		performLogin(rc, configs, flags)
 	}
 
 	fact, err := rc.getPage(action, configs, flags, model, page, returnFact)
