@@ -1,20 +1,15 @@
 package main
 
-import (
-	"os"
-)
-
-func executeAllMetrics(actionPages map[string]string, client *GatewayClient, configs Configs, flags *Flags, model string, continuous bool) {
+func executeAllMetrics(actionPages map[string]string, client *gatewayClient, configs configs, flags *flags, model string, continuous bool) {
 	for {
 		allMetrics(actionPages, client, configs, flags, model)
 		if !continuous {
 			break
 		}
 	}
-	os.Exit(0)
 }
 
-func executeRetrieveAction(client *GatewayClient, action string, actionPages map[string]string, configs Configs, flags *Flags, model string, continuous bool) {
+func executeRetrieveAction(client *gatewayClient, action string, actionPages map[string]string, configs configs, flags *flags, model string, continuous bool) {
 	for {
 		_, err := client.retrieveAction(action, actionPages, configs, flags, model, "")
 		if err != nil {
@@ -24,5 +19,4 @@ func executeRetrieveAction(client *GatewayClient, action string, actionPages map
 			break
 		}
 	}
-	os.Exit(0)
 }

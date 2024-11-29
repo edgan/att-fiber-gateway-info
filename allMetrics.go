@@ -6,7 +6,7 @@ import (
 	"sync"
 )
 
-func allMetrics(actionPages map[string]string, client *GatewayClient, configs Configs, flags *Flags, model string) {
+func allMetrics(actionPages map[string]string, client *gatewayClient, configs configs, flags *flags, model string) {
 	returnFact := ""
 
 	metricActions := returnMeticsActions()

@@ -1,0 +1,16 @@
+enableAllRules = true
+
+[rule.add-constant]
+Disabled = true
+
+[rule.deep-exit]
+Disabled = true
+
+[rule.error-strings]
+Disabled = true
+
+[rule.flag-parameter]
+Disabled = true
+
+[rule.line-length-limit]
+Disabled = true

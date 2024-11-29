@@ -9,13 +9,13 @@ import (
 	"github.com/fatih/color"
 )
 
-type Configs struct {
+type configs struct {
 	BaseURL      string
 	Password     string
 	StatsdIPPort string
 }
 
-type Flags struct {
+type flags struct {
 	AllMetrics   *bool
 	AnswerNo     *bool
 	AnswerYes    *bool
@@ -33,12 +33,12 @@ type Flags struct {
 	StatsdIPPort *string
 }
 
-func returnFlags(actionDescription string, colorMode bool, cookiePath string, filterDescription string) (*string, *Flags, *bool) {
+func returnFlags(actionDescription string, colorMode bool, cookiePath string, filterDescription string) (*string, *flags, *bool) {
 	// action is a special case where there can be more than one action per run, and hence it doesn't work as part of
 	// the flags struct.
 	action := flag.String("action", "", actionDescription)
 
-	flags := &Flags{
+	flags := &flags{
 		AllMetrics: flag.Bool("allmetrics", false, "Return all metrics"),
 		AnswerNo:   flag.Bool("no", false, "Answer no to any questions"),
 		AnswerYes:  flag.Bool("yes", false, "Answer yes to any questions"),
@@ -64,7 +64,7 @@ func returnFlags(actionDescription string, colorMode bool, cookiePath string, fi
 	version := flag.Bool("version", false, "Show version")
 
 	flag.Usage = func() {
-		Usage(colorMode)
+		usage(colorMode)
 	}
 
 	flag.Parse()
@@ -72,41 +72,26 @@ func returnFlags(actionDescription string, colorMode bool, cookiePath string, fi
 	return action, flags, version
 }
 
-func validateFlags(action string, actionPages map[string]string, config *Config, flags *Flags) (Configs, *Flags) {
-	var configs Configs
-
-	// Helper function to get the flag value or default to config value
-	getConfigValue := func(flagValue string, configValue string) string {
-		if flagValue != "" {
-			return flagValue
-		}
-		return configValue
-	}
-
-	// Assign config values using helper function
-	configs.BaseURL = getConfigValue(*flags.BaseURL, config.BaseURL)
-	configs.Password = getConfigValue(*flags.Password, config.Password)
-	configs.StatsdIPPort = getConfigValue(*flags.StatsdIPPort, config.StatsdIPPort)
-
+func validateMetricsFlags(flags *flags, returnFlags *flags) {
 	if *flags.Continuous && !(*flags.AllMetrics || *flags.Metrics) {
 		logFatal("-continuous must not be set without -allmetrics or -metrics.")
 	}
 
-	if *flags.AllMetrics {
-		*flags.Metrics = true
+	if *flags.AllMetrics || *flags.Datadog {
+		*returnFlags.Metrics = true
 	}
+}
 
+func validateMetricActionsFlags(action string, flags *flags) {
 	if *flags.Metrics && !*flags.AllMetrics {
 		metricActions := returnMeticsActions()
 		if !contains(metricActions, action) {
 			logFatal(fmt.Sprintf("Action must be one of these (%s) when -metrics is enabled.", strings.Join(metricActions, ", ")))
 		}
 	}
+}
 
-	if *flags.Datadog && !*flags.Metrics {
-		logFatal("Metrics must be enabled when enabling datadog")
-	}
-
+func validateActionsAndFilterFlags(action string, actionPages map[string]string, flags *flags) {
 	// Action validation
 	if !*flags.AllMetrics && !containsMapKey(actionPages, action) {
 		actionsHelp := getMapKeys(actionPages)
@@ -120,13 +105,27 @@ func validateFlags(action string, actionPages map[string]string, config *Config,
 			logFatal(fmt.Sprintf("Filter must be one of these (%s)", strings.Join(filters, ", ")))
 		}
 	}
-
-	return configs, flags
 }
 
-func Usage(colorMode bool) {
+func validateFlags(action string, actionPages map[string]string, config *config, flags *flags) (configs configs, returnFlags *flags) {
+	returnFlags = flags
+
+	configs.BaseURL = returnConfigValue(*flags.BaseURL, config.BaseURL)
+	configs.Password = returnConfigValue(*flags.Password, config.Password)
+	configs.StatsdIPPort = returnConfigValue(*flags.StatsdIPPort, config.StatsdIPPort)
+
+	validateMetricsFlags(flags, returnFlags)
+
+	validateMetricActionsFlags(action, flags)
+
+	validateActionsAndFilterFlags(action, actionPages, flags)
+
+	return configs, returnFlags
+}
+
+func usage(colorMode bool) {
 	// Define Sprintf functions based on colorMode
-	var blueSprintf, boldGreenSprintf, cyanSprintf, greenSprintf func(format string, a ...interface{}) string
+	var blueSprintf, boldGreenSprintf, cyanSprintf, greenSprintf func(format string, a ...any) string
 
 	if colorMode {
 		blueSprintf = color.New(color.FgBlue).Sprintf

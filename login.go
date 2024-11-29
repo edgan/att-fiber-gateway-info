@@ -9,14 +9,14 @@ import (
 	"strings"
 )
 
-func calculateHash(configs Configs, nonce string) string {
+func calculateHash(configs configs, nonce string) string {
 	// Replicate JavaScript hex_md5(password + nonce)
 	hasher := md5.New()
 	io.WriteString(hasher, configs.Password+nonce)
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-func (rc *GatewayClient) login(configs Configs) error {
+func (rc *gatewayClient) login(configs configs) error {
 	page := "login"
 
 	// Get nonce from page
@@ -45,7 +45,7 @@ func (rc *GatewayClient) login(configs Configs) error {
 }
 
 // performLogin performs the login action for the client
-func performLogin(client *GatewayClient, configs Configs) {
+func performLogin(client *gatewayClient, configs configs) {
 	if err := client.login(configs); err != nil {
 		logFatalf("Login failed: %v", err)
 	}

@@ -29,7 +29,7 @@ func returnVersion() string {
 	return version
 }
 
-func returnActionMetric(action string, flags *Flags) string {
+func returnActionMetric(action string) string {
 	actionMetric := strings.Replace(action, "-", ".", 2)
 	actionMetric = strings.Replace(actionMetric, " ", ".", 1)
 
@@ -109,4 +109,11 @@ func returnPath(page string) string {
 	path := "/cgi-bin/" + page + ".ha"
 
 	return path
+}
+
+func returnConfigValue(flagValue string, configValue string) string {
+	if flagValue != "" {
+		return flagValue
+	}
+	return configValue
 }

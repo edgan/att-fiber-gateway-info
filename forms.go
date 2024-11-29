@@ -7,7 +7,7 @@ import (
 	"net/url"
 )
 
-func (rc *GatewayClient) postForm(path string, formData url.Values) error {
+func (rc *gatewayClient) postForm(path string, formData url.Values) error {
 	// Submit form
 	resp, err := rc.client.PostForm(rc.baseURL+path, formData)
 
@@ -32,7 +32,7 @@ func (rc *GatewayClient) postForm(path string, formData url.Values) error {
 	return nil
 }
 
-func (rc *GatewayClient) submitForm(action string, flags *Flags, page string, path string, resetAction [4]string) error {
+func (rc *gatewayClient) submitForm(action string, flags *flags, page string, path string, resetAction [4]string) error {
 	buttonName := resetAction[0]
 	buttonValue := resetAction[1]
 	question := resetAction[2]

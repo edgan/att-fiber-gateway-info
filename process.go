@@ -19,7 +19,9 @@ func processDeviceList(tableData [][]string) {
 		substring := " / "
 
 		if count > 1 {
-			row[1] = strings.Replace(row[1], substring, "Name: ", 1)
+			if strings.Contains(row[1], substring) {
+				row[1] = strings.Replace(row[1], substring, "Name: ", 1)
+			}
 		}
 
 		line := strings.Join(row, ": ")
@@ -34,105 +36,43 @@ func processDeviceList(tableData [][]string) {
 }
 
 func processGeneric(tableData [][]string) {
-	if len(tableData) == 0 {
-		return
-	}
-
-	// Determine the maximum number of columns
-	numCols := 0
-	for _, row := range tableData {
-		if len(row) > numCols {
-			numCols = len(row)
-		}
-	}
-
-	// Initialize slice to hold max width of each column
-	colWidths := make([]int, numCols)
-
-	// Calculate maximum width for each column
-	for _, row := range tableData {
-		for i, cell := range row {
-			cellLen := len(stripAnsi(cell))
-			if i == 0 && numCols == 2 {
-				cellLen += 1 // Account for the ":" after the key
-			}
-			if cellLen > colWidths[i] {
-				colWidths[i] = cellLen
-			}
-		}
-	}
-
-	// Print each row with proper alignment
-	for _, row := range tableData {
-		// For tables with two columns, add ":" after the first column
-		if numCols == 2 && len(row) >= 1 {
-			if strings.Contains(row[0], "Legal Disclaimer") {
-				continue
-			}
-
-			key := row[0] + ":"
-
-			if row[0] == "" {
-				key = row[0]
-			}
-
-			format0 := fmt.Sprintf("%%-%ds", colWidths[0]+2)
-			fmt.Printf(format0, key)
-
-			// Check if the second column exists
-			if len(row) >= 2 {
-				format1 := fmt.Sprintf("%%-%ds", colWidths[1]+2)
-				fmt.Printf(format1, row[1])
-			}
-		} else {
-			// For tables with more than two columns
-			for i := 0; i < numCols; i++ {
-				var cell string
-				if i < len(row) {
-					cell = row[i]
-				} else {
-					cell = ""
-				}
-				// Left-align the content within the column width
-				format := fmt.Sprintf("%%-%ds", colWidths[i]+2) // Add extra space for padding
-				fmt.Printf(format, cell)
-			}
-		}
-		fmt.Println()
-	}
+	// Call prettyPrint with stripAnsiCodes = true and specialFormatting = true
+	prettyPrint(tableData, true, true)
 }
 
 func processHomeNetworkStatus(tableData [][]string) {
 	for _, row := range tableData {
+		key := row[0]
 		count := len(row)
 		if row[0] != "" && count > 1 {
-			row[0] = row[0] + ":"
+			key = key + ":"
 		}
 	}
 
-	prettyPrint(tableData)
+	prettyPrint(tableData, false, false)
 }
 
 func processIPAllocation(tableData [][]string) {
 	for _, row := range tableData {
-		row[4] = ""
+		action := row[4]
+		action = ""
+		row[4] = action
 	}
 
-	prettyPrint(tableData)
+	prettyPrint(tableData, false, false)
 }
 
-func processNatTotals(tableData [][]string) (int, int, int) {
-	// Initialize counters
-	var icmpCount, tcpCount, udpCount int
-
+func processNatTotals(tableData [][]string) (icmpCount int, tcpCount int, udpCount int) {
 	for _, row := range tableData {
-		if row[1] == "icmp" {
+		protocol := row[1]
+
+		if protocol == "icmp" {
 			icmpCount++
 		}
-		if row[1] == "tcp" {
+		if protocol == "tcp" {
 			tcpCount++
 		}
-		if row[1] == "udp" {
+		if protocol == "udp" {
 			udpCount++
 		}
 	}
@@ -140,38 +80,40 @@ func processNatTotals(tableData [][]string) (int, int, int) {
 	return icmpCount, tcpCount, udpCount
 }
 
+func processNatCheck(value string) {
+	fmt.Printf("%s.0\n", value)
+
+	maxConnections := 8192
+	connections, err := strconv.Atoi(value)
+
+	if err != nil {
+		panic(err)
+	}
+
+	if connections >= maxConnections {
+		fmt.Printf("\nError: Too many connections\n")
+		os.Exit(1)
+	}
+}
+
 func processNatCheckTotals(action string, class string, tableData [][]string) {
 	if class == "table60" {
 		for _, row := range tableData {
-			if len(row) > 0 && row[0] == "Total sessions in use" {
+			if len(row) == 0 || len(row) < 2 {
+				continue
+			}
+
+			key := row[0]
+			value := row[1]
+
+			if key == "Total sessions in use" {
 				if action == "nat-check" {
-					fmt.Printf("%s.0\n", row[1])
-
-					maxConnections := 8192
-					connections, err := strconv.Atoi(row[1])
-
-					if err != nil {
-						panic(err)
-					}
-
-					if connections >= maxConnections {
-						fmt.Printf("\nError: Too many connections\n")
-						os.Exit(1)
-					}
-				}
-
-				if action == "nat-totals" {
-					fmt.Printf("%s: %s\n", "Total number of connections", row[1])
+					processNatCheck(value)
+				} else if action == "nat-totals" {
+					printNatTotals(value)
 				}
 			}
 		}
-	}
-
-	if action == "nat-totals" && class == "grid table100" {
-		icmpCount, tcpCount, udpCount := processNatTotals(tableData)
-		fmt.Printf("Total number of icmp connections: %d\n", icmpCount)
-		fmt.Printf("Total number of tcp connections: %d\n", tcpCount)
-		fmt.Printf("Total number of udp connections: %d\n", udpCount)
 	}
 }
 
@@ -186,7 +128,7 @@ func processNatConnectionsNonPretty(class string, tableData [][]string) {
 
 func processNatConnectionsPretty(class string, tableData [][]string) {
 	if class == "grid table100" {
-		prettyPrint(tableData)
+		prettyPrint(tableData, false, false)
 	}
 }
 
@@ -212,62 +154,129 @@ func processNatSources(class string, tableData [][]string) {
 	}
 }
 
-// Helper function to process "nat-totals" action
-func processNatTotalsAction(tableData [][]string, modelActionMetric, dotZero string, flags *Flags) []string {
+// Processes the "IP Family" case
+func processIPFamilyCase(tableData [][]string, modelActionMetric, dotZero string) []string {
 	var metrics []string
+
+	icmpCount, tcpCount, udpCount := processNatTotals(tableData)
+
+	metrics = append(metrics,
+		fmt.Sprintf("%s.icmp.connections=%d%s", modelActionMetric, icmpCount, dotZero),
+		fmt.Sprintf("%s.tcp.connections=%d%s", modelActionMetric, tcpCount, dotZero),
+		fmt.Sprintf("%s.udp.connections=%d%s", modelActionMetric, udpCount, dotZero),
+	)
+
+	return metrics
+}
+
+func processTotalConnections(key, value, modelActionMetric, dotZero string, flags *flags) string {
+	stat := processStat(key)
+
+	if strings.Contains(stat, "sessions.in.use") {
+		stat = strings.Replace(stat, "Total.sessions.in.use", "connections", 1)
+	}
+
+	returnedValue := processValue(value, flags.Noconvert, dotZero)
+	metric := fmt.Sprintf("%s.%s=%s", modelActionMetric, stat, returnedValue)
+	return metric
+}
+
+// Helper function to process "nat-totals" action
+func processNatTotalsAction(tableData [][]string, modelActionMetric, dotZero string, flags *flags) []string {
+	var metrics []string
+
 	for _, row := range tableData {
-		if len(row) == 0 || row[0] == "" {
+		if len(row) == 0 || len(row) < 2 {
+			continue
+		}
+		key := row[0]
+		value := row[1]
+
+		if key == "" {
 			continue
 		}
 
 		switch {
-		case strings.Contains(row[0], "IP Family"):
-			icmpCount, tcpCount, udpCount := processNatTotals(tableData)
-			metrics = append(metrics,
-				fmt.Sprintf("%s.icmp.connections=%d%s", modelActionMetric, icmpCount, dotZero),
-				fmt.Sprintf("%s.tcp.connections=%d%s", modelActionMetric, tcpCount, dotZero),
-				fmt.Sprintf("%s.udp.connections=%d%s", modelActionMetric, udpCount, dotZero),
-			)
+		case strings.Contains(key, "IP Family"):
+			metrics = append(metrics, processIPFamilyCase(tableData, modelActionMetric, dotZero)...)
 			return metrics
 
-		case row[0] == "Total sessions available", row[0] == "Select display option":
+		case key == "Total sessions available", key == "Select display option":
 			continue
 
 		default:
-			stat := processStat(row[0])
-			if strings.Contains(stat, "sessions.in.use") {
-				stat = strings.Replace(stat, "Total.sessions.in.use", "connections", 1)
-			}
-			value := processValue(row[1], flags.Noconvert, dotZero)
-			metric := fmt.Sprintf("%s.%s=%s", modelActionMetric, stat, value)
+			metric := processTotalConnections(key, value, modelActionMetric, dotZero, flags)
 			metrics = append(metrics, metric)
 		}
 	}
+
 	return metrics
 }
 
-// Helper function to process general actions
-func processGeneralAction(tableData [][]string, modelActionMetric, lowerSummary, dotZero string, flags *Flags) []string {
+// Helper function to process general actions without nested for loops
+func processGeneralAction(tableData [][]string, modelActionMetric, lowerSummary, dotZero string, flags *flags) []string {
 	var metrics []string
+	var rowsToProcess []struct {
+		Stat           string
+		IsPortSpecific bool
+		Cells          []string
+	}
+
+	// First phase: Collect necessary data from tableData
 	for _, row := range tableData {
 		if len(row) == 0 || row[0] == "" {
 			continue
 		}
 
-		stat := processStat(row[0])
+		key := row[0]
+		stat := processStat(key)
+		isPortSpecific := len(row) > 2
+		cells := row[1:]
 
-		for i, cell := range row[1:] {
-			value := processValue(cell, flags.Noconvert, dotZero)
-			var metric string
-			if len(row) > 2 {
-				// Port-specific metrics
-				metric = fmt.Sprintf("%s.%s.port%d.%s=%s", modelActionMetric, lowerSummary, i+1, stat, value)
-			} else {
-				metric = fmt.Sprintf("%s.%s.%s=%s", modelActionMetric, lowerSummary, stat, value)
-			}
-			metrics = append(metrics, metric)
-		}
+		rowsToProcess = append(rowsToProcess, struct {
+			Stat           string
+			IsPortSpecific bool
+			Cells          []string
+		}{
+			Stat:           stat,
+			IsPortSpecific: isPortSpecific,
+			Cells:          cells,
+		})
 	}
+
+	// Second phase: Process the collected data to generate metrics
+	for _, item := range rowsToProcess {
+		indices := make([]int, len(item.Cells))
+		for i := range item.Cells {
+			indices[i] = i
+		}
+		metrics = append(metrics, processCells(item, modelActionMetric, lowerSummary, dotZero, flags, indices)...)
+	}
+
+	return metrics
+}
+
+// Helper function to process cells for each row
+func processCells(item struct {
+	Stat           string
+	IsPortSpecific bool
+	Cells          []string
+}, modelActionMetric, lowerSummary, dotZero string, flags *flags, indices []int) []string {
+	var metrics []string
+
+	for _, i := range indices {
+		cell := item.Cells[i]
+		returnedValue := processValue(cell, flags.Noconvert, dotZero)
+		var metric string
+		if item.IsPortSpecific {
+			// Port-specific metrics
+			metric = fmt.Sprintf("%s.%s.port%d.%s=%s", modelActionMetric, lowerSummary, i+1, item.Stat, returnedValue)
+		} else {
+			metric = fmt.Sprintf("%s.%s.%s=%s", modelActionMetric, lowerSummary, item.Stat, returnedValue)
+		}
+		metrics = append(metrics, metric)
+	}
+
 	return metrics
 }
 
@@ -295,4 +304,30 @@ func processValue(value string, noconvert *bool, dotZero string) string {
 		value += dotZero
 	}
 	return value
+}
+
+func processDatadogMetrics(metrics []string) (floatMetrics map[string]float64) {
+	for _, metric := range metrics {
+		metric = strings.ToLower(strings.TrimSpace(metric))
+		splitMetric := strings.Split(metric, "=")
+
+		if len(splitMetric) != 2 {
+			logFatalf("Invalid metric format:", metric)
+		}
+
+		key := splitMetric[0]
+		value := splitMetric[1]
+
+		if strings.Contains(value, ".0") {
+			valueF, err := strconv.ParseFloat(value, 64)
+
+			if err != nil {
+				logFatalf("Error:", err)
+			}
+
+			floatMetrics[key] = valueF
+		}
+	}
+
+	return floatMetrics
 }

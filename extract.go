@@ -7,19 +7,53 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-func extractHeadersAndTableData(action string, configs Configs, doc *goquery.Document, flags *Flags, model string, returnFact string) string {
+// DataContext holds the context data for processing
+type DataContext struct {
+	action        string
+	configs       configs
+	flags         *flags
+	model         string
+	returnFact    string
+	currentHeader string
+	shortSummary  string
+	class         string
+	fact          *string
+}
+
+// Handles return facts or outputs data based on the flags and action
+func handleReturnFactsOrOutputData(ctx *DataContext, tableData [][]string) {
+	if ctx.returnFact == "model" {
+		if len(tableData) > 1 && len(tableData[1]) > 1 {
+			*ctx.fact = strings.Replace(tableData[1][1], "-", "", 1)
+		}
+	} else if *ctx.flags.Metrics {
+		debugLog(*ctx.flags.Debug, "outputMetrics")
+		outputMetrics(ctx.action, ctx.configs, ctx.flags, ctx.currentHeader, ctx.model, ctx.shortSummary, tableData)
+	} else {
+		printData(ctx.action, ctx.class, ctx.currentHeader, ctx.flags, tableData)
+	}
+}
+
+// Extracts headers and table data from the document
+func extractHeadersAndTableData(action string, configs configs, doc *goquery.Document, flags *flags, model string, returnFact string) string {
 	fact := ""
 	currentHeader := ""
 	actionPrefixes := returnActionPrefixes()
 	validClasses := []string{"table60", "table75", "table100"}
 
-	doc.Find("h1, h2, table").Each(func(i int, s *goquery.Selection) {
+	// Initialize the context
+	ctx := DataContext{
+		action:     action,
+		configs:    configs,
+		flags:      flags,
+		model:      model,
+		returnFact: returnFact,
+		fact:       &fact,
+	}
+
+	doc.Find("h1, h2, table").Each(func(_ int, s *goquery.Selection) {
 		// Update current header if applicable
-		if !strings.Contains(action, actionPrefixes["nat"]) && (s.Is("h1") || s.Is("h2")) {
-			headerText := strings.TrimSpace(s.Text())
-			if headerText != "" {
-				currentHeader = headerText
-			}
+		if updateCurrentHeader(action, actionPrefixes, s, &currentHeader) {
 			return
 		}
 
@@ -31,49 +65,66 @@ func extractHeadersAndTableData(action string, configs Configs, doc *goquery.Doc
 			}
 
 			shortSummary := ""
-			// Validate table summary if metrics are to be returned
-			if action != "fiber-status" && returnFact == "" && *flags.Metrics {
-				summary, hasSummary := s.Attr("summary")
-				if !hasSummary {
-					return
-				}
 
-				debugLog(*flags.Debug, summary)
-				var isValid bool
-				isValid, shortSummary = isValidSummary(summary)
-				if !isValid {
-					return
-				}
+			// Validate table summary if metrics are to be returned
+			if !validateTableSummary(action, returnFact, flags, s, &shortSummary) {
+				return
 			}
 
 			// Extract table data
 			tableData := extractTableData(s)
 
+			// Update context with current header, short summary, and class
+			ctx.currentHeader = currentHeader
+			ctx.shortSummary = shortSummary
+			ctx.class = class
+
 			// Handle return facts or output data
-			if returnFact == "model" {
-				if len(tableData) > 1 && len(tableData[1]) > 1 {
-					fact = strings.Replace(tableData[1][1], "-", "", 1)
-				}
-			} else if *flags.Metrics {
-				debugLog(*flags.Debug, "outputMetrics")
-				outputMetrics(action, configs, flags, currentHeader, model, shortSummary, tableData)
-			} else {
-				printData(action, class, currentHeader, flags, model, tableData)
-			}
+			handleReturnFactsOrOutputData(&ctx, tableData)
 		}
 	})
 
 	return fact
 }
 
+// Updates the current header if applicable
+func updateCurrentHeader(action string, actionPrefixes map[string]string, s *goquery.Selection, currentHeader *string) bool {
+	if !strings.Contains(action, actionPrefixes["nat"]) && (s.Is("h1") || s.Is("h2")) {
+		headerText := strings.TrimSpace(s.Text())
+		if headerText != "" {
+			*currentHeader = headerText
+		}
+		return true
+	}
+	return false
+}
+
+// Validates the table summary if metrics are to be returned
+func validateTableSummary(action string, returnFact string, flags *flags, s *goquery.Selection, shortSummary *string) bool {
+	if action != "fiber-status" && returnFact == "" && *flags.Metrics {
+		summary, hasSummary := s.Attr("summary")
+		if !hasSummary {
+			return false
+		}
+
+		debugLog(*flags.Debug, summary)
+		var isValid bool
+		isValid, *shortSummary = isValidSummary(summary)
+		if !isValid {
+			return false
+		}
+	}
+	return true
+}
+
 // Modify the extractTableData function to include table headers
 func extractTableData(s *goquery.Selection) [][]string {
 	var tableData [][]string
-	s.Find("tr").Each(func(j int, row *goquery.Selection) {
+	s.Find("tr").Each(func(_ int, row *goquery.Selection) {
 		var rowData []string
 
 		// Extract "th" and "td" content
-		row.Find("th, td").Each(func(k int, cell *goquery.Selection) {
+		row.Find("th, td").Each(func(_ int, cell *goquery.Selection) {
 			cellText := strings.TrimSpace(cell.Text())
 			rowData = append(rowData, cellText)
 		})
@@ -108,7 +159,7 @@ func extractCellText(cell *goquery.Selection) string {
 	return strings.TrimSpace(cell.Text())
 }
 
-func extractData(action string, configs Configs, content string, flags *Flags, model string, returnFact string) (string, error) {
+func extractData(action string, configs configs, content string, flags *flags, model string, returnFact string) (string, error) {
 	fact := ""
 
 	// Load the HTML content into goquery

@@ -1,6 +1,6 @@
 package main
 
-func (rc *GatewayClient) retrieveAction(action string, actionPages map[string]string, configs Configs, flags *Flags, model string, returnFact string) (string, error) {
+func (rc *gatewayClient) retrieveAction(action string, actionPages map[string]string, configs configs, flags *flags, model string, returnFact string) (string, error) {
 	fact := ""
 
 	// Get the specified page based on action

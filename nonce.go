@@ -8,39 +8,44 @@ import (
 
 // Extracts the nonce value from the HTML document
 func findNonce(n *html.Node) (string, error) {
-	var nonce string
-
-	var searchNode func(*html.Node)
-	searchNode = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "input" {
-			var isNonceInput bool
-			var nonceValue string
-			for _, attr := range n.Attr {
-				if attr.Key == "name" && attr.Val == "nonce" {
-					isNonceInput = true
-				}
-				if attr.Key == "value" {
-					nonceValue = attr.Val
-				}
-			}
-			if isNonceInput && nonceValue != "" {
-				nonce = nonceValue
-			}
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			searchNode(c)
-		}
-	}
-
-	searchNode(n)
-
+	nonce := searchNonce(n)
 	if nonce == "" {
 		return "", fmt.Errorf("nonce not found in HTML")
 	}
 	return nonce, nil
 }
 
-func (rc *GatewayClient) getNonce(page string) (string, error) {
+// Recursively searches for the nonce value in the HTML node tree
+func searchNonce(n *html.Node) string {
+	if n.Type == html.ElementNode && n.Data == "input" {
+		if isNonceInput, nonceValue := checkNonceInput(n); isNonceInput && nonceValue != "" {
+			return nonceValue
+		}
+	}
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		if result := searchNonce(c); result != "" {
+			return result
+		}
+	}
+	return ""
+}
+
+// Checks if the input node is a nonce input and retrieves its value
+func checkNonceInput(n *html.Node) (bool, string) {
+	var isNonceInput bool
+	var nonceValue string
+	for _, attr := range n.Attr {
+		if attr.Key == "name" && attr.Val == "nonce" {
+			isNonceInput = true
+		}
+		if attr.Key == "value" {
+			nonceValue = attr.Val
+		}
+	}
+	return isNonceInput, nonceValue
+}
+
+func (rc *gatewayClient) getNonce(page string) (string, error) {
 	path := returnPath(page)
 
 	if page == "login" && rc.loadedCookies == 0 {

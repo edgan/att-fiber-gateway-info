@@ -1,3 +1,5 @@
+// att-fiber-gateway-info
+// A golang command line tool to pull values from the pages of a AT&T Fiber gateways.
 package main
 
 import (
@@ -38,8 +40,6 @@ func main() {
 	// Handle actions based on flags
 	if *flags.AllMetrics {
 		executeAllMetrics(actionPages, client, configs, flags, model, *flags.Continuous)
-	} else if *flags.Metrics {
-		executeRetrieveAction(client, *action, actionPages, configs, flags, model, *flags.Continuous)
 	} else {
 		executeRetrieveAction(client, *action, actionPages, configs, flags, model, *flags.Continuous)
 	}

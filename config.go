@@ -12,7 +12,7 @@ import (
 )
 
 // Names have to be capitalized
-type Config struct {
+type config struct {
 	BaseURL      string `yaml:"baseURL"`
 	Password     string `yaml:"password"`
 	StatsdIPPort string `yaml:"statsdIPPort"`
@@ -24,7 +24,7 @@ type Config struct {
 //go:embed default_config.yml
 var defaultConfig []byte
 
-func loadConfig(configFile string) (*Config, error) {
+func loadConfig(configFile string) (*config, error) {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user home directory: %w", err)
@@ -53,7 +53,7 @@ func loadConfig(configFile string) (*Config, error) {
 	defer file.Close()
 
 	// Decode the config file
-	config := &Config{}
+	config := &config{}
 	decoder := yaml.NewDecoder(file)
 	if err := decoder.Decode(config); err != nil {
 		return nil, fmt.Errorf("failed to parse config file: %w", err)
@@ -78,7 +78,7 @@ func determineConfigFile() string {
 }
 
 // loadAppConfig loads configuration from the file
-func loadAppConfig(configFile string) *Config {
+func loadAppConfig(configFile string) *config {
 	config, err := loadConfig(configFile)
 	if err != nil {
 		logFatalf("Error loading configuration: %v", err)

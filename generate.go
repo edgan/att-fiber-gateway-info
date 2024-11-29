@@ -4,7 +4,7 @@ import (
 	"strings"
 )
 
-func generateFiberMetric(dotZero string, header string, modelActionMetric string, tableData [][]string) []string {
+func generateFiberMetric(dotZero string, header string, modelActionMetric string) []string {
 	metrics := []string{}
 	fiber := "Currently"
 
@@ -20,7 +20,7 @@ func generateFiberMetric(dotZero string, header string, modelActionMetric string
 	return metrics
 }
 
-func generateNonFiberMetric(action, dotZero string, flags *Flags, modelActionMetric, summary string, tableData [][]string) []string {
+func generateNonFiberMetric(action, dotZero string, flags *flags, modelActionMetric, summary string, tableData [][]string) []string {
 	var metrics []string
 	lowerSummary := strings.ToLower(strings.Replace(summary, " ", ".", 1))
 

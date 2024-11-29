@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func (rc *GatewayClient) getPath(flags *Flags, path string) (string, error) {
+func (rc *gatewayClient) getPath(flags *flags, path string) (string, error) {
 	resp, err := rc.client.Get(rc.baseURL + path)
 
 	if err != nil {
@@ -34,7 +34,7 @@ func (rc *GatewayClient) getPath(flags *Flags, path string) (string, error) {
 	return bodyStr, nil
 }
 
-func (rc *GatewayClient) getPage(action string, configs Configs, flags *Flags, model string, page string, returnFact string) (string, error) {
+func (rc *gatewayClient) getPage(action string, configs configs, flags *flags, model string, page string, returnFact string) (string, error) {
 	fact := ""
 	path := returnPath(page)
 
@@ -59,6 +59,7 @@ func (rc *GatewayClient) getPage(action string, configs Configs, flags *Flags, m
 		}
 
 		err := rc.submitForm(action, flags, page, path, resetActions[action])
+
 		if err != nil {
 			logFatalf("Submission failed: %v", err)
 		}
@@ -83,7 +84,6 @@ func (rc *GatewayClient) getPage(action string, configs Configs, flags *Flags, m
 		if err != nil {
 			logFatalf("Error extracting %s", action)
 		}
-
 	}
 
 	return fact, nil

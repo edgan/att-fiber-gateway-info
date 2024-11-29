@@ -1,7 +1,7 @@
 package main
 
-func outputMetrics(action string, configs Configs, flags *Flags, header string, model string, summary string, tableData [][]string) {
-	actionMetric := returnActionMetric(action, flags)
+func outputMetrics(action string, configs configs, flags *flags, header string, model string, summary string, tableData [][]string) {
+	actionMetric := returnActionMetric(action)
 	modelActionMetric := model + "." + actionMetric
 
 	dotZero := ".0"
@@ -9,7 +9,7 @@ func outputMetrics(action string, configs Configs, flags *Flags, header string, 
 	metrics := []string{}
 
 	if action == "fiber-status" {
-		metrics = generateFiberMetric(dotZero, header, modelActionMetric, tableData)
+		metrics = generateFiberMetric(dotZero, header, modelActionMetric)
 	} else {
 		metrics = generateNonFiberMetric(action, dotZero, flags, modelActionMetric, summary, tableData)
 	}

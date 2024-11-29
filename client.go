@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-type GatewayClient struct {
+type gatewayClient struct {
 	client        *http.Client
 	baseURL       string
 	colorMode     bool
@@ -14,7 +14,7 @@ type GatewayClient struct {
 	loginPath     string
 }
 
-func NewGatewayClient(configs Configs, colorMode bool, flags *Flags, loginPath string) (*GatewayClient, error) {
+func newGatewayClient(configs configs, colorMode bool, flags *flags, loginPath string) (*gatewayClient, error) {
 	// Create and load cookies from file if applicable
 	jar, loadedCookies, err := createAndLoadCookies(configs, flags)
 	if err != nil {
@@ -34,7 +34,7 @@ func NewGatewayClient(configs Configs, colorMode bool, flags *Flags, loginPath s
 		Jar:       jar,
 	}
 
-	return &GatewayClient{
+	return &gatewayClient{
 		client:        client,
 		baseURL:       configs.BaseURL,
 		colorMode:     colorMode,
@@ -45,8 +45,8 @@ func NewGatewayClient(configs Configs, colorMode bool, flags *Flags, loginPath s
 }
 
 // createGatewayClient creates a new client for interacting with the gateway
-func createGatewayClient(configs Configs, colorMode bool, flags *Flags) (*GatewayClient, error) {
+func createGatewayClient(configs configs, colorMode bool, flags *flags) (*gatewayClient, error) {
 	loginPath := returnPath("login")
-	client, err := NewGatewayClient(configs, colorMode, flags, loginPath)
+	client, err := newGatewayClient(configs, colorMode, flags, loginPath)
 	return client, err
 }

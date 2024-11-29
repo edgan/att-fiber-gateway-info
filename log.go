@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func logFatal(msg interface{}) {
+func logFatal(msg any) {
 	var output string
 	switch v := msg.(type) {
 	case string:
@@ -20,7 +20,7 @@ func logFatal(msg interface{}) {
 	os.Exit(1)
 }
 
-func logFatalf(format string, args ...interface{}) {
+func logFatalf(format string, args ...any) {
 	fmt.Fprintf(os.Stderr, format+"\n", args...)
 	os.Exit(1)
 }
