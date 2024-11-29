@@ -14,9 +14,9 @@ addresses
 
 ## Usage
 ```
+helm repo add edgan https://github.com/edgan/charts/raw/refs/heads/main
 cd helm
-helm package .
-helm install att-fiber-gateway-info att-fiber-gateway-info-0.1.0.tgz -f values.yaml
+helm install att-fiber-gateway-info edgan/att-fiber-gateway-info -f values.yaml
 ```
 
 ## Checking on it

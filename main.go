@@ -6,7 +6,6 @@ import (
 )
 
 func main() {
-	// Initial setup
 	colorMode := checkColorTerminal()
 	config := loadAppConfig(determineConfigFile())
 	actionPrefixes := returnActionPrefixes()
