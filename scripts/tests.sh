@@ -38,12 +38,16 @@ run_commands() {
 
   if [ "${#actions[@]}" -eq 0 ]; then
     local full_command="${COMMAND} ${flag}"
-    print_separator "${full_command}"
+    if [ -z "${DEBUG}" ]; then
+      print_separator "${full_command}"
+    fi
     ${full_command}
   else
     for action in "${actions[@]}"; do
       local full_command="${ACTION_COMMAND} ${action} ${flag}"
-      print_separator "${full_command}"
+      if [ -z "${DEBUG}" ]; then
+        print_separator "${full_command}"
+      fi
       ${full_command}
     done
   fi
@@ -88,8 +92,10 @@ build_binary() {
   if [ ! -f "${COMMAND}" ]; then
     local build_script='scripts/build.sh'
     local text="Running ${build_script}"
-    print_color_conditional "GREEN" "${text}"
-    echo
+    if [ -z "${DEBUG}" ]; then
+      print_color_conditional "GREEN" "${text}"
+      echo
+    fi
     ${build_script}
   fi
 }
@@ -103,6 +109,11 @@ if [ "${GOOS}" == "windows" ]; then
   COMMAND="bin/att-fiber-gateway-info_${GOOS}_${GOARCH}.exe"
 else
   COMMAND="bin/att-fiber-gateway-info_${GOOS}_${GOARCH}"
+
+fi
+
+if [ ! -z "${DEBUG}" ]; then
+  COMMAND="echo ${COMMAND}"
 fi
 
 build_binary
@@ -110,7 +121,7 @@ build_binary
 ACTION_COMMAND="${COMMAND} -action"
 
 if [[ "${TESTS}" == "login_failure" || "${TESTS}" == "all" ]]; then
-  LOGIN_FAILURE_ACTIONS=(ip-allocation restart-gateway)
+  LOGIN_FAILURE_ACTIONS=(ip-allocation nat-check nat-connections nat-destinations nat-sources nat-totals reset-connection reset-device reset-firewall reset-ip reset-wifi restart-gateway)
   run_commands "-password 1234567890 -fresh" "${LOGIN_FAILURE_ACTIONS[@]}"
 fi
 
