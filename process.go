@@ -14,7 +14,6 @@ func processDeviceList(tableData [][]string) {
 	for _, row := range tableData {
 		count := len(row)
 
-		// ipv4 address / name
 		if row[keyRow] == "IPv4 Address / Name" {
 			row[keyRow] = "IPv4 Address"
 		}
@@ -29,9 +28,12 @@ func processDeviceList(tableData [][]string) {
 
 		line := strings.Join(row, ": ")
 
-		// connection-type
 		if row[keyRow] == "Connection Type" {
-			line = strings.Join(row, ": \n  ")
+			line = strings.Join(row, ":\n  ")
+			line = strings.Replace(line, "Wi-Fi", "Wi-Fi: ", 1)
+			line = strings.Replace(line, "Type: ", "\n  Type: ", 1)
+			line = strings.Replace(line, "Name: ", "\n  Name: ", 1)
+
 		}
 
 		fmt.Println(line)
