@@ -21,9 +21,9 @@ func processDeviceList(tableData [][]string) {
 
 		substring := " / "
 
-		if count > one {
-			if strings.Contains(row[one], substring) {
-				row[one] = strings.Replace(row[one], substring, "Name: ", oneOccurance)
+		if count > 1 {
+			if strings.Contains(row[valueRow], substring) {
+				row[valueRow] = strings.Replace(row[valueRow], substring, "Name: ", oneOccurance)
 			}
 		}
 
@@ -64,15 +64,13 @@ func processIPAllocation(tableData [][]string) {
 
 func processNatTotals(tableData [][]string) (icmpCount int, tcpCount int, udpCount int) {
 	for _, row := range tableData {
-		protocol := row[one]
-
-		if protocol == "icmp" {
+		if row[protocol] == "icmp" {
 			icmpCount++
 		}
-		if protocol == "tcp" {
+		if row[protocol] == "tcp" {
 			tcpCount++
 		}
-		if protocol == "udp" {
+		if row[protocol] == "udp" {
 			udpCount++
 		}
 	}

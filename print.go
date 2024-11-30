@@ -47,7 +47,7 @@ func printRowWithPadding(row []string, columnWidths []int, numCols int, specialF
 		return
 	}
 
-	if specialFormatting && numCols == two && len(row) >= 1 {
+	if specialFormatting && numCols == 2 && len(row) >= 1 {
 		formatSpecialTwoColumnRow(row, columnWidths)
 	} else {
 		formatGeneralRow(row, columnWidths, numCols)

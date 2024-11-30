@@ -9,17 +9,6 @@ const period = "."
 const space = " "
 const star = "*"
 
-const zero = 0
-const one = 1
-const two = 2
-const three = 3
-const four = 4
-const five = 5
-const six = 6
-const seven = 7
-const eight = 8
-const nine = 9
-
 const oneOccurance = 1
 const twoOccurance = 2
 
@@ -30,6 +19,8 @@ const warning = 3
 
 const keyRow = 0
 const valueRow = 1
+
+const protocol = 1
 
 const columnFormat = "%%-%ds"
 const columnNumnerOfAction = 4

@@ -1,3 +1,4 @@
+//revive:disable:add-constant
 package main
 
 import (
@@ -20,7 +21,7 @@ func giveMetricsToDatadogStatsd(configs configs, metrics []string, model string)
 	floatMetrics := processDatadogMetrics(metrics)
 
 	for key, value := range floatMetrics {
-		err = client.Gauge(key, value, []string{"gateway:" + model}, one)
+		err = client.Gauge(key, value, []string{"gateway:" + model}, 1)
 		if err != nil {
 			log.Printf("Error sending %s to statsd: %v", key, err)
 		}
