@@ -30,10 +30,10 @@ func isValidSummary(summary string) (bool, string) {
 
 		for _, pattern := range patterns {
 			re := regexp.MustCompile(pattern)
-			shortSummary = re.ReplaceAllString(shortSummary, "")
+			shortSummary = re.ReplaceAllString(shortSummary, empty)
 		}
 
 		return true, shortSummary
 	}
-	return false, ""
+	return false, empty
 }

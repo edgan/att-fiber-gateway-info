@@ -10,11 +10,13 @@ type gatewayClient struct {
 	baseURL       string
 	colorMode     bool
 	cookieFile    string
-	loadedCookies int
+	loadedCookies bool
 	loginPath     string
 }
 
-func newGatewayClient(configs configs, colorMode bool, flags *flags, loginPath string) (*gatewayClient, error) {
+func newGatewayClient(
+	configs configs, colorMode bool, flags *flags, loginPath string,
+) (*gatewayClient, error) {
 	// Create and load cookies from file if applicable
 	jar, loadedCookies, err := createAndLoadCookies(configs, flags)
 	if err != nil {

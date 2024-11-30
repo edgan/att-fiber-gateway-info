@@ -6,10 +6,10 @@ import (
 	"sync"
 )
 
-func allMetrics(actionPages map[string]string, client *gatewayClient, configs configs, flags *flags, model string) {
-	returnFact := ""
-
-	metricActions := returnMeticsActions()
+func allMetrics(
+	actionPages map[string]string, client *gatewayClient, configs configs, flags *flags, model string,
+) {
+	returnFact := empty
 
 	// Use a WaitGroup to wait for all goroutines to complete
 	var wg sync.WaitGroup
@@ -19,7 +19,7 @@ func allMetrics(actionPages map[string]string, client *gatewayClient, configs co
 
 	for _, action := range metricActions {
 		// Increment the WaitGroup counter for each goroutine
-		wg.Add(1)
+		wg.Add(one)
 
 		// Launch each action retrieval in a new goroutine
 		go func(action string) {

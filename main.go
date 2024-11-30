@@ -5,13 +5,15 @@ package main
 import (
 	"fmt"
 	"os"
+
+	"edgan/att-fiber-gateway-info/internal/color"
+	"edgan/att-fiber-gateway-info/internal/logging"
 )
 
 func main() {
-	colorMode := checkColorTerminal()
+	colorMode := color.CheckColorTerminal()
 	config := loadAppConfig(determineConfigFile())
-	actionPrefixes := returnActionPrefixes()
-	actionPages := returnActionPages(actionPrefixes)
+	actionPages := returnActionPages()
 	actionsDescription := actionsHelp()
 	filtersDescription := filtersHelp()
 	cookiePath := determineCookiePath()
@@ -19,7 +21,7 @@ func main() {
 
 	if *version {
 		fmt.Println(returnApplicationNameVersion())
-		os.Exit(0)
+		os.Exit(zero)
 	}
 
 	// Validate flags
@@ -28,13 +30,13 @@ func main() {
 	// Create client
 	client, err := createGatewayClient(configs, colorMode, flags)
 	if err != nil {
-		logFatalf("Failed to create router client: %v", err)
+		logging.LogFatalf("Failed to create router client: %v", err)
 	}
 
 	// Retrieve model information
-	model, err := client.retrieveAction("system-information", actionPages, configs, flags, "", "model")
+	model, err := client.retrieveAction("system-information", actionPages, configs, flags, empty, "model")
 	if err != nil {
-		logFatalf("Failed to get system-information: %v", err)
+		logging.LogFatalf("Failed to get system-information: %v", err)
 	}
 
 	// Handle actions based on flags

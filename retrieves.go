@@ -1,7 +1,13 @@
 package main
 
-func (rc *gatewayClient) retrieveAction(action string, actionPages map[string]string, configs configs, flags *flags, model string, returnFact string) (string, error) {
-	fact := ""
+import (
+	"edgan/att-fiber-gateway-info/internal/logging"
+)
+
+func (rc *gatewayClient) retrieveAction(
+	action string, actionPages map[string]string, configs configs, flags *flags, model string, returnFact string,
+) (string, error) {
+	fact := empty
 
 	// Get the specified page based on action
 	page := returnActionPage(action, actionPages)
@@ -14,15 +20,15 @@ func (rc *gatewayClient) retrieveAction(action string, actionPages map[string]st
 
 	for _, loginPage := range loginPages {
 		if page == loginPage {
-			if configs.Password == "" {
-				logFatal("Password is required")
+			if configs.Password == empty {
+				logging.LogFatal("Password is required")
 			}
 			loginRequired = true
 		}
 	}
 
 	if loginRequired {
-		debugLog(*flags.Debug, "LoginRequired true")
+		logging.DebugLog(*flags.Debug, "LoginRequired true")
 		performLogin(rc, configs, flags)
 	}
 

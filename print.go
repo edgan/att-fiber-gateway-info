@@ -7,35 +7,35 @@ import (
 
 // Formats a special two-column row with special formatting
 func formatSpecialTwoColumnRow(row []string, columnWidths []int) {
-	key := row[0]
-	value := ""
+	key := row[zero]
+	value := empty
 
-	if len(row) >= 2 {
-		value = row[1]
+	if len(row) >= two {
+		value = row[one]
 	}
 
 	modifiedKey := key
-	if key != "" {
-		modifiedKey = key + ":"
+	if key != empty {
+		modifiedKey = key + colon
 	}
 
-	format0 := fmt.Sprintf("%%-%ds", columnWidths[0]+2)
+	format0 := fmt.Sprintf(columnFormat, columnWidths[zero]+two)
 	fmt.Printf(format0, modifiedKey)
 
-	format1 := fmt.Sprintf("%%-%ds", columnWidths[1]+2)
+	format1 := fmt.Sprintf(columnFormat, columnWidths[one]+two)
 	fmt.Printf(format1, value)
 }
 
 // Formats a general row for tables with more than two columns or when special formatting is not needed
 func formatGeneralRow(row []string, columnWidths []int, numCols int) {
-	for i := 0; i < numCols; i++ {
+	for i := zero; i < numCols; i++ {
 		var cell string
 		if i < len(row) {
 			cell = row[i]
 		} else {
-			cell = ""
+			cell = empty
 		}
-		format := fmt.Sprintf("%%-%ds", columnWidths[i]+2)
+		format := fmt.Sprintf(columnFormat, columnWidths[i]+two)
 		fmt.Printf(format, cell)
 	}
 }
@@ -43,11 +43,11 @@ func formatGeneralRow(row []string, columnWidths []int, numCols int) {
 // Function to print a row with padding and handle special cases
 func printRowWithPadding(row []string, columnWidths []int, numCols int, specialFormatting bool) {
 	// Skip rows containing "Legal Disclaimer"
-	if len(row) > 0 && strings.Contains(row[0], "Legal Disclaimer") {
+	if len(row) > zero && strings.Contains(row[zero], "Legal Disclaimer") {
 		return
 	}
 
-	if specialFormatting && numCols == 2 && len(row) >= 1 {
+	if specialFormatting && numCols == two && len(row) >= one {
 		formatSpecialTwoColumnRow(row, columnWidths)
 	} else {
 		formatGeneralRow(row, columnWidths, numCols)
@@ -67,7 +67,7 @@ func updateColumnWidths(row []string, columnWidths []int, numCols int, stripAnsi
 
 		cellLen := len(cellContent)
 
-		if i == 0 && numCols == 2 && specialFormatting {
+		if i == zero && numCols == two && specialFormatting {
 			cellLen++ // Account for the added colon
 		}
 
@@ -86,16 +86,17 @@ func calculateColumnWidths(tableData [][]string, numCols int, stripAnsiCodes boo
 	for _, row := range tableData {
 		updateColumnWidths(row, columnWidths, numCols, stripAnsiCodes, specialFormatting)
 	}
+
 	return columnWidths
 }
 
 func prettyPrint(tableData [][]string, stripAnsiCodes bool, specialFormatting bool) {
-	if len(tableData) == 0 {
+	if len(tableData) == zero {
 		return
 	}
 
 	// Determine the maximum number of columns
-	numCols := 0
+	numCols := zero
 
 	for _, row := range tableData {
 		if len(row) > numCols {
@@ -113,7 +114,7 @@ func prettyPrint(tableData [][]string, stripAnsiCodes bool, specialFormatting bo
 }
 
 func printNatConnectionTotals(action string, class string, tableData [][]string) {
-	if action == "nat-totals" && class == "grid table100" {
+	if action == "nat-totals" && class == gridTable100 {
 		icmpCount, tcpCount, udpCount := processNatTotals(tableData)
 		fmt.Printf("Total number of icmp connections: %d\n", icmpCount)
 		fmt.Printf("Total number of tcp connections: %d\n", tcpCount)
@@ -134,7 +135,7 @@ func printMetrics(metrics []string) {
 
 func printData(action string, class string, currentHeader string, flags *flags, tableData [][]string) {
 	// If the table has data, process it
-	if len(tableData) > 0 {
+	if len(tableData) > zero {
 		// Process and print table data
 		printTableData(action, class, flags, currentHeader, tableData)
 	}
@@ -142,9 +143,9 @@ func printData(action string, class string, currentHeader string, flags *flags, 
 
 func printTableData(action string, class string, flags *flags, header string, tableData [][]string) {
 	// Output the section header if it's available
-	if header != "" {
+	if header != empty {
 		fmt.Printf("\n%s\n", header)
-		fmt.Println(strings.Repeat("-", len(header)))
+		fmt.Println(strings.Repeat(dash, len(header)))
 	}
 
 	switch action {

@@ -1,8 +1,10 @@
 package main
 
-func outputMetrics(action string, configs configs, flags *flags, header string, model string, summary string, tableData [][]string) {
+func outputMetrics(
+	action string, configs configs, flags *flags, header string, model string, summary string, tableData [][]string,
+) {
 	actionMetric := returnActionMetric(action)
-	modelActionMetric := model + "." + actionMetric
+	modelActionMetric := model + period + actionMetric
 
 	dotZero := ".0"
 

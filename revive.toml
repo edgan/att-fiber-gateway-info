@@ -3,6 +3,12 @@ enableAllRules = true
 [rule.add-constant]
 Disabled = true
 
+[rule.cognitive-complexity]
+Arguments = [20]
+
+[rule.cyclomatic]
+Arguments = [20]
+
 [rule.deep-exit]
 Disabled = true
 
@@ -13,4 +19,4 @@ Disabled = true
 Disabled = true
 
 [rule.line-length-limit]
-Disabled = true
+Arguments = [120]

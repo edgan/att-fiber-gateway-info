@@ -7,6 +7,8 @@ import (
 	"io"
 	"net/url"
 	"strings"
+
+	"edgan/att-fiber-gateway-info/internal/logging"
 )
 
 func calculateHash(configs configs, nonce string) string {
@@ -32,13 +34,13 @@ func (rc *gatewayClient) login(configs configs, flags *flags) error {
 	// Prepare form data
 	formData := url.Values{
 		"nonce":        {nonce},
-		"password":     {strings.Repeat("*", len(configs.Password))}, // Replicate JS behavior
+		"password":     {strings.Repeat(star, len(configs.Password))}, // Replicate JS behavior
 		"hashpassword": {hash},
 		"Continue":     {"Continue"}, // submit button
 	}
 
 	if err := rc.postForm(flags, formData, rc.loginPath); err != nil {
-		logFatalf("Submission to %s failed\n%v", rc.loginPath, err)
+		logging.LogFatalf("Submission to %s failed\n%v", rc.loginPath, err)
 	}
 
 	return nil
@@ -47,6 +49,6 @@ func (rc *gatewayClient) login(configs configs, flags *flags) error {
 // performLogin performs the login action for the client
 func performLogin(client *gatewayClient, configs configs, flags *flags) {
 	if err := client.login(configs, flags); err != nil {
-		logFatalf("Login failed: %v", err)
+		logging.LogFatalf("Login failed: %v", err)
 	}
 }

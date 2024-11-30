@@ -1,6 +1,13 @@
 package main
 
-func executeAllMetrics(actionPages map[string]string, client *gatewayClient, configs configs, flags *flags, model string, continuous bool) {
+import (
+	"edgan/att-fiber-gateway-info/internal/logging"
+)
+
+func executeAllMetrics(
+	actionPages map[string]string, client *gatewayClient, configs configs,
+	flags *flags, model string, continuous bool,
+) {
 	for {
 		allMetrics(actionPages, client, configs, flags, model)
 		if !continuous {
@@ -9,11 +16,14 @@ func executeAllMetrics(actionPages map[string]string, client *gatewayClient, con
 	}
 }
 
-func executeRetrieveAction(client *gatewayClient, action string, actionPages map[string]string, configs configs, flags *flags, model string, continuous bool) {
+func executeRetrieveAction(
+	client *gatewayClient, action string, actionPages map[string]string,
+	configs configs, flags *flags, model string, continuous bool,
+) {
 	for {
-		_, err := client.retrieveAction(action, actionPages, configs, flags, model, "")
+		_, err := client.retrieveAction(action, actionPages, configs, flags, model, empty)
 		if err != nil {
-			logFatalf("Failed to get %s: %v", action, err)
+			logging.LogFatalf("Failed to get %s: %v", action, err)
 		}
 		if !continuous {
 			break

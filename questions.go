@@ -39,7 +39,7 @@ func askYesNo(colorMode bool, flags *flags, question string, warning string) boo
 		warning = red.Sprint(warning)
 	}
 
-	fullQuestion := question + " " + warning + " (yes/no): "
+	fullQuestion := question + space + warning + " (yes/no): "
 
 	if *flags.AnswerNo {
 		fmt.Println(fullQuestion)

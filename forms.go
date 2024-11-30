@@ -5,14 +5,16 @@ import (
 	"io"
 	"log"
 	"net/url"
+
+	"edgan/att-fiber-gateway-info/internal/logging"
 )
 
 func (rc *gatewayClient) postForm(flags *flags, formData url.Values, path string) error {
 	// Submit form
-	resp, err := rc.client.PostForm(rc.baseURL+path, formData)
+	resp, err1 := rc.client.PostForm(rc.baseURL+path, formData)
 
-	if err != nil {
-		return fmt.Errorf("failed to submit the form to %s: %v", path, err)
+	if err1 != nil {
+		return fmt.Errorf("failed to submit the form to %s: %v", path, err1)
 	}
 
 	defer resp.Body.Close()
@@ -20,33 +22,36 @@ func (rc *gatewayClient) postForm(flags *flags, formData url.Values, path string
 	if path == rc.loginPath {
 		// Save session cookies
 		if err := rc.saveSessionCookies(); err != nil {
-			log.Printf("Failed to save cookies: %v", err)
+			log.Printf("Failed to save cookies: %v", err1)
 		}
 	}
 
-	body, err := io.ReadAll(resp.Body)
+	body, err2 := io.ReadAll(resp.Body)
 
-	if err != nil {
-		debugLog(*flags.Debug, "Failed to ReadAll")
-		return fmt.Errorf("failed to read response for path %s: %v", path, err)
+	if err2 != nil {
+		logging.DebugLog(*flags.Debug, "Failed to ReadAll")
+		return fmt.Errorf("failed to read response for path %s: %v", path, err2)
 	}
 
 	bodyStr := string(body)
 
-	error := checkForLoginFailure(bodyStr, flags, rc.loginPath)
+	err3 := checkForLoginFailure(bodyStr, flags, rc.loginPath)
 
-	if error != nil {
-		return error
+	if err3 != nil {
+		return err3
 	}
 
 	return nil
 }
 
-func (rc *gatewayClient) submitForm(action string, flags *flags, page string, path string, resetAction [4]string) error {
-	buttonName := resetAction[0]
-	buttonValue := resetAction[1]
-	question := resetAction[2]
-	warning := resetAction[3]
+func (rc *gatewayClient) submitForm(
+	action string, flags *flags, page string, path string,
+	resetAction [actionAttributes]string,
+) error {
+	buttonName := resetAction[zero]
+	buttonValue := resetAction[one]
+	question := resetAction[two]
+	warning := resetAction[three]
 
 	if askYesNo(rc.colorMode, flags, question, warning) {
 		nonce, err := rc.getNonce(page)

@@ -1,7 +1,7 @@
 //go:build windows
 // +build windows
 
-package main
+package color
 
 import (
 	"golang.org/x/sys/windows"

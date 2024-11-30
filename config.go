@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"runtime"
 
+	"edgan/att-fiber-gateway-info/internal/logging"
+
 	"gopkg.in/yaml.v3"
 )
 
@@ -33,7 +35,7 @@ func loadConfig(configFile string) (*config, error) {
 	configPath := filepath.Join(homeDir, configFile)
 
 	// This applies to Linux/MacOS only, not Windows.
-	permissions := os.FileMode(0600)
+	permissions := os.FileMode(unixUserReadPermission)
 
 	// Check if the config file exists
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
@@ -71,7 +73,7 @@ func determineConfigFile() string {
 	case "windows":
 		configFile = configFilename
 	default: // Linux and other Unix-like systems
-		configFile = "." + configFilename
+		configFile = period + configFilename
 	}
 
 	return configFile
@@ -81,7 +83,7 @@ func determineConfigFile() string {
 func loadAppConfig(configFile string) *config {
 	config, err := loadConfig(configFile)
 	if err != nil {
-		logFatalf("Error loading configuration: %v", err)
+		logging.LogFatalf("Error loading configuration: %v", err)
 	}
 	return config
 }

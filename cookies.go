@@ -8,6 +8,8 @@ import (
 	"net/url"
 	"os"
 	"runtime"
+
+	"edgan/att-fiber-gateway-info/internal/logging"
 )
 
 // Saves the current cookies to the file after login
@@ -15,14 +17,14 @@ func (rc *gatewayClient) saveSessionCookies() error {
 	return saveCookies(rc.client.Jar, rc.baseURL, rc.cookieFile)
 }
 
-func createAndLoadCookies(configs configs, flags *flags) (*cookiejar.Jar, int, error) {
+func createAndLoadCookies(configs configs, flags *flags) (*cookiejar.Jar, bool, error) {
 	// Create cookie jar
 	jar, err := cookiejar.New(nil)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to create cookie jar: %v", err)
+		return nil, false, fmt.Errorf("failed to create cookie jar: %v", err)
 	}
 
-	loadedCookies := 0
+	loadedCookies := false
 
 	if !*flags.FreshCookies {
 		// Load cookies from file if it exists
@@ -31,8 +33,8 @@ func createAndLoadCookies(configs configs, flags *flags) (*cookiejar.Jar, int, e
 				return nil, loadedCookies, fmt.Errorf("failed to load cookies: %v", err)
 			}
 
-			loadedCookies = 1
-			debugLog(*flags.Debug, "Stored cookies use") // Assuming debug is true for simplicity
+			loadedCookies = true
+			logging.DebugLog(*flags.Debug, "Stored cookies use") // Assuming debug is true for simplicity
 		}
 	}
 

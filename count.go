@@ -13,7 +13,7 @@ func countIPsByColumn(tableData [][]string, column int) []struct {
 	ipCount := make(map[string]int)
 
 	for i, row := range tableData {
-		if i != 0 {
+		if i != zero {
 			ipCount[row[column]]++
 		}
 	}

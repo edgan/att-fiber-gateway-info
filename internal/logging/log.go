@@ -1,11 +1,11 @@
-package main
+package logging
 
 import (
 	"fmt"
 	"os"
 )
 
-func logFatal(msg any) {
+func LogFatal(msg any) {
 	var output string
 	switch v := msg.(type) {
 	case string:
@@ -20,7 +20,7 @@ func logFatal(msg any) {
 	os.Exit(1)
 }
 
-func logFatalf(format string, args ...any) {
+func LogFatalf(format string, args ...any) {
 	fmt.Fprintf(os.Stderr, format+"\n", args...)
 	os.Exit(1)
 }
