@@ -1,3 +1,4 @@
+//revive:disable:add-constant
 package main
 
 import (
@@ -13,7 +14,7 @@ func countIPsByColumn(tableData [][]string, column int) []struct {
 	ipCount := make(map[string]int)
 
 	for i, row := range tableData {
-		if i != zero {
+		if i != 0 {
 			ipCount[row[column]]++
 		}
 	}

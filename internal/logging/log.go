@@ -1,3 +1,4 @@
+// Package logging is for logging functions
 package logging
 
 import (
@@ -5,6 +6,7 @@ import (
 	"os"
 )
 
+// LogFatal is print + exit
 func LogFatal(msg any) {
 	var output string
 	switch v := msg.(type) {
@@ -20,6 +22,7 @@ func LogFatal(msg any) {
 	os.Exit(1)
 }
 
+// LogFatalf is printf + exit
 func LogFatalf(format string, args ...any) {
 	fmt.Fprintf(os.Stderr, format+"\n", args...)
 	os.Exit(1)

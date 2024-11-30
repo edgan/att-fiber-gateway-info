@@ -1,3 +1,4 @@
+//revive:disable:add-constant
 package main
 
 import (
@@ -7,35 +8,34 @@ import (
 
 // Formats a special two-column row with special formatting
 func formatSpecialTwoColumnRow(row []string, columnWidths []int) {
-	key := row[zero]
 	value := empty
 
-	if len(row) >= two {
-		value = row[one]
+	if len(row) >= 2 {
+		value = row[valueRow]
 	}
 
-	modifiedKey := key
-	if key != empty {
-		modifiedKey = key + colon
+	if row[keyRow] != empty {
+		row[keyRow] = row[keyRow] + colon
 	}
 
-	format0 := fmt.Sprintf(columnFormat, columnWidths[zero]+two)
-	fmt.Printf(format0, modifiedKey)
+	format0 := fmt.Sprintf(columnFormat, columnWidths[0]+2)
+	fmt.Printf(format0, row[keyRow])
 
-	format1 := fmt.Sprintf(columnFormat, columnWidths[one]+two)
+	format1 := fmt.Sprintf(columnFormat, columnWidths[1]+2)
 	fmt.Printf(format1, value)
 }
 
-// Formats a general row for tables with more than two columns or when special formatting is not needed
+// Formats a general row for tables with more than two columns or when special
+// formatting is not needed
 func formatGeneralRow(row []string, columnWidths []int, numCols int) {
-	for i := zero; i < numCols; i++ {
+	for i := 0; i < numCols; i++ {
 		var cell string
 		if i < len(row) {
 			cell = row[i]
 		} else {
 			cell = empty
 		}
-		format := fmt.Sprintf(columnFormat, columnWidths[i]+two)
+		format := fmt.Sprintf(columnFormat, columnWidths[i]+2)
 		fmt.Printf(format, cell)
 	}
 }
@@ -43,11 +43,11 @@ func formatGeneralRow(row []string, columnWidths []int, numCols int) {
 // Function to print a row with padding and handle special cases
 func printRowWithPadding(row []string, columnWidths []int, numCols int, specialFormatting bool) {
 	// Skip rows containing "Legal Disclaimer"
-	if len(row) > zero && strings.Contains(row[zero], "Legal Disclaimer") {
+	if len(row) > 0 && strings.Contains(row[keyRow], "Legal Disclaimer") {
 		return
 	}
 
-	if specialFormatting && numCols == two && len(row) >= one {
+	if specialFormatting && numCols == two && len(row) >= 1 {
 		formatSpecialTwoColumnRow(row, columnWidths)
 	} else {
 		formatGeneralRow(row, columnWidths, numCols)
@@ -67,7 +67,7 @@ func updateColumnWidths(row []string, columnWidths []int, numCols int, stripAnsi
 
 		cellLen := len(cellContent)
 
-		if i == zero && numCols == two && specialFormatting {
+		if i == 0 && numCols == 2 && specialFormatting {
 			cellLen++ // Account for the added colon
 		}
 
@@ -91,12 +91,12 @@ func calculateColumnWidths(tableData [][]string, numCols int, stripAnsiCodes boo
 }
 
 func prettyPrint(tableData [][]string, stripAnsiCodes bool, specialFormatting bool) {
-	if len(tableData) == zero {
+	if len(tableData) == 0 {
 		return
 	}
 
 	// Determine the maximum number of columns
-	numCols := zero
+	numCols := 0
 
 	for _, row := range tableData {
 		if len(row) > numCols {
@@ -135,7 +135,7 @@ func printMetrics(metrics []string) {
 
 func printData(action string, class string, currentHeader string, flags *flags, tableData [][]string) {
 	// If the table has data, process it
-	if len(tableData) > zero {
+	if len(tableData) > 0 {
 		// Process and print table data
 		printTableData(action, class, flags, currentHeader, tableData)
 	}

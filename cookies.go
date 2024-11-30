@@ -34,7 +34,9 @@ func createAndLoadCookies(configs configs, flags *flags) (*cookiejar.Jar, bool, 
 			}
 
 			loadedCookies = true
-			logging.DebugLog(*flags.Debug, "Stored cookies use") // Assuming debug is true for simplicity
+			if *flags.Debug {
+				logging.DebugLog(*flags.Debug, "Stored cookies use")
+			}
 		}
 	}
 

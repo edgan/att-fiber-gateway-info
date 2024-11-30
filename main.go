@@ -1,5 +1,7 @@
 // att-fiber-gateway-info
 // A golang command line tool to pull values from the pages of a AT&T Fiber gateways.
+//
+//revive:disable:add-constant
 package main
 
 import (
@@ -21,7 +23,7 @@ func main() {
 
 	if *version {
 		fmt.Println(returnApplicationNameVersion())
-		os.Exit(zero)
+		os.Exit(0)
 	}
 
 	// Validate flags

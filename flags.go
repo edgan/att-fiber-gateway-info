@@ -38,8 +38,8 @@ type flags struct {
 func returnFlags(
 	actionDescription string, colorMode bool, cookiePath string, filterDescription string,
 ) (*string, *flags, *bool) {
-	// action is a special case where there can be more than one action per run, and hence it doesn't work as part of
-	// the flags struct.
+	// action is a special case where there can be more than one action per
+	// run, and hence it doesn't work as part of the flags struct.
 	action := flag.String("action", empty, actionDescription)
 
 	flags := &flags{

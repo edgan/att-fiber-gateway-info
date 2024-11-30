@@ -48,20 +48,15 @@ func (rc *gatewayClient) submitForm(
 	action string, flags *flags, page string, path string,
 	resetAction [actionAttributes]string,
 ) error {
-	buttonName := resetAction[zero]
-	buttonValue := resetAction[one]
-	question := resetAction[two]
-	warning := resetAction[three]
-
-	if askYesNo(rc.colorMode, flags, question, warning) {
+	if askYesNo(rc.colorMode, flags, resetAction[question], resetAction[warning]) {
 		nonce, err := rc.getNonce(page)
 		if err != nil {
 			return fmt.Errorf("failed to get nonce: %v", err)
 		}
 
 		formData := url.Values{
-			"nonce":    {nonce},
-			buttonName: {buttonValue}, // Dynamically use the submit button
+			"nonce":                 {nonce},
+			resetAction[buttonName]: {resetAction[buttonValue]}, // Dynamically use the submit button
 		}
 
 		if err := rc.postForm(flags, formData, path); err != nil {

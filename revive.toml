@@ -1,7 +1,7 @@
 enableAllRules = true
 
-[rule.add-constant]
-Disabled = true
+#[rule.add-constant]
+#Disabled = true
 
 [rule.cognitive-complexity]
 Arguments = [20]

@@ -1,3 +1,4 @@
+//revive:disable:add-constant
 package main
 
 import (
@@ -14,22 +15,22 @@ func processDeviceList(tableData [][]string) {
 		count := len(row)
 
 		// ipv4 address / name
-		if row[zero] == "IPv4 Address / Name" {
-			row[zero] = "IPv4 Address"
+		if row[keyRow] == "IPv4 Address / Name" {
+			row[keyRow] = "IPv4 Address"
 		}
 
 		substring := " / "
 
 		if count > one {
 			if strings.Contains(row[one], substring) {
-				row[one] = strings.Replace(row[one], substring, "Name: ", one)
+				row[one] = strings.Replace(row[one], substring, "Name: ", oneOccurance)
 			}
 		}
 
 		line := strings.Join(row, ": ")
 
 		// connection-type
-		if row[zero] == "Connection Type" {
+		if row[keyRow] == "Connection Type" {
 			line = strings.Join(row, ": \n  ")
 		}
 
@@ -44,10 +45,9 @@ func processGeneric(tableData [][]string) {
 
 func processHomeNetworkStatus(tableData [][]string) {
 	for _, row := range tableData {
-		key := row[zero]
 		count := len(row)
-		if key != empty && count > one {
-			key = key + colon
+		if row[keyRow] != empty && count > 1 {
+			row[keyRow] = row[keyRow] + colon
 		}
 	}
 
@@ -56,9 +56,7 @@ func processHomeNetworkStatus(tableData [][]string) {
 
 func processIPAllocation(tableData [][]string) {
 	for _, row := range tableData {
-		action := row[four]
-		action = empty
-		row[four] = action
+		row[columnNumnerOfAction] = empty
 	}
 
 	prettyPrint(tableData, false, false)
@@ -93,25 +91,22 @@ func processNatCheck(value string) {
 
 	if connections >= maxConnections {
 		fmt.Printf("\nError: Too many connections\n")
-		os.Exit(one)
+		os.Exit(1)
 	}
 }
 
 func processNatCheckTotals(action string, class string, tableData [][]string) {
 	if class == "table60" {
 		for _, row := range tableData {
-			if len(row) == zero || len(row) < two {
+			if len(row) == 0 || len(row) < 2 {
 				continue
 			}
 
-			key := row[zero]
-			value := row[one]
-
-			if key == "Total sessions in use" {
+			if row[keyRow] == "Total sessions in use" {
 				if action == "nat-check" {
-					processNatCheck(value)
+					processNatCheck(row[valueRow])
 				} else if action == "nat-totals" {
-					printNatTotals(value)
+					printNatTotals(row[valueRow])
 				}
 			}
 		}
@@ -174,7 +169,7 @@ func processTotalConnections(key, value, modelActionMetric, dotZero string, flag
 	stat := processStat(key)
 
 	if strings.Contains(stat, "sessions.in.use") {
-		stat = strings.Replace(stat, "Total.sessions.in.use", "connections", one)
+		stat = strings.Replace(stat, "Total.sessions.in.use", "connections", oneOccurance)
 	}
 
 	returnedValue := processValue(value, flags.Noconvert, dotZero)
@@ -187,26 +182,24 @@ func processNatTotalsAction(tableData [][]string, modelActionMetric, dotZero str
 	var metrics []string
 
 	for _, row := range tableData {
-		if len(row) == zero || len(row) < two {
+		if len(row) == 0 || len(row) < 2 {
 			continue
 		}
-		key := row[zero]
-		value := row[one]
 
-		if key == empty {
+		if row[keyRow] == empty {
 			continue
 		}
 
 		switch {
-		case strings.Contains(key, "IP Family"):
+		case strings.Contains(row[keyRow], "IP Family"):
 			metrics = append(metrics, processIPFamilyCase(tableData, modelActionMetric, dotZero)...)
 			return metrics
 
-		case key == "Total sessions available", key == "Select display option":
+		case row[keyRow] == "Total sessions available", row[keyRow] == "Select display option":
 			continue
 
 		default:
-			metric := processTotalConnections(key, value, modelActionMetric, dotZero, flags)
+			metric := processTotalConnections(row[keyRow], row[valueRow], modelActionMetric, dotZero, flags)
 			metrics = append(metrics, metric)
 		}
 	}
@@ -227,14 +220,14 @@ func processGeneralAction(
 
 	// First phase: Collect necessary data from tableData
 	for _, row := range tableData {
-		if len(row) == zero || row[zero] == empty {
+		if len(row) == 0 || row[0] == empty {
 			continue
 		}
 
-		key := row[one]
+		key := row[1]
 		stat := processStat(key)
-		isPortSpecific := len(row) > two
-		cells := row[one:]
+		isPortSpecific := len(row) > 2
+		cells := row[1:]
 
 		rowsToProcess = append(rowsToProcess, struct {
 			Stat           string
@@ -273,7 +266,9 @@ func processCells(item struct {
 		var metric string
 		if item.IsPortSpecific {
 			// Port-specific metrics
-			metric = fmt.Sprintf("%s.%s.port%d.%s=%s", modelActionMetric, lowerSummary, i+one, item.Stat, returnedValue)
+			metric = fmt.Sprintf(
+				"%s.%s.port%d.%s=%s", modelActionMetric, lowerSummary, i+1, item.Stat, returnedValue,
+			)
 		} else {
 			metric = fmt.Sprintf("%s.%s.%s=%s", modelActionMetric, lowerSummary, item.Stat, returnedValue)
 		}
@@ -285,8 +280,8 @@ func processCells(item struct {
 
 // Helper function to process stat strings
 func processStat(stat string) string {
-	stat = strings.Replace(stat, space, period, one)
-	stat = strings.Replace(stat, " (Mbps)", empty, one)
+	stat = strings.Replace(stat, space, period, oneOccurance)
+	stat = strings.Replace(stat, " (Mbps)", empty, oneOccurance)
 	return stat
 }
 
@@ -314,21 +309,18 @@ func processDatadogMetrics(metrics []string) (floatMetrics map[string]float64) {
 		metric = strings.ToLower(strings.TrimSpace(metric))
 		splitMetric := strings.Split(metric, equals)
 
-		if len(splitMetric) != two {
+		if len(splitMetric) != 2 {
 			logging.LogFatalf("Invalid metric format:", metric)
 		}
 
-		key := splitMetric[zero]
-		value := splitMetric[one]
-
-		if strings.Contains(value, ".0") {
-			valueF, err := strconv.ParseFloat(value, floatPrecision)
+		if strings.HasSuffix(splitMetric[valueRow], ".0") {
+			valueF, err := strconv.ParseFloat(splitMetric[valueRow], floatPrecision)
 
 			if err != nil {
 				logging.LogFatalf("Error:", err)
 			}
 
-			floatMetrics[key] = valueF
+			floatMetrics[splitMetric[keyRow]] = valueF
 		}
 	}
 

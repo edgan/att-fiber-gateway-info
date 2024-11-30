@@ -32,8 +32,8 @@ func returnVersion() string {
 }
 
 func returnActionMetric(action string) string {
-	actionMetric := strings.Replace(action, dash, period, two)
-	actionMetric = strings.Replace(actionMetric, space, period, one)
+	actionMetric := strings.Replace(action, dash, period, twoOccurance)
+	actionMetric = strings.Replace(actionMetric, space, period, oneOccurance)
 
 	return actionMetric
 }

@@ -20,7 +20,19 @@ const seven = 7
 const eight = 8
 const nine = 9
 
+const oneOccurance = 1
+const twoOccurance = 2
+
+const buttonName = 0
+const buttonValue = 1
+const question = 2
+const warning = 3
+
+const keyRow = 0
+const valueRow = 1
+
 const columnFormat = "%%-%ds"
+const columnNumnerOfAction = 4
 const columnNumberOfDestinationIPs = 7
 const columnNumberOfSourceIPs = 5
 const floatPrecision = 64

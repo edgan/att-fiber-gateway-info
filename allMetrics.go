@@ -1,3 +1,4 @@
+//revive:disable:add-constant
 package main
 
 import (
@@ -19,7 +20,7 @@ func allMetrics(
 
 	for _, action := range metricActions {
 		// Increment the WaitGroup counter for each goroutine
-		wg.Add(one)
+		wg.Add(1)
 
 		// Launch each action retrieval in a new goroutine
 		go func(action string) {

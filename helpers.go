@@ -1,3 +1,4 @@
+//revive:disable:add-constant
 package main
 
 import (
@@ -6,7 +7,7 @@ import (
 
 // Helper function to get map keys as a sorted slice
 func getMapKeys(m map[string]string) []string {
-	keys := make([]string, zero, len(m))
+	keys := make([]string, 0, len(m))
 	for key := range m {
 		keys = append(keys, key)
 	}

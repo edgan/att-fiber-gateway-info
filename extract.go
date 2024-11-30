@@ -1,3 +1,4 @@
+//revive:disable:add-constant
 package main
 
 import (
@@ -25,8 +26,8 @@ type DataContext struct {
 // Handles return facts or outputs data based on the flags and action
 func handleReturnFactsOrOutputData(ctx *DataContext, tableData [][]string) {
 	if ctx.returnFact == "model" {
-		if len(tableData) > one && len(tableData[one]) > one {
-			*ctx.fact = strings.Replace(tableData[one][one], dash, empty, one)
+		if len(tableData) > 1 && len(tableData[1]) > 1 {
+			*ctx.fact = strings.Replace(tableData[1][1], dash, empty, oneOccurance)
 		}
 	} else if *ctx.flags.Metrics {
 		logging.DebugLog(*ctx.flags.Debug, "outputMetrics")
@@ -145,7 +146,7 @@ func extractTableData(s *goquery.Selection) [][]string {
 // Helper function to extract and process cell text
 func extractCellText(cell *goquery.Selection) string {
 	pre := cell.Find("pre")
-	if pre.Length() > zero {
+	if pre.Length() > 0 {
 		htmlContent, err := pre.Html()
 		if err != nil {
 			return empty
