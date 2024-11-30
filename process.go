@@ -220,12 +220,11 @@ func processGeneralAction(
 
 	// First phase: Collect necessary data from tableData
 	for _, row := range tableData {
-		if len(row) == 0 || row[0] == empty {
+		if len(row) == 0 || row[keyRow] == empty {
 			continue
 		}
 
-		key := row[1]
-		stat := processStat(key)
+		stat := processStat(row[keyRow])
 		isPortSpecific := len(row) > 2
 		cells := row[1:]
 
